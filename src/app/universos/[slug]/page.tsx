@@ -106,12 +106,12 @@ export default async function UniversoPage({ params }: Props) {
       )}
 
       {collections.length > 0 && (
-        <Section title="Coleções" href="/loja#colecoes">
+        <Section title="Coleções" href="/#colecoes">
           <div className="flex flex-wrap gap-3">
             {collections.map((collection) => (
               <Link
                 key={collection.id}
-                href="/loja#colecoes"
+                href="/#colecoes"
                 className="rounded-full border border-[var(--border)] px-5 py-2 text-sm font-semibold transition hover:border-gold hover:text-gold"
               >
                 {collection.title}

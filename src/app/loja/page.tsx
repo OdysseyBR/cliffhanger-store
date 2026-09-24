@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { CatalogBrowser } from "@/components/CatalogBrowser";
 import { Page } from "@/components/Page";
 import { Section } from "@/components/Section";
@@ -19,7 +20,13 @@ export default async function LojaPage() {
         title="Loja"
         subtitle="Catálogo completo — filtre por categoria, preço, disponibilidade e avaliação."
       >
-        <CatalogBrowser products={products} />
+        <Suspense
+          fallback={
+            <div className="h-64 animate-pulse rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]" />
+          }
+        >
+          <CatalogBrowser products={products} />
+        </Suspense>
       </Section>
     </Page>
   );

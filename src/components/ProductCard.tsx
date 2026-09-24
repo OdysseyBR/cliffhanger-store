@@ -7,20 +7,8 @@ import { Stars } from "@/components/Stars";
 import { useStore } from "@/components/Providers";
 import { discountPercent, formatPrice } from "@/lib/format";
 import { typeLabels } from "@/data/catalog";
+import { badgeTone } from "@/lib/tones";
 import type { Product } from "@/lib/types";
-
-const badgeTone: Record<string, string> = {
-  NOVO: "bg-[#30a46c] text-white",
-  "LANÇAMENTO": "bg-violet text-paper",
-  "PRÉ-VENDA": "bg-gold text-ink",
-  EXCLUSIVO: "bg-ink text-gold",
-  LIMITADO: "bg-[#e5484d] text-white",
-  "BEST-SELLER": "bg-gold text-ink",
-  ESGOTANDO: "bg-[#e5484d] text-white",
-  OFERTA: "bg-[#e5484d] text-white",
-  DIGITAL: "bg-violet text-paper",
-  "EDIÇÃO ESPECIAL": "bg-ink text-gold",
-};
 
 export function ProductCard({ product, widthClass = "" }: { product: Product; widthClass?: string }) {
   const { addToCart, toggleWishlist, isWished } = useStore();

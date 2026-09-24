@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { HashScroll } from "@/components/HashScroll";
 import { SiteHeader } from "@/components/SiteHeader";
 
 /**
@@ -18,6 +19,7 @@ export function Page({
 }) {
   return (
     <>
+      <HashScroll />
       {beforeHeader}
       {!hideHeader && <SiteHeader />}
       {children}

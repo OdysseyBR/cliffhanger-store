@@ -11,6 +11,7 @@ import { Stars } from "@/components/Stars";
 import { categoryLabels, typeLabels } from "@/data/catalog";
 import { formatDate, formatPrice } from "@/lib/format";
 import { getCatalog, getProductBySlug } from "@/lib/data";
+import { badgeTone, statusTone } from "@/lib/tones";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -62,6 +63,9 @@ export default async function ProdutoPage({ params }: Props) {
   const sameWork = catalog.products.filter(
     (p) => p.workId === product.workId && p.id !== product.id,
   );
+  const sameFormats = sameWork.filter(
+    (p) => p.category === "livros" || p.category === "ebooks" || p.category === "audiobooks",
+  );
   const sameUniverse = catalog.products.filter(
     (p) =>
       p.universeId === product.universeId &&
@@ -74,6 +78,15 @@ export default async function ProdutoPage({ params }: Props) {
     product.compareAt && product.compareAt > product.price
       ? Math.round(((product.compareAt - product.price) / product.compareAt) * 100)
       : null;
+
+  const status =
+    product.stock === 0 && !product.digital
+      ? { label: "Esgotado", tone: statusTone.alert }
+      : product.digital
+        ? { label: "Entrega imediata", tone: statusTone.ok }
+        : product.stock <= 5
+          ? { label: `Restam ${product.stock} un.`, tone: statusTone.alert }
+          : { label: "Pronta entrega", tone: statusTone.ok };
 
   return (
     <Page>
@@ -90,26 +103,27 @@ export default async function ProdutoPage({ params }: Props) {
         </nav>
 
         <div className="grid gap-8 lg:grid-cols-[minmax(0,420px)_1fr]">
-          {/* imagem + info */}
+          {/* imagem */}
           <div className="card overflow-hidden">
             <div className="aspect-[2/3]">
               <ProductArt product={product} />
             </div>
           </div>
 
-          <div className="flex flex-col gap-4">
+          {/* buy box (sticky no desktop) */}
+          <div className="flex flex-col gap-4 lg:sticky lg:top-32 lg:self-start">
             <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-wider">
               <span className="text-gold">{typeLabels[product.type]}</span>
               {product.badge && (
-                <span className="rounded-full bg-violet px-2.5 py-1 text-paper">
+                <span
+                  className={`rounded-full px-2.5 py-1 ${badgeTone[product.badge] ?? "bg-violet text-paper"}`}
+                >
                   {product.badge}
                 </span>
               )}
-              {product.digital && (
-                <span className="rounded-full border border-[var(--border)] px-2.5 py-1">
-                  Digital
-                </span>
-              )}
+              <span className={`rounded-full border px-2.5 py-1 ${status.tone}`}>
+                {status.label}
+              </span>
             </div>
 
             <h1 className="text-display text-4xl sm:text-5xl">{product.title}</h1>
@@ -124,11 +138,35 @@ export default async function ProdutoPage({ params }: Props) {
                 </span>
               )}
               {off && (
-                <span className="rounded-full bg-[#e5484d] px-3 py-1 text-xs font-extrabold text-white">
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-extrabold ${badgeTone.OFERTA}`}
+                >
                   {off}% OFF
                 </span>
               )}
             </div>
+
+            {sameFormats.length > 0 && (
+              <div>
+                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-gold">
+                  Outros formatos da obra
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <span className="rounded-full border border-transparent bg-violet px-3 py-1.5 text-xs font-semibold text-paper">
+                    {typeLabels[product.type]} · {formatPrice(product.price)}
+                  </span>
+                  {sameFormats.map((format) => (
+                    <Link
+                      key={format.id}
+                      href={`/produtos/${format.slug}`}
+                      className="rounded-full border border-[var(--border)] px-3 py-1.5 text-xs font-semibold transition hover:border-violet-soft"
+                    >
+                      {typeLabels[format.type]} · {formatPrice(format.price)}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <p className="max-w-2xl text-sm leading-relaxed text-[var(--text-muted)]">
               {product.description}
@@ -142,25 +180,26 @@ export default async function ProdutoPage({ params }: Props) {
             )}
 
             <AddToCart product={product} />
-
-            {product.specs.length > 0 && (
-              <div className="card p-5">
-                <h2 className="text-display mb-3 text-2xl">Especificações</h2>
-                <dl className="grid gap-2 text-sm sm:grid-cols-2">
-                  {product.specs.map((spec) => (
-                    <div
-                      key={spec.label}
-                      className="flex justify-between gap-4 border-b border-[var(--border)] pb-2"
-                    >
-                      <dt className="text-[var(--text-muted)]">{spec.label}</dt>
-                      <dd className="text-right font-semibold">{spec.value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            )}
           </div>
         </div>
+
+        {/* especificações em largura total */}
+        {product.specs.length > 0 && (
+          <div className="card mt-8 p-5">
+            <h2 className="text-display mb-3 text-2xl">Especificações</h2>
+            <dl className="grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
+              {product.specs.map((spec) => (
+                <div
+                  key={spec.label}
+                  className="flex justify-between gap-4 border-b border-[var(--border)] pb-2"
+                >
+                  <dt className="text-[var(--text-muted)]">{spec.label}</dt>
+                  <dd className="text-right font-semibold">{spec.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )}
       </div>
 
       {/* Sobre a obra + autor */}

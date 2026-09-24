@@ -143,13 +143,25 @@ export default async function HomePage() {
           href="/obras/valeharts-i-o-ultimo-farol"
         >
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {editoriais.map((work) => (
-              <WorkCard
-                key={work.id}
-                work={work}
-                authorName={authors.find((a) => a.id === work.authorId)?.name}
-              />
-            ))}
+            {editoriais.map((work) => {
+              const workProducts = products.filter((p) => p.workId === work.id);
+              const starProduct =
+                workProducts.find((p) => p.category === "livros") ?? workProducts[0];
+              return (
+                <WorkCard
+                  key={work.id}
+                  work={work}
+                  authorName={authors.find((a) => a.id === work.authorId)?.name}
+                  priceFrom={
+                    workProducts.length > 0
+                      ? Math.min(...workProducts.map((p) => p.price))
+                      : undefined
+                  }
+                  rating={starProduct?.rating}
+                  reviewCount={starProduct?.reviewCount}
+                />
+              );
+            })}
           </div>
         </Section>
       ) : null,

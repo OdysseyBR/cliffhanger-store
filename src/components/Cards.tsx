@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BookCover } from "@/components/BookCover";
 import { IconArrowRight } from "@/components/Icons";
 import { ProductArt } from "@/components/ProductArt";
+import { Stars } from "@/components/Stars";
 import { formatPrice } from "@/lib/format";
 import type { Collection, Product, Universe, Work } from "@/lib/types";
 
@@ -21,7 +22,19 @@ export function UniverseCard({ universe }: { universe: Universe }) {
   );
 }
 
-export function WorkCard({ work, authorName }: { work: Work; authorName?: string }) {
+export function WorkCard({
+  work,
+  authorName,
+  priceFrom,
+  rating,
+  reviewCount,
+}: {
+  work: Work;
+  authorName?: string;
+  priceFrom?: number;
+  rating?: number;
+  reviewCount?: number;
+}) {
   return (
     <Link
       href={`/obras/${work.slug}`}
@@ -41,7 +54,21 @@ export function WorkCard({ work, authorName }: { work: Work; authorName?: string
           {work.subtitle && <span className="block font-normal opacity-80">{work.subtitle}</span>}
         </span>
         {authorName && (
-          <span className="mt-auto text-xs text-[var(--text-muted)]">{authorName}</span>
+          <span className="text-xs text-[var(--text-muted)]">{authorName}</span>
+        )}
+        {(typeof priceFrom === "number" || typeof rating === "number") && (
+          <div className="mt-auto flex flex-wrap items-end justify-between gap-2 border-t border-[var(--border)] pt-3">
+            <div className="flex flex-col gap-1">
+              {typeof rating === "number" && <Stars rating={rating} count={reviewCount} />}
+              {typeof priceFrom === "number" && (
+                <span className="text-[11px] text-[var(--text-muted)]">
+                  a partir de{" "}
+                  <strong className="text-sm text-gold">{formatPrice(priceFrom)}</strong>
+                </span>
+              )}
+            </div>
+            <span className="btn btn-primary px-3 py-1.5 text-[11px]">Ver obra</span>
+          </div>
         )}
       </div>
     </Link>

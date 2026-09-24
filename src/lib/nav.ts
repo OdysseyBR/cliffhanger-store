@@ -65,7 +65,7 @@ export const megaMenu: { title: string; items: NavItem[] }[] = [
     items: [
       { label: "Universos", href: "/universos" },
       { label: "Autores", href: "/autores" },
-      { label: "Coleções", href: "/loja#colecoes" },
+      { label: "Coleções", href: "/#colecoes" },
       { label: "Lançamentos", href: "/lancamentos" },
     ],
   },

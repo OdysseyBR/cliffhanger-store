@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BookCover } from "@/components/BookCover";
+import { FormatBuyBox } from "@/components/FormatBuyBox";
 import { IconGlobe, IconPen } from "@/components/Icons";
 import { Page } from "@/components/Page";
 import { ProductCard } from "@/components/ProductCard";
 import { Section } from "@/components/Section";
+import { typeLabels } from "@/data/catalog";
 import { getCatalog, getWorkBySlug, getWorks } from "@/lib/data";
 
 interface Props {
@@ -37,15 +39,26 @@ export default async function ObraPage({ params }: Props) {
   const author = catalog.authors.find((a) => a.id === work.authorId);
   const universe = catalog.universes.find((u) => u.id === work.universeId);
 
-  const formats = catalog.products.filter((p) => p.workId === work.id);
-  const seriesWorks = catalog.works.filter(
-    (w) => w.seriesName === work.seriesName && w.id !== work.id,
+  const formats = catalog.products.filter(
+    (p) =>
+      p.workId === work.id &&
+      (p.category === "livros" || p.category === "ebooks" || p.category === "audiobooks"),
   );
+  const seriesWorks = work.seriesName
+    ? catalog.works.filter(
+        (w) => w.seriesName === work.seriesName && w.id !== work.id,
+      )
+    : [];
   const universeProducts = catalog.products.filter(
     (p) =>
       p.universeId === work.universeId &&
       !formats.some((f) => f.id === p.id) &&
       p.category !== "livros",
+  );
+
+  const defaultFormat = Math.max(
+    0,
+    formats.findIndex((p) => p.category === "livros" && !p.digital),
   );
 
   return (
@@ -97,21 +110,16 @@ export default async function ObraPage({ params }: Props) {
             </div>
 
             {formats.length > 0 && (
-              <div className="mt-6 flex flex-wrap gap-3">
-                {formats.map((product) => (
-                  <Link
-                    key={product.id}
-                    href={`/produtos/${product.slug}`}
-                    className="btn btn-primary"
-                  >
-                    {product.badge === "PRÉ-VENDA" ? "Pré-venda" : "Comprar"} ·{" "}
-                    {product.price.toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
-                  </Link>
-                ))}
-              </div>
+              <FormatBuyBox
+                defaultIndex={defaultFormat}
+                formats={formats.map((product) => ({
+                  id: product.id,
+                  slug: product.slug,
+                  label: typeLabels[product.type],
+                  price: product.price,
+                  preOrder: product.badge === "PRÉ-VENDA",
+                }))}
+              />
             )}
           </div>
         </div>
@@ -166,14 +174,45 @@ export default async function ObraPage({ params }: Props) {
         </Section>
       )}
 
-      {/* Personagens / conteúdo editorial */}
-      <Section title="Conteúdo editorial">
+      {/* Ficha técnica + contexto (sem sinopse duplicada) */}
+      <Section title="Ficha e contexto">
         <div className="card grid gap-6 p-6 lg:grid-cols-2">
           <div>
-            <h3 className="text-display text-2xl">Sobre esta obra</h3>
-            <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">
-              {work.synopsis}
-            </p>
+            <h3 className="text-display text-2xl">Ficha técnica</h3>
+            <dl className="mt-3 space-y-2 text-sm">
+              <div className="flex justify-between gap-4 border-b border-[var(--border)] pb-2">
+                <dt className="text-[var(--text-muted)]">Ano</dt>
+                <dd className="font-semibold">{work.year}</dd>
+              </div>
+              {work.seriesName && (
+                <div className="flex justify-between gap-4 border-b border-[var(--border)] pb-2">
+                  <dt className="text-[var(--text-muted)]">Série</dt>
+                  <dd className="text-right font-semibold">
+                    {work.seriesName} · volume {work.seriesIndex}
+                  </dd>
+                </div>
+              )}
+              {author && (
+                <div className="flex justify-between gap-4 border-b border-[var(--border)] pb-2">
+                  <dt className="text-[var(--text-muted)]">Autor</dt>
+                  <dd className="text-right font-semibold">
+                    <Link href={`/autores/${author.slug}`} className="hover:text-gold">
+                      {author.name}
+                    </Link>
+                  </dd>
+                </div>
+              )}
+              {universe && (
+                <div className="flex justify-between gap-4 border-b border-[var(--border)] pb-2">
+                  <dt className="text-[var(--text-muted)]">Universo</dt>
+                  <dd className="text-right font-semibold">
+                    <Link href={`/universos/${universe.slug}`} className="hover:text-gold">
+                      {universe.name}
+                    </Link>
+                  </dd>
+                </div>
+              )}
+            </dl>
           </div>
           <div>
             <h3 className="text-display text-2xl">Contexto</h3>
