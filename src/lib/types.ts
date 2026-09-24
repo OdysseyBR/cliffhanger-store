@@ -123,12 +123,43 @@ export interface Collection {
   createdAt: string;
 }
 
+/** Página de lançamento (Documento Mestre 13.1 — coleção `launches`). */
+export interface LaunchSocial {
+  label: string;
+  href: string;
+}
+
+export interface Launch {
+  id: string;
+  slug: string;
+  title: string;
+  /** subtítulo/linha de destaque */
+  highlight?: string;
+  /** arte de destaque (SVG geométrico como as capas) */
+  cover: Cover;
+  /** marcação de pré-venda (13.1) */
+  preOrder: boolean;
+  /** ISO — data do lançamento (exibe data + countdown) */
+  releaseDate: string;
+  synopsis: string;
+  /** trailer/teaser: URL .mp4/.webm ou embed YouTube/Vimeo */
+  trailerUrl?: string;
+  /** redes sociais do lançamento (13.1) */
+  socials?: LaunchSocial[];
+  workId?: string;
+  universeId?: string;
+  /** edições do lançamento */
+  productIds: string[];
+  createdAt: string;
+}
+
 export interface Catalog {
   universes: Universe[];
   authors: Author[];
   works: Work[];
   products: Product[];
   collections: Collection[];
+  launches: Launch[];
 }
 
 export interface CartItem {
@@ -226,6 +257,8 @@ export interface ThemeBanner {
   secondaryCta?: ThemeCta;
   /** imagem em /public (ex.: /winter-fest.png) */
   image?: string;
+  /** vídeo (.mp4/.webm) — Doc Mestre 3.1: banner pode suportar vídeo; substitui a imagem no quadro */
+  video?: string;
   imageCaption?: string;
   imageCta?: ThemeCta;
   /** ISO — exibe contagem regressiva */

@@ -4,6 +4,7 @@ import { CatalogBrowser } from "@/components/CatalogBrowser";
 import { Page } from "@/components/Page";
 import { Section } from "@/components/Section";
 import { getCatalog } from "@/lib/data";
+import { buildFilterMaps } from "@/lib/filters";
 
 export const metadata: Metadata = {
   title: "Loja",
@@ -12,7 +13,8 @@ export const metadata: Metadata = {
 };
 
 export default async function LojaPage() {
-  const { products } = await getCatalog();
+  const catalog = await getCatalog();
+  const { products } = catalog;
 
   return (
     <Page>
@@ -25,7 +27,7 @@ export default async function LojaPage() {
             <div className="h-64 animate-pulse rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]" />
           }
         >
-          <CatalogBrowser products={products} />
+          <CatalogBrowser products={products} filterMaps={buildFilterMaps(catalog)} />
         </Suspense>
       </Section>
     </Page>

@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { ThemeBanner } from "@/components/ThemeBanner";
 import { ThemeZones } from "@/components/ThemeZones";
 import { ImageField } from "@/components/admin/ImageField";
 import { deleteTheme, saveTheme } from "@/components/admin/admin-api";
+import { Card, Field, SelectInput, TextArea, TextInput } from "@/components/admin/form-fields";
 import {
   IconArrowDown,
   IconArrowLeft,
@@ -94,103 +95,6 @@ function slugKey(raw: string): string {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
-}
-
-/* ------------------------------------------------------------------ */
-/* helpers de formulário                                               */
-/* ------------------------------------------------------------------ */
-
-function Field({
-  label,
-  children,
-  hint,
-  className = "",
-}: {
-  label: string;
-  children: ReactNode;
-  hint?: string;
-  className?: string;
-}) {
-  return (
-    <label className={`block ${className}`}>
-      <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-        {label}
-      </span>
-      {children}
-      {hint && <span className="mt-1 block text-[11px] text-[var(--text-muted)]">{hint}</span>}
-    </label>
-  );
-}
-
-function TextInput({
-  value,
-  onChange,
-  placeholder,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-}) {
-  return (
-    <input
-      type="text"
-      value={value}
-      placeholder={placeholder}
-      onChange={(event) => onChange(event.target.value)}
-      className="field w-full"
-    />
-  );
-}
-
-function TextArea({
-  value,
-  onChange,
-  rows = 3,
-  placeholder,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  rows?: number;
-  placeholder?: string;
-}) {
-  return (
-    <textarea
-      value={value}
-      rows={rows}
-      placeholder={placeholder}
-      onChange={(event) => onChange(event.target.value)}
-      className="field w-full"
-    />
-  );
-}
-
-function SelectInput({
-  value,
-  options,
-  onChange,
-}: {
-  value: string;
-  options: { value: string; label: string }[];
-  onChange: (v: string) => void;
-}) {
-  return (
-    <select value={value} onChange={(event) => onChange(event.target.value)} className="field w-full">
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
-  );
-}
-
-function Card({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="card p-5">
-      <h2 className="text-display mb-4 text-2xl text-gold">{title}</h2>
-      <div className="space-y-4">{children}</div>
-    </section>
-  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -615,6 +519,18 @@ export function ThemeEditor({
             onChange={(url) => patchBanner({ image: url || undefined })}
             hint="Envie sua arte — o arquivo vai para o Cloudinary e a URL é salva no modelo."
           />
+
+          <Field label="Vídeo do banner (.mp4/.webm — Doc 3.1)">
+            <TextInput
+              value={banner.video ?? ""}
+              onChange={(v) => patchBanner({ video: v || undefined })}
+            />
+          </Field>
+          {banner.video && (
+            <p className="text-[11px] text-[var(--text-muted)]">
+              Vídeo no quadro lateral: autoplay mudo em loop; a imagem acima vira pôster.
+            </p>
+          )}
 
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Legenda sobre a imagem">

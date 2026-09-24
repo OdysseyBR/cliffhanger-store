@@ -1,3 +1,4 @@
+import { launches } from "@/data/launches";
 import type {
   Author,
   Catalog,
@@ -1044,7 +1045,7 @@ const collections: Collection[] = [
   },
 ];
 
-export const catalog: Catalog = { universes, authors, works, products, collections };
+export const catalog: Catalog = { universes, authors, works, products, collections, launches };
 
 export const categoryLabels: Record<ProductCategory, string> = {
   livros: "Livros",

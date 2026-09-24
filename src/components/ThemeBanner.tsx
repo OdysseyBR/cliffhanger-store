@@ -10,15 +10,18 @@ import type { ThemeBanner as BannerConfig } from "@/lib/types";
  */
 export function ThemeBanner({ banner }: { banner: BannerConfig }) {
   const hasImage = Boolean(banner.image);
+  const hasVideo = Boolean(banner.video);
+  // Doc Mestre 3.1 — o banner pode suportar imagem OU vídeo no quadro lateral.
+  const hasMedia = hasImage || hasVideo;
 
   return (
     <section className="relative isolate overflow-hidden bg-glow">
       <div
         className={`mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:items-center lg:px-8 lg:py-20 ${
-          hasImage ? "lg:grid-cols-[1.1fr_0.9fr]" : "lg:grid-cols-1"
+          hasMedia ? "lg:grid-cols-[1.1fr_0.9fr]" : "lg:grid-cols-1"
         }`}
       >
-        <div className={`relative z-10 ${hasImage ? "" : "max-w-3xl"}`}>
+        <div className={`relative z-10 ${hasMedia ? "" : "max-w-3xl"}`}>
           {banner.eyebrow && (
             <span className="inline-block rounded-full border border-gold/60 px-3 py-1 text-xs font-bold uppercase tracking-widest text-gold">
               {banner.eyebrow}
@@ -65,17 +68,31 @@ export function ThemeBanner({ banner }: { banner: BannerConfig }) {
           )}
         </div>
 
-        {hasImage && banner.image && (
+        {hasMedia && (
           <div className="relative">
             <div className="relative mx-auto aspect-[4/3] w-full max-w-xl overflow-hidden rounded-3xl border border-[var(--border)] shadow-[0_30px_80px_-30px_rgba(86,3,173,0.9)]">
-              <Image
-                src={banner.image}
-                alt={banner.imageCaption ?? banner.title}
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 44rem"
-                className="object-cover"
-              />
+              {hasVideo && banner.video ? (
+                <video
+                  src={banner.video}
+                  poster={banner.image}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                banner.image && (
+                  <Image
+                    src={banner.image}
+                    alt={banner.imageCaption ?? banner.title}
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 44rem"
+                    className="object-cover"
+                  />
+                )
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent" />
               {(banner.imageCaption || banner.imageCta) && (
                 <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-3">

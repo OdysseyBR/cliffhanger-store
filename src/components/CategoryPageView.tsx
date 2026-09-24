@@ -9,6 +9,8 @@ import {
   IconTablet,
 } from "@/components/Icons";
 import { Page } from "@/components/Page";
+import { getCatalog } from "@/lib/data";
+import { buildFilterMaps } from "@/lib/filters";
 import { formatPrice } from "@/lib/format";
 import type { Product, ProductCategory } from "@/lib/types";
 
@@ -34,7 +36,7 @@ function categoryIcon(category: ProductCategory) {
  * Hero com identidade própria (ícone, intro e chips de itens/preço)
  * seguido dos filtros e grade do catálogo.
  */
-export function CategoryPageView({
+export async function CategoryPageView({
   title,
   intro,
   category,
@@ -45,6 +47,7 @@ export function CategoryPageView({
   category: ProductCategory;
   products: Product[];
 }) {
+  const catalog = await getCatalog();
   const count = products.length;
   const min = count > 0 ? Math.min(...products.map((p) => p.price)) : 0;
   const max = count > 0 ? Math.max(...products.map((p) => p.price)) : 0;
@@ -93,6 +96,7 @@ export function CategoryPageView({
           >
             <CatalogBrowser
               products={products}
+              filterMaps={buildFilterMaps(catalog)}
               showCategories={false}
               fixedCategory={category}
               emptyMessage={`Ainda não há ${title.toLowerCase()} disponíveis.`}

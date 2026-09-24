@@ -1,5 +1,6 @@
 import "server-only";
 import { cert, getApps, initializeApp, type App } from "firebase-admin/app";
+import { getAuth, type Auth } from "firebase-admin/auth";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
 
 /**
@@ -31,6 +32,7 @@ function parseServiceAccount(): Record<string, string> | null {
 
 let adminApp: App | null | undefined;
 let adminDb: Firestore | null | undefined;
+let adminAuth: Auth | null | undefined;
 
 export function getAdminApp(): App | null {
   if (adminApp !== undefined) return adminApp;
@@ -55,6 +57,17 @@ export function getAdminDb(): Firestore | null {
   const app = getAdminApp();
   adminDb = app ? getFirestore(app) : null;
   return adminDb;
+}
+
+/**
+ * Auth do Admin — usado para operações que o client SDK não expõe
+ * (ex.: revogação de refresh tokens / logout de dispositivos — Doc 9.5).
+ */
+export function getAdminAuth(): Auth | null {
+  if (adminAuth !== undefined) return adminAuth;
+  const app = getAdminApp();
+  adminAuth = app ? getAuth(app) : null;
+  return adminAuth;
 }
 
 /** Converte Timestamps do Firestore em strings ISO (modelo de domínio). */

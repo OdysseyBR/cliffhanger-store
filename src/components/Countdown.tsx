@@ -3,8 +3,16 @@
 import { useEffect, useState } from "react";
 import { IconClock } from "@/components/Icons";
 
-/** Contagem regressiva do banner (7.7 pré-venda / campanhas). */
-export function Countdown({ target }: { target: string }) {
+/** Contagem regressiva do banner (7.7 pré-venda / campanhas) e das páginas de lançamento (13.1). */
+export function Countdown({
+  target,
+  prefix = "Termina em",
+  doneLabel = "Campanha encerrada",
+}: {
+  target: string;
+  prefix?: string;
+  doneLabel?: string;
+}) {
   const [label, setLabel] = useState<string | null>(null);
 
   useEffect(() => {
@@ -43,7 +51,7 @@ export function Countdown({ target }: { target: string }) {
   return (
     <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-gold/50 bg-gold/10 px-4 py-2 text-sm font-bold text-gold">
       <IconClock className="h-4 w-4" />
-      {label === "encerrado" ? "Campanha encerrada" : `Termina em ${label}`}
+      {label === "encerrado" ? doneLabel : `${prefix} ${label}`}
     </p>
   );
 }

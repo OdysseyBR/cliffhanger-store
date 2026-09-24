@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useStore } from "@/components/Providers";
 import { Page } from "@/components/Page";
+import { ProductCard } from "@/components/ProductCard";
 import { Section } from "@/components/Section";
 import { ProductArt } from "@/components/ProductArt";
 import { formatPrice } from "@/lib/format";
@@ -44,6 +45,26 @@ export default function CarrinhoPage() {
   const progress = hasPhysical
     ? Math.min(100, Math.round((subtotal / FREE_SHIPPING_FROM) * 100))
     : 100;
+
+  // Recomendações relacionadas (Doc Mestre 7.1): mesma obra → mesmo universo →
+  // melhor avaliado, sempre fora do carrinho.
+  const cartIds = new Set(cart.map((item) => item.productId));
+  const cartWorkIds = new Set(lines.map((l) => l.product.workId));
+  const cartUniverseIds = new Set(lines.map((l) => l.product.universeId));
+  const notInCart = products.filter((p) => !cartIds.has(p.id));
+  const relatedPool = [
+    ...notInCart.filter((p) => p.workId !== undefined && cartWorkIds.has(p.workId)),
+    ...notInCart.filter(
+      (p) =>
+        !(p.workId !== undefined && cartWorkIds.has(p.workId)) &&
+        p.universeId !== undefined &&
+        cartUniverseIds.has(p.universeId),
+    ),
+    ...[...notInCart].sort((a, b) => b.rating - a.rating),
+  ];
+  const recs = relatedPool
+    .filter((p, index, arr) => arr.findIndex((other) => other.id === p.id) === index)
+    .slice(0, 4);
 
   return (
     <Page>
@@ -135,6 +156,20 @@ export default function CarrinhoPage() {
                 </button>
               </li>
             </ul>
+
+            {/* recomendações relacionadas (7.1) */}
+            {recs.length > 0 && (
+              <div className="card p-5">
+                <p className="mb-4 text-xs font-bold uppercase tracking-wider text-gold">
+                  Recomendações relacionadas
+                </p>
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                  {recs.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* resumo */}
             <aside className="card h-fit space-y-4 p-5 lg:sticky lg:top-32">

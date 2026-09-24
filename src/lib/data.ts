@@ -1,9 +1,11 @@
 import { catalog as localCatalog } from "@/data/catalog";
+import { launches as localLaunches } from "@/data/launches";
 import { getAdminDb, revive } from "@/lib/firebase-admin";
 import type {
   Author,
   Catalog,
   Collection,
+  Launch,
   Product,
   ProductCategory,
   Universe,
@@ -41,17 +43,25 @@ async function loadCatalog(): Promise<Catalog> {
   if (!db) return localCatalog;
 
   try {
-    const [universes, authors, works, products, collections] = await Promise.all([
+    const [universes, authors, works, products, collections, launchDocs] = await Promise.all([
       readCollection<Universe>(db, "universes"),
       readCollection<Author>(db, "authors"),
       readCollection<Work>(db, "works"),
       readCollection<Product>(db, "products"),
       readCollection<Collection>(db, "collections"),
+      readCollection<Launch>(db, "launches"),
     ]);
 
     if (products.length === 0) return localCatalog;
 
-    return { universes, authors, works, products, collections };
+    return {
+      universes,
+      authors,
+      works,
+      products,
+      collections,
+      launches: launchDocs.length > 0 ? launchDocs : localLaunches,
+    };
   } catch (error) {
     console.warn("[catalog] Firestore indisponível, usando catálogo local:", error);
     return localCatalog;
@@ -63,6 +73,15 @@ export function getCatalog(): Promise<Catalog> {
     globalCache[CACHE_KEY] = loadCatalog();
   }
   return globalCache[CACHE_KEY]!;
+}
+
+/**
+ * Invalida o cache do catálogo — chamada pelas APIs de escrita do
+ * painel (produtos, etc.) para que a loja reflita a alteração na
+ * hora, sem esperar restart do processo.
+ */
+export function invalidateCatalog(): void {
+  delete globalCache[CACHE_KEY];
 }
 
 // ---------------------------------------------------------------------------
@@ -116,6 +135,17 @@ export async function getAuthorBySlug(slug: string): Promise<Author | undefined>
 export async function getCollections(): Promise<Collection[]> {
   const { collections } = await getCatalog();
   return collections;
+}
+
+/** Páginas de lançamento (Documento Mestre 13.1). */
+export async function getLaunches(): Promise<Launch[]> {
+  const { launches } = await getCatalog();
+  return [...launches].sort((a, b) => b.releaseDate.localeCompare(a.releaseDate));
+}
+
+export async function getLaunchBySlug(slug: string): Promise<Launch | undefined> {
+  const launches = await getLaunches();
+  return launches.find((l) => l.slug === slug);
 }
 
 /** Mais vendidos (menor salesRank primeiro). */

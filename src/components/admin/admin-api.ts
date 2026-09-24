@@ -1,7 +1,7 @@
 "use client";
 
 import { getClientAuth, firebaseEnabled } from "@/lib/firebase";
-import type { ThemeModel } from "@/lib/types";
+import type { Product, ThemeModel } from "@/lib/types";
 
 /**
  * Cliente da API do Theme Engine — anexa o ID token do Firebase e
@@ -16,7 +16,7 @@ export type AdminResult<T> =
 
 export async function adminFetch<T>(
   path: string,
-  init?: { method?: "GET" | "POST"; body?: string },
+  init?: { method?: "GET" | "POST" | "PUT" | "DELETE"; body?: string },
 ): Promise<AdminResult<T>> {
   if (!firebaseEnabled) {
     return {
@@ -103,5 +103,19 @@ export function deleteTheme(id: string) {
   return adminFetch<{ ok: boolean }>("/api/admin/themes", {
     method: "POST",
     body: JSON.stringify({ action: "delete", id }),
+  });
+}
+
+/** Criador de itens (Doc Mestre 11.2) — cria (POST) ou atualiza (PUT). */
+export function saveProduct(product: Product, isNew: boolean) {
+  return adminFetch<{ product: Product }>(
+    isNew ? "/api/products" : `/api/products/${product.id}`,
+    { method: isNew ? "POST" : "PUT", body: JSON.stringify({ product }) },
+  );
+}
+
+export function deleteProduct(id: string) {
+  return adminFetch<{ ok: boolean }>(`/api/products/${id}`, {
+    method: "DELETE",
   });
 }

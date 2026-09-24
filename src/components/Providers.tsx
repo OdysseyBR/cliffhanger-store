@@ -15,9 +15,12 @@ import {
   FacebookAuthProvider,
   GoogleAuthProvider,
   onAuthStateChanged,
+  sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
+  updatePassword,
   type User,
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
@@ -46,6 +49,10 @@ export interface SessionUser {
   email: string | null;
   displayName: string | null;
   photoURL: string | null;
+  /** e-mail verificado pelo Firebase (9.5) */
+  emailVerified: boolean;
+  /** provedores vinculados: google.com, facebook.com, password… */
+  providers: string[];
 }
 
 interface StoreValue {
@@ -77,6 +84,12 @@ interface StoreValue {
   signInEmail: (email: string, password: string) => Promise<void>;
   registerEmail: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  // segurança da conta (Doc Mestre 9.5)
+  changePassword: (newPassword: string) => Promise<void>;
+  sendReset: (email: string) => Promise<void>;
+  verifyEmail: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
+  revokeSessions: () => Promise<void>;
 }
 
 const StoreContext = createContext<StoreValue | null>(null);
@@ -116,6 +129,8 @@ export function Providers({ children }: { children: ReactNode }) {
               email: u.email,
               displayName: u.displayName,
               photoURL: u.photoURL,
+              emailVerified: u.emailVerified,
+              providers: u.providerData.map((provider) => provider.providerId),
             }
           : null,
       );
@@ -222,8 +237,18 @@ export function Providers({ children }: { children: ReactNode }) {
         await action();
         if (successMessage) notify(successMessage, "success");
       } catch (error) {
-        const message =
-          error instanceof Error ? error.message.replace("auth/", "") : "Falha na autenticação";
+        const raw = error instanceof Error ? error.message : "";
+        const code = /\(auth\/([a-z-]+)\)/.exec(raw)?.[1] ?? raw.replace("auth/", "");
+        const friendly: Record<string, string> = {
+          "requires-recent-login":
+            "Confirme sua identidade: faça login novamente para esta ação.",
+          "no-password-provider":
+            "Sua conta não usa senha (entrou por Google/Facebook).",
+          "weak-password": "Senha muito fraca — use pelo menos 6 caracteres.",
+          "invalid-password": "Senha inválida.",
+          "too-many-requests": "Muitas tentativas — tente novamente em instantes.",
+        };
+        const message = friendly[code] ?? (code || "Falha na autenticação");
         setAuthError(message);
         notify(message, "error");
         throw error;
@@ -274,6 +299,59 @@ export function Providers({ children }: { children: ReactNode }) {
     await runAuth(() => signOut(auth), "Sessão encerrada");
   }, [runAuth]);
 
+  // ---- segurança da conta (Doc Mestre 9.5) ----
+  const changePassword = useCallback(
+    async (newPassword: string) => {
+      const auth = getClientAuth();
+      const current = auth?.currentUser;
+      if (!current) throw new Error("Nenhuma sessão ativa");
+      await runAuth(() => updatePassword(current, newPassword), "Senha alterada");
+    },
+    [runAuth],
+  );
+
+  const sendReset = useCallback(
+    async (email: string) => {
+      const auth = getClientAuth();
+      if (!auth) throw new Error("Firebase não configurado");
+      await runAuth(() => sendPasswordResetEmail(auth, email), "Link de recuperação enviado");
+    },
+    [runAuth],
+  );
+
+  const verifyEmail = useCallback(async () => {
+    const auth = getClientAuth();
+    const current = auth?.currentUser;
+    if (!current) throw new Error("Nenhuma sessão ativa");
+    await runAuth(() => sendEmailVerification(current), "Verificação enviada para seu e-mail");
+  }, [runAuth]);
+
+  const deleteAccount = useCallback(async () => {
+    const auth = getClientAuth();
+    const current = auth?.currentUser;
+    if (!current) throw new Error("Nenhuma sessão ativa");
+    await runAuth(() => current.delete(), "Conta excluída");
+  }, [runAuth]);
+
+  const revokeSessions = useCallback(async () => {
+    const auth = getClientAuth();
+    const current = auth?.currentUser;
+    if (!auth || !current) throw new Error("Nenhuma sessão ativa");
+    await runAuth(async () => {
+      // revogação de refresh tokens é recurso do Admin SDK (9.5) — via API
+      const idToken = await current.getIdToken();
+      const res = await fetch("/api/account/revoke", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+      const body = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        throw new Error(body.error ?? "Não foi possível encerrar as sessões.");
+      }
+      await signOut(auth);
+    }, "Sessões encerradas em todos os dispositivos");
+  }, [runAuth]);
+
   const value = useMemo<StoreValue>(
     () => ({
       cart,
@@ -299,6 +377,11 @@ export function Providers({ children }: { children: ReactNode }) {
       signInEmail,
       registerEmail,
       logout,
+      changePassword,
+      sendReset,
+      verifyEmail,
+      deleteAccount,
+      revokeSessions,
     }),
     [
       cart,
@@ -322,6 +405,11 @@ export function Providers({ children }: { children: ReactNode }) {
       signInEmail,
       registerEmail,
       logout,
+      changePassword,
+      sendReset,
+      verifyEmail,
+      deleteAccount,
+      revokeSessions,
     ],
   );
 
