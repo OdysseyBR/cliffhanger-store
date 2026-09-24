@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cliffhanger Store
 
-## Getting Started
+Loja online do universo **Cliffhanger**: livros, e-books, audiobooks, produtos oficiais e
+colecionáveis. Projeto desenvolvido conforme o Documento Mestre (`Projeto/` na raiz do workspace).
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router, Turbopack) + **TypeScript**
+- **Tailwind CSS v4** (temas sazonal: `default` / `summer` via `data-theme`)
+- **Firebase** — Auth (Google, Facebook, e-mail) + Firestore (catálogo, usuários, pedidos)
+- **Vercel** — deploy de produção automático a cada push em `main`
+
+## Rodando localmente
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # preencha os valores (ver tabela abaixo)
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Comandos
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Comando             | Descrição                                                        |
+| ------------------- | ---------------------------------------------------------------- |
+| `npm run dev`       | Servidor de desenvolvimento                                       |
+| `npm run build`     | Build de produção (gera as páginas estáticas)                    |
+| `npm run start`     | Serve o build de produção                                        |
+| `npm run lint`      | ESLint (Next + React Hooks)                                      |
+| `npm run seed`      | Semear o Firestore com o catálogo de demonstração (Fase 0)       |
+| `npx tsx scripts/check-firestore.ts` | Diagnóstico somente-leitura das coleções     |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Variáveis de ambiente (`.env.local`)
 
-## Learn More
+Copie `.env.example` para `.env.local`. **Nenhum segredo vai para o Git** (`.env*` está no
+`.gitignore`; apenas `.env.example` é versionado). Os valores reais ficam no `.env.local` e no
+painel da Vercel (ambiente *Production*).
 
-To learn more about Next.js, take a look at the following resources:
+| Variável | Uso |
+| --- | --- |
+| `NEXT_PUBLIC_FIREBASE_*` (6) | Cliente Firebase no navegador (auth + Firestore) |
+| `FIREBASE_SERVICE_ACCOUNT` | Service account JSON em **linha única** (seed e API no servidor) |
+| `NEXT_PUBLIC_SITE_URL` | URL canônica (metadataBase / back_urls) |
+| `NEXT_PUBLIC_FACEBOOK_APP_ID` | *Opcional* — sem o valor, o botão Facebook exibe um aviso |
+| `CATALOG_SOURCE` | *Opcional* — `local` força o catálogo embarcado em vez do Firestore |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Fonte de dados do catálogo
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+`src/lib/data.ts` é **Firestore-first**: lê as coleções `products`, `works`, `universes`,
+`authors` e `collections` no servidor e, se o Firebase não estiver configurado (ou falhar),
+usa fallback silencioso para `src/data/catalog.ts` (catálogo de demonstração, mesma fonte do
+`npm run seed`). Isso mantém o build funcionando em qualquer ambiente.
 
-## Deploy on Vercel
+## Rotas principais
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`/` (Home) · `/loja` · `/livros` · `/ebooks` · `/audiobooks` · `/produtos` · `/colecionaveis` ·
+`/lancamentos` · `/ofertas` · `/obras/[slug]` · `/produtos/[slug]` · `/universos` (+`/[slug]`) ·
+`/autores` (+`/[slug]`) · `/buscar` · `/carrinho` · `/checkout` (Dados → Entrega → Pagamento →
+Revisão → Pedido) · `/conta` · `/wishlist` · `/biblioteca` · `/api/products` · `/api/orders`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+A Home segue a arquitetura fixa do Documento Mestre:
+**BANNER → HEADER (só logo centralizado) → MENU BUTTONS → DESTAQUES (side scroll) → seções**.
+
+## Estado no navegador
+
+Carrinho, wishlist, tema e biblioteca são persistidos em `localStorage`
+(`ch:cart`, `ch:wishlist`, `ch:theme`, `ch:library`) via store externo
+(`src/lib/client-store.ts`) — funciona sem login e sincroniza com o perfil quando há sessão.
+
+## Deploy
+
+1. Push em `main` → a integração Git da Vercel faz o deploy de produção automaticamente.
+2. Manual: `npx vercel --prod` (requer `npx vercel link`).
+3. O checkout em `/api/orders` calcula totais **no servidor** (frete grátis ≥ R$199) e grava o
+   pedido no Firestore quando `FIREBASE_SERVICE_ACCOUNT` está configurado.
+
+Produção: <https://www.cliffhangerstore.xyz>
+
+## Paleta
+
+`#0C0014` (fundo) · `#5603AD` (violeta) · `#F8FEFF` (papel) · `#FDC500` (ouro) — de `Paleta.png`.
