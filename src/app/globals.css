@@ -17,10 +17,13 @@
 }
 
 :root {
-  /* Tema padrão: Inverno (fundo escuro, texto claro) */
+  /* Tema padrão: Inverno (fundo escuro, texto claro).
+     O Theme Engine (Fase 2) sobrepõe estas variáveis por modelo em
+     `html[data-theme="…"]` — ver src/lib/theme-css.ts. */
   --surface: #0c0014;
   --surface-raised: #180a28;
   --surface-raised-2: #241038;
+  --body-bg: #0c0014;
   --text: #f8feff;
   --text-muted: #b9a9d0;
   --brand: #5603ad;
@@ -28,20 +31,16 @@
   --accent: #fdc500;
   --border: rgba(248, 254, 255, 0.14);
   --header-bg: rgba(12, 0, 20, 0.86);
-}
 
-[data-theme="summer"] {
-  /* Verão: fundo claro, texto escuro */
-  --surface: #f8feff;
-  --surface-raised: #ffffff;
-  --surface-raised-2: #f1ecfb;
-  --text: #0c0014;
-  --text-muted: #55466e;
-  --brand: #5603ad;
-  --brand-strong: #3a0077;
-  --accent: #fdc500;
-  --border: rgba(12, 0, 20, 0.12);
-  --header-bg: rgba(248, 254, 255, 0.86);
+  /* forma (2.3) — controlada por modelo */
+  --card-radius: 1.25rem;
+  --btn-radius: 0.75rem;
+  --field-radius: 0.75rem;
+
+  /* atmosfera — derivada das cores do modelo */
+  --glow-brand: rgba(86, 3, 173, 0.55);
+  --glow-accent: rgba(253, 197, 0, 0.18);
+  --title-gradient: linear-gradient(100deg, #fdc500, #ffffff 45%, #b98cff);
 }
 
 * {
@@ -53,7 +52,7 @@ html {
 }
 
 body {
-  background: var(--surface);
+  background: var(--body-bg, var(--surface));
   color: var(--text);
   font-family: var(--font-sans);
   min-height: 100vh;
@@ -74,6 +73,13 @@ body {
   line-height: 0.95;
 }
 
+/* Rótulos do Menu Buttons: tipografia da marca (Bebas), nunca a fonte
+   editorial do tema — Georgia/serifas não cabem no card horizontal.
+   Bebas é webfont, então o rótulo não quebra em nenhum modelo. */
+.font-menu {
+  font-family: var(--font-display-face), "Arial Narrow", Impact, sans-serif;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -84,7 +90,7 @@ body {
   letter-spacing: 0.06em;
   font-size: 0.8rem;
   padding: 0.75rem 1.5rem;
-  border-radius: 0.75rem;
+  border-radius: var(--btn-radius);
   transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease,
     color 0.15s ease, border-color 0.15s ease;
   cursor: pointer;
@@ -132,14 +138,14 @@ body {
 .card {
   background: var(--surface-raised);
   border: 1px solid var(--border);
-  border-radius: 1.25rem;
+  border-radius: var(--card-radius);
 }
 
 .field {
   width: 100%;
   background: var(--surface-raised);
   border: 1px solid var(--border);
-  border-radius: 0.75rem;
+  border-radius: var(--field-radius);
   padding: 0.7rem 0.9rem;
   color: var(--text);
   font-size: 0.95rem;
@@ -154,6 +160,53 @@ body {
 .field:focus {
   border-color: var(--brand-strong);
   box-shadow: 0 0 0 3px rgba(86, 3, 173, 0.25);
+}
+
+/* ---- zonas de festival (Theme Engine) ---- */
+
+.zone-marquee {
+  overflow: hidden;
+  border-block: 1px solid var(--border);
+  background: var(--brand);
+  color: var(--text);
+  padding-block: 0.7rem;
+}
+
+.zone-marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 2.5rem;
+  animation: zone-marquee-scroll 28s linear infinite;
+}
+
+.zone-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.5rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.zone-marquee-dot {
+  color: var(--accent);
+}
+
+@keyframes zone-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zone-marquee-track {
+    animation: none;
+  }
 }
 
 /* ---- barra de rolagem lateral (Destaques) ---- */
@@ -189,16 +242,12 @@ body {
 /* ---- gradientes e brilhos da identidade ---- */
 
 .bg-glow {
-  background: radial-gradient(
-      60rem 30rem at 80% -10%,
-      rgba(86, 3, 173, 0.55),
-      transparent 60%
-    ),
-    radial-gradient(40rem 20rem at 0% 110%, rgba(253, 197, 0, 0.18), transparent 60%);
+  background: radial-gradient(60rem 30rem at 80% -10%, var(--glow-brand), transparent 60%),
+    radial-gradient(40rem 20rem at 0% 110%, var(--glow-accent), transparent 60%);
 }
 
 .text-gradient {
-  background: linear-gradient(100deg, #fdc500, #ffffff 45%, #b98cff);
+  background: var(--title-gradient);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -224,6 +273,8 @@ body {
 }
 
 /* ---- logo por tema (inverno = logo branca, verão = logo escura) ---- */
+/* O Theme Engine injeta as regras por modelo (html[data-theme=…] .logo-*),
+   geradas em src/lib/theme-css.ts conforme identity.mode. */
 
 [data-theme="summer"] .logo-white {
   display: none;

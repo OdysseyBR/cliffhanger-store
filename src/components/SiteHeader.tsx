@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useStore } from "@/components/Providers";
+import { IconCart, IconHeart, IconMenu, IconSearch, IconUser } from "@/components/Icons";
 import { menuButtons, megaMenu } from "@/lib/nav";
 
 /**
@@ -35,14 +36,14 @@ export function SiteHeader() {
               aria-label="Abrir navegação"
               aria-expanded={open}
             >
-              <span className="text-lg">☰</span>
+              <IconMenu />
             </button>
             <Link
               href="/buscar"
               className="hidden h-10 w-10 place-items-center rounded-full transition hover:bg-[var(--surface-raised)] sm:grid"
               aria-label="Buscar"
             >
-              <span className="text-lg">⌕</span>
+              <IconSearch />
             </Link>
           </div>
 
@@ -71,7 +72,7 @@ export function SiteHeader() {
               className="relative hidden h-10 w-10 place-items-center rounded-full transition hover:bg-[var(--surface-raised)] sm:grid"
               aria-label={`Wishlist${wishlist.length ? ` (${wishlist.length})` : ""}`}
             >
-              <span className="text-lg">♡</span>
+              <IconHeart filled={wishlist.length > 0} />
               {wishlist.length > 0 && (
                 <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-[#e5484d] px-1 text-[9px] font-bold text-white">
                   {wishlist.length}
@@ -83,14 +84,14 @@ export function SiteHeader() {
               className="grid h-10 w-10 place-items-center rounded-full transition hover:bg-[var(--surface-raised)]"
               aria-label={user ? "Minha conta" : "Entrar"}
             >
-              <span className="text-lg">{user ? "●" : "◎"}</span>
+              <IconUser logged={Boolean(user)} />
             </Link>
             <Link
               href="/carrinho"
               className="relative grid h-10 w-10 place-items-center rounded-full transition hover:bg-[var(--surface-raised)]"
               aria-label={`Carrinho${cartCount ? ` (${cartCount})` : ""}`}
             >
-              <span className="text-lg">🛒</span>
+              <IconCart />
               {cartCount > 0 && (
                 <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-gold px-1 text-[9px] font-bold text-ink">
                   {cartCount}

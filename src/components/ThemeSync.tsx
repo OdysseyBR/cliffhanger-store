@@ -1,21 +1,24 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { useStore } from "@/components/Providers";
 
 /**
- * Aplica o tema salvo (Default / Summer Fest) no <html> antes da hidratação
- * e mantém o atributo data-theme em sincronia com o estado global.
+ * Aplica o override de tema do usuário (se houver) por cima do modelo
+ * publicado definido no servidor. "" (Automático) mantém o modelo ativo.
+ * O valor vindo do servidor é memorizado no primeiro efeito para que
+ * voltar a "Automático" restaure o modelo ativo em vez do último override.
  */
 export function ThemeSync() {
+  const theme = useStore().theme;
+  const serverTheme = useRef<string | null>(null);
+
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem("ch:theme");
-      const theme = raw ? (JSON.parse(raw) as string) : "default";
-      document.documentElement.dataset.theme = theme;
-    } catch {
-      /* sem storage — mantém tema padrão */
+    if (serverTheme.current === null) {
+      serverTheme.current = document.documentElement.dataset.theme ?? "";
     }
-  }, []);
+    document.documentElement.dataset.theme = theme || serverTheme.current;
+  }, [theme]);
 
   return null;
 }

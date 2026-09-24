@@ -9,14 +9,17 @@ import { SiteHeader } from "@/components/SiteHeader";
 export function Page({
   children,
   beforeHeader,
+  hideHeader = false,
 }: {
   children: ReactNode;
   beforeHeader?: ReactNode;
+  /** Modo Somente Banner (Documento Mestre 3.3): oculta o header na Home. */
+  hideHeader?: boolean;
 }) {
   return (
     <>
       {beforeHeader}
-      <SiteHeader />
+      {!hideHeader && <SiteHeader />}
       {children}
     </>
   );

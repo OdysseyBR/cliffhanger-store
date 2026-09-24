@@ -100,10 +100,9 @@ export function Providers({ children }: { children: ReactNode }) {
   const [authLoading, setAuthLoading] = useState(firebaseEnabled);
   const [authError, setAuthError] = useState<string | null>(null);
 
-  // aplica o tema no <html> (DOM = sistema externo, sem setState)
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-  }, [theme]);
+  // tema do <html> é gerenciado pelo <ThemeSync /> (filho): aplica o
+  // override do usuário apenas quando houver; "" mantém o modelo ativo
+  // vindo do servidor (data-theme={activeTheme.key} no layout).
 
   // autenticação Firebase
   useEffect(() => {

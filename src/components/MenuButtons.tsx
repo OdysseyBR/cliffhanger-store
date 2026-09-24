@@ -1,17 +1,30 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { menuButtons } from "@/lib/nav";
+import {
+  IconBag,
+  IconBook,
+  IconDice,
+  IconGlobe,
+  IconHeadphones,
+  IconPen,
+  IconRocket,
+  IconShirt,
+  IconTag,
+  IconTablet,
+} from "@/components/Icons";
 
-const icons: Record<string, string> = {
-  Loja: "🛍️",
-  Livros: "📚",
-  "E-books": "📖",
-  Audiobooks: "🎧",
-  Produtos: "👕",
-  Colecionáveis: "🎲",
-  Universos: "🌌",
-  Autores: "✍️",
-  Lançamentos: "🚀",
-  Ofertas: "🏷️",
+const icons: Record<string, ReactNode> = {
+  Loja: <IconBag />,
+  Livros: <IconBook />,
+  "E-books": <IconTablet />,
+  Audiobooks: <IconHeadphones />,
+  Produtos: <IconShirt />,
+  Colecionáveis: <IconDice />,
+  Universos: <IconGlobe />,
+  Autores: <IconPen />,
+  Lançamentos: <IconRocket />,
+  Ofertas: <IconTag />,
 };
 
 /** Menu Buttons (Documento Mestre 3.4) — segundo bloco fixo da Home. */
@@ -31,7 +44,9 @@ export function MenuButtons() {
               >
                 {icons[item.label] ?? "•"}
               </span>
-              <span className="text-display text-lg leading-none">{item.label}</span>
+              <span className="text-display font-menu min-w-0 flex-1 text-lg leading-none break-words">
+                {item.label}
+              </span>
             </Link>
           </li>
         ))}

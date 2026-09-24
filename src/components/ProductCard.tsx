@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { IconHeart } from "@/components/Icons";
 import { ProductArt } from "@/components/ProductArt";
 import { Stars } from "@/components/Stars";
 import { useStore } from "@/components/Providers";
@@ -52,11 +53,11 @@ export function ProductCard({ product, widthClass = "" }: { product: Product; wi
           type="button"
           onClick={() => toggleWishlist(product.id)}
           aria-label={wished ? "Remover da wishlist" : "Salvar na wishlist"}
-          className={`absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full border border-[var(--border)] bg-[var(--surface-raised)]/90 text-lg transition hover:scale-110 ${
+          className={`absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full border border-[var(--border)] bg-[var(--surface-raised)]/90 transition hover:scale-110 ${
             wished ? "text-[#e5484d]" : "text-[var(--text-muted)]"
           }`}
         >
-          {wished ? "♥" : "♡"}
+          <IconHeart filled={wished} className="h-4.5 w-4.5" />
         </button>
       </div>
 

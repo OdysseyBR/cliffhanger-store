@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRef } from "react";
+import { IconChevronLeft, IconChevronRight } from "@/components/Icons";
 import { ProductCard } from "@/components/ProductCard";
 import { Section } from "@/components/Section";
 import type { Product } from "@/lib/types";
@@ -32,10 +33,10 @@ export function Destaques({ products }: { products: Product[] }) {
         <button
           type="button"
           onClick={() => scrollBy(-1)}
-          className="absolute -left-2 top-1/3 z-10 hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-[var(--border)] bg-[var(--surface-raised)] shadow transition hover:border-gold sm:grid"
+          className="absolute -left-2 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-[var(--border)] bg-[var(--surface-raised)] shadow transition hover:border-gold sm:grid"
           aria-label="Rolar para a esquerda"
         >
-          ←
+          <IconChevronLeft />
         </button>
 
         <div ref={trackRef} className="scroll-x pr-6">
@@ -61,10 +62,10 @@ export function Destaques({ products }: { products: Product[] }) {
         <button
           type="button"
           onClick={() => scrollBy(1)}
-          className="absolute -right-2 top-1/3 z-10 hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-[var(--border)] bg-[var(--surface-raised)] shadow transition hover:border-gold sm:grid"
+          className="absolute -right-2 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-[var(--border)] bg-[var(--surface-raised)] shadow transition hover:border-gold sm:grid"
           aria-label="Rolar para a direita"
         >
-          →
+          <IconChevronRight />
         </button>
       </div>
     </Section>

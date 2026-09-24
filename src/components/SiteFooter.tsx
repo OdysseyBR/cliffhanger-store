@@ -1,17 +1,35 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { footerLinks, mainNav } from "@/lib/nav";
+
+/**
+ * Logo do footer como máscara CSS: o desenho é pintado com `currentColor`
+ * (a cor do texto do rodapé = text-paper). Assim ela reage ao fundo de cada
+ * tema automaticamente — escura no Summer, clara nos temas escuros — sem
+ * depender de uma lista de regras por modelo.
+ */
+const logoMaskStyle: CSSProperties = {
+  backgroundColor: "currentColor",
+  WebkitMaskImage: "url(/logo-cliffhanger-branco.svg)",
+  maskImage: "url(/logo-cliffhanger-branco.svg)",
+  WebkitMaskRepeat: "no-repeat",
+  maskRepeat: "no-repeat",
+  WebkitMaskSize: "contain",
+  maskSize: "contain",
+  WebkitMaskPosition: "center",
+  maskPosition: "center",
+};
 
 export function SiteFooter() {
   return (
     <footer className="mt-16 border-t border-[var(--border)] bg-ink text-paper">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-4 lg:px-8">
         <div>
-          <img
-            src="/logo-cliffhanger-branco.svg"
-            alt="Cliffhanger Store"
-            className="h-12 w-auto"
-            width={220}
-            height={48}
+          <span
+            role="img"
+            aria-label="Cliffhanger Store"
+            className="block h-12 aspect-[1650/414]"
+            style={logoMaskStyle}
           />
           <p className="mt-4 max-w-xs text-sm text-paper/70">
             Livros, e-books, audiobooks, produtos oficiais e colecionáveis dos universos

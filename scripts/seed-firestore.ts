@@ -90,6 +90,29 @@ async function main() {
     async () => writeCollection("collections", catalog.collections),
   );
 
+  // Theme Engine (Fase 2): modelos de tema SEM apagar — merge por id,
+  // preservando edições feitas no painel /admin.
+  async function writeThemes(): Promise<void> {
+    const { themes } = await import("../src/data/themes");
+    const col = db.collection("themes");
+    const existing = new Set((await col.listDocuments()).map((doc) => doc.id));
+    let written = 0;
+    let kept = 0;
+    for (const theme of themes) {
+      if (existing.has(theme.id)) {
+        kept += 1;
+        continue;
+      }
+      await col.doc(theme.id).set({ ...theme });
+      written += 1;
+    }
+    console.log(
+      `✓ themes: ${written} novos, ${kept} preservados (merge, sem limpar)`,
+    );
+  }
+
+  batches.push(async () => writeThemes());
+
   for (const run of batches) {
     await run();
   }

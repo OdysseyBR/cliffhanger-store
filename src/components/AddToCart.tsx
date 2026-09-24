@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { IconHeart } from "@/components/Icons";
 import { useStore } from "@/components/Providers";
 import type { Product } from "@/lib/types";
 
@@ -56,7 +57,10 @@ export function AddToCart({ product }: { product: Product }) {
           onClick={() => toggleWishlist(product.id)}
           aria-pressed={wished}
         >
-          {wished ? "♥ Na wishlist" : "♡ Wishlist"}
+          <span className="inline-flex items-center gap-1.5">
+            <IconHeart filled={wished} className="h-4 w-4" />
+            {wished ? "Na wishlist" : "Wishlist"}
+          </span>
         </button>
       </div>
 

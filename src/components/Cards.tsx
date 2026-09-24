@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BookCover } from "@/components/BookCover";
+import { IconArrowRight } from "@/components/Icons";
 import { ProductArt } from "@/components/ProductArt";
 import { formatPrice } from "@/lib/format";
 import type { Collection, Product, Universe, Work } from "@/lib/types";
@@ -94,8 +95,9 @@ export function CollectionCard({
           Suma da coleção:{" "}
           <strong className="text-gold">{formatPrice(total)}</strong>
         </span>
-        <Link href="/loja" className="text-xs font-bold uppercase tracking-wider text-gold hover:underline">
-          Explorar →
+        <Link href="/loja" className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gold hover:underline">
+          Explorar
+          <IconArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
     </article>

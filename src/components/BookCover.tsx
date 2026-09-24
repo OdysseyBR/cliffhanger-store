@@ -118,18 +118,20 @@ export function BookCover({
         </g>
       )}
 
-      {/* título na capa */}
+      {/* título na capa — fonte encolhe para caber nos 300 de largura */}
       {title && (
         <text
           x="34"
           y="404"
           fill={fg}
           fontFamily="var(--font-display-face), Impact, sans-serif"
-          fontSize="34"
+          fontSize={title.length > 18 ? 24 : title.length > 14 ? 28 : 34}
           letterSpacing="1"
+          textLength={title.length > 14 ? 248 : undefined}
+          lengthAdjust={title.length > 14 ? "spacingAndGlyphs" : undefined}
           style={{ textTransform: "uppercase" }}
         >
-          {title.length > 18 ? `${title.slice(0, 17)}…` : title}
+          {title.length > 24 ? `${title.slice(0, 23)}…` : title}
         </text>
       )}
       {label && (

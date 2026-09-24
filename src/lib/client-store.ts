@@ -8,7 +8,11 @@ import type { CartItem } from "@/lib/types";
  * de hidratação e efeitos que chamam `setState`.
  */
 
-export type ThemeName = "default" | "summer";
+/**
+ * Nome de modelo para o override do usuário no navegador.
+ * "" = seguir o modelo publicado/ativo (Theme Engine).
+ */
+export type ThemeName = string;
 
 export interface PersistedState {
   cart: CartItem[];
@@ -19,7 +23,7 @@ export interface PersistedState {
 export const SERVER_STATE: PersistedState = {
   cart: [],
   wishlist: [],
-  theme: "default",
+  theme: "",
 };
 
 const KEYS = {
@@ -55,7 +59,7 @@ export function getStoreSnapshot(): PersistedState {
   cache = {
     cart: safeRead<CartItem[]>(KEYS.cart, []),
     wishlist: safeRead<string[]>(KEYS.wishlist, []),
-    theme: safeRead<ThemeName>(KEYS.theme, "default"),
+    theme: safeRead<ThemeName>(KEYS.theme, ""),
   };
   return cache;
 }

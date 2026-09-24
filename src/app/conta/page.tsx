@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { useStore } from "@/components/Providers";
+import { IconCheck, IconFacebookF, IconGoogleG } from "@/components/Icons";
 import { Page } from "@/components/Page";
 import { Section } from "@/components/Section";
 
@@ -93,26 +94,32 @@ export default function ContaPage() {
                   <p className="mb-2 text-xs font-bold uppercase tracking-wider text-gold">
                     Tema da loja (Theme Engine)
                   </p>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setTheme("default")}
-                      className={`rounded-full border px-4 py-2 text-xs font-bold transition ${
-                        theme === "default" ? "border-transparent bg-violet text-paper" : "border-[var(--border)]"
-                      }`}
-                    >
-                      Winter Fest (padrão)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setTheme("summer")}
-                      className={`rounded-full border px-4 py-2 text-xs font-bold transition ${
-                        theme === "summer" ? "border-transparent bg-violet text-paper" : "border-[var(--border)]"
-                      }`}
-                    >
-                      Summer Fest
-                    </button>
+                  <div className="flex flex-wrap gap-2">
+                    {(
+                      [
+                        { key: "", label: "Automático" },
+                        { key: "winter-fest", label: "Winter Fest" },
+                        { key: "summer-fest", label: "Summer Fest" },
+                      ] as const
+                    ).map((option) => (
+                      <button
+                        key={option.key || "auto"}
+                        type="button"
+                        onClick={() => setTheme(option.key)}
+                        className={`rounded-full border px-4 py-2 text-xs font-bold transition ${
+                          theme === option.key
+                            ? "border-transparent bg-violet text-paper"
+                            : "border-[var(--border)]"
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
                   </div>
+                  <p className="mt-2 text-xs text-[var(--text-muted)]">
+                    “Automático” segue o modelo publicado no painel /admin (pode mudar por
+                    agendamento).
+                  </p>
                 </div>
               </div>
             ) : (
@@ -152,7 +159,8 @@ export default function ContaPage() {
                     disabled={busy || !firebaseReady}
                     onClick={() => void run(signInGoogle)}
                   >
-                    <span className="text-base font-extrabold text-gold">G</span> Continuar com Google
+                    <IconGoogleG className="h-4 w-4" />
+                    Continuar com Google
                   </button>
                   <button
                     type="button"
@@ -165,7 +173,7 @@ export default function ContaPage() {
                         : "Defina NEXT_PUBLIC_FACEBOOK_APP_ID para habilitar"
                     }
                   >
-                    <span className="text-base font-extrabold text-[#1877F2]">f</span>{" "}
+                    <IconFacebookF className="h-4 w-4" />
                     {facebookConfigured ? "Continuar com Facebook" : "Facebook (não configurado)"}
                   </button>
                 </div>
@@ -211,20 +219,20 @@ export default function ContaPage() {
             <h2 className="text-display text-3xl">Por que ter conta?</h2>
             <ul className="space-y-3 text-sm text-[var(--text-muted)]">
               <li className="flex gap-3">
-                <span className="text-gold">▸</span> Biblioteca digital sincronizada entre
+                <span className="mt-0.5 shrink-0 self-start text-gold"><IconCheck className="h-4 w-4" /></span> Biblioteca digital sincronizada entre
                 dispositivos.
               </li>
               <li className="flex gap-3">
-                <span className="text-gold">▸</span> Wishlist compartilhável e alertas de reposição.
+                <span className="mt-0.5 shrink-0 self-start text-gold"><IconCheck className="h-4 w-4" /></span> Wishlist compartilhável e alertas de reposição.
               </li>
               <li className="flex gap-3">
-                <span className="text-gold">▸</span> Dados e endereço pré-preenchidos no checkout.
+                <span className="mt-0.5 shrink-0 self-start text-gold"><IconCheck className="h-4 w-4" /></span> Dados e endereço pré-preenchidos no checkout.
               </li>
               <li className="flex gap-3">
-                <span className="text-gold">▸</span> Pontos no Cliffhanger Club a cada compra.
+                <span className="mt-0.5 shrink-0 self-start text-gold"><IconCheck className="h-4 w-4" /></span> Pontos no Cliffhanger Club a cada compra.
               </li>
               <li className="flex gap-3">
-                <span className="text-gold">▸</span> Acesso antecipado a pré-vendas e edições
+                <span className="mt-0.5 shrink-0 self-start text-gold"><IconCheck className="h-4 w-4" /></span> Acesso antecipado a pré-vendas e edições
                 limitadas.
               </li>
             </ul>

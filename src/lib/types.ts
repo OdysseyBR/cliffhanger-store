@@ -165,3 +165,165 @@ export interface Order {
   status: OrderStatus;
   createdAt: string;
 }
+
+// ---------------------------------------------------------------------------
+// Cliffhanger Theme Engine (Fase 2 — Documento Mestre, seção 4)
+// ---------------------------------------------------------------------------
+
+/** Estado de autoria do modelo (4.5). "Agendado"/"Ativo" são derivados da janela. */
+export type ThemeStatus = "rascunho" | "preview" | "publicado" | "arquivado";
+
+/** Fase exibida no admin: autoria + derivadas de agendamento. */
+export type ThemePhase = ThemeStatus | "agendado" | "ativo" | "expirado";
+
+export type ThemeKind = "default" | "seasonal" | "festival" | "campaign" | "launch" | "custom";
+
+export type BorderStyleKey = "clean" | "framed" | "editorial";
+
+export interface ThemeColors {
+  surface: string;
+  surfaceRaised: string;
+  surfaceRaised2: string;
+  text: string;
+  textMuted: string;
+  brand: string;
+  brandStrong: string;
+  accent: string;
+  /** rgba(...) */
+  border: string;
+  /** rgba(...) */
+  headerBg: string;
+}
+
+export interface ThemeIdentity {
+  /** claro = usa logo escura; escuro = logo branca */
+  mode: "dark" | "light";
+  colors: ThemeColors;
+  /** chave de FONT_STACKS (tipografia de destaque) */
+  displayFont: string;
+  /** raio dos cards (ex.: "1.25rem") */
+  cardRadius: string;
+  borderStyle: BorderStyleKey;
+  /**
+   * Background livre do body (ex.: gradiente) — permite que festivais
+   * saiam da paleta oficial. Vazio/ausente = usa --surface.
+   */
+  bodyBackground?: string;
+}
+
+export interface ThemeCta {
+  label: string;
+  href: string;
+}
+
+export interface ThemeBanner {
+  eyebrow?: string;
+  title: string;
+  /** segunda linha do título (gradiente) */
+  highlight?: string;
+  description?: string;
+  primaryCta?: ThemeCta;
+  secondaryCta?: ThemeCta;
+  /** imagem em /public (ex.: /winter-fest.png) */
+  image?: string;
+  imageCaption?: string;
+  imageCta?: ThemeCta;
+  /** ISO — exibe contagem regressiva */
+  countdown?: string;
+  /** métricas exibidas no banner (Universo/Formatos/Avaliação…) */
+  stats?: { label: string; value: string }[];
+  /** false = Modo Somente Banner (3.3): header oculto na Home */
+  showHeader: boolean;
+}
+
+export type HomeSectionKey =
+  | "novidades"
+  | "mais-vendidos"
+  | "pre-vendas"
+  | "edicoes-especiais"
+  | "universos"
+  | "derivados"
+  | "editorial"
+  | "club"
+  | "newsletter"
+  | "recomendacoes"
+  | "colecoes"
+  | "ofertas";
+
+export interface ThemeHomeSection {
+  key: HomeSectionKey;
+  enabled: boolean;
+}
+
+/**
+ * Zonas novas na Home — festivais sazonais saem do padrão adicionando
+ * blocos que a Home oficial não tem (Documento Mestre 4.4, extensão).
+ */
+export type ThemeZoneType =
+  | "marquee"
+  | "promo-grid"
+  | "category-band"
+  | "editorial"
+  | "countdown";
+
+/** Onde a zona é inserida na arquitetura fixa da Home (3.x). */
+export type ThemeZonePlacement = "after-menu" | "after-destaques" | "end";
+
+export interface ThemeZoneItem {
+  title: string;
+  subtitle?: string;
+  /** imagem enviada no admin (URL Cloudinary ou /public) */
+  image?: string;
+  href?: string;
+}
+
+export interface ThemeZone {
+  id: string;
+  type: ThemeZoneType;
+  enabled: boolean;
+  placement: ThemeZonePlacement;
+  title?: string;
+  subtitle?: string;
+  /** marquee: mensagens rolantes */
+  messages?: string[];
+  /** promo-grid / category-band */
+  items?: ThemeZoneItem[];
+  /** editorial */
+  image?: string;
+  body?: string;
+  cta?: ThemeCta;
+  /** countdown: ISO */
+  countdown?: string;
+}
+
+/** CMS da Home (4.4): banner, destaques, seções e zonas do modelo. */
+export interface ThemeHome {
+  banner: ThemeBanner;
+  /** productIds; vazio = seleção automática */
+  destaques: string[];
+  sections: ThemeHomeSection[];
+  /** zonas adicionais (festivais) — vazio no modelo default */
+  zones: ThemeZone[];
+}
+
+export interface ThemeModel {
+  id: string;
+  /** vira o atributo data-theme no <html> */
+  key: string;
+  name: string;
+  kind: ThemeKind;
+  /** ex.: "v1.0" (4.7 versionamento) */
+  version: string;
+  status: ThemeStatus;
+  /** 2 = schema Cliffhanger Theme Engine (ignora docs de implementações antigas) */
+  schemaVersion: number;
+  /** id do modelo do qual este foi duplicado */
+  parentOf?: string | null;
+  /** ISO — janela de agendamento (4.6) */
+  scheduledStart?: string | null;
+  scheduledEnd?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  identity: ThemeIdentity;
+  home: ThemeHome;
+}

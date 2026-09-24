@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BookCover } from "@/components/BookCover";
+import { IconGlobe, IconPen } from "@/components/Icons";
 import { Page } from "@/components/Page";
 import { ProductCard } from "@/components/ProductCard";
 import { Section } from "@/components/Section";
@@ -82,13 +83,15 @@ export default async function ObraPage({ params }: Props) {
 
             <div className="mt-6 flex flex-wrap gap-3 text-xs">
               {author && (
-                <Link href={`/autores/${author.slug}`} className="btn btn-ghost px-4 py-2">
-                  ✍️ {author.name}
+                <Link href={`/autores/${author.slug}`} className="btn btn-ghost inline-flex items-center gap-2 px-4 py-2">
+                  <IconPen className="h-4 w-4" />
+                  {author.name}
                 </Link>
               )}
               {universe && (
-                <Link href={`/universos/${universe.slug}`} className="btn btn-ghost px-4 py-2">
-                  🌌 {universe.name}
+                <Link href={`/universos/${universe.slug}`} className="btn btn-ghost inline-flex items-center gap-2 px-4 py-2">
+                  <IconGlobe className="h-4 w-4" />
+                  {universe.name}
                 </Link>
               )}
             </div>
