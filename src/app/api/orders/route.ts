@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { getAdminDb } from "@/lib/firebase-admin";
+import { isGateResponse, requireAdmin } from "@/lib/admin-guard";
+import { getAdminDb, revive } from "@/lib/firebase-admin";
 import { getProducts } from "@/lib/data";
 import type { Order, OrderItem, OrderStatus } from "@/lib/types";
 
@@ -125,4 +126,65 @@ export async function POST(request: Request) {
     persisted: Boolean(db),
     status,
   });
+}
+
+/** Status em inglês vindos de pedidos antigos (demo) → enum Doc Mestre. */
+const LEGACY_STATUS: Record<string, OrderStatus> = {
+  pending: "aguardando_pagamento",
+  paid: "pagamento_aprovado",
+  processing: "em_separacao",
+  shipped: "enviado",
+  delivered: "entregue",
+  cancelled: "cancelado",
+  canceled: "cancelado",
+};
+
+const KNOWN_STATUS: OrderStatus[] = [
+  "aguardando_pagamento",
+  "pagamento_aprovado",
+  "em_separacao",
+  "enviado",
+  "entregue",
+  "cancelado",
+];
+
+function normalizeStatus(value: unknown): OrderStatus {
+  const raw = typeof value === "string" ? value.trim() : "";
+  if (KNOWN_STATUS.includes(raw as OrderStatus)) return raw as OrderStatus;
+  return LEGACY_STATUS[raw.toLowerCase()] ?? (raw as OrderStatus);
+}
+
+/**
+ * Lista pedidos para o painel (Doc Mestre 11.1 — Dashboard e módulo
+ * Pedidos). Dados de cliente: exige super admin no servidor.
+ */
+export async function GET(request: Request) {
+  const gate = await requireAdmin(request);
+  if (isGateResponse(gate)) return gate;
+
+  const db = getAdminDb();
+  if (!db) {
+    return Response.json(
+      { error: "Firestore não configurado neste ambiente." },
+      { status: 503 },
+    );
+  }
+
+  try {
+    const snap = await db
+      .collection("orders")
+      .orderBy("createdAt", "desc")
+      .limit(50)
+      .get();
+    const orders = snap.docs.map((doc) => {
+      const order = revive({ id: doc.id, ...doc.data() }) as Order;
+      return { ...order, status: normalizeStatus(order.status) };
+    });
+    return Response.json({ orders });
+  } catch {
+    return Response.json(
+      { error: "Falha ao ler os pedidos." },
+      { status: 500 },
+    );
+  }
 }

@@ -43,12 +43,19 @@ export function getAdminApp(): App | null {
     return null;
   }
 
-  adminApp =
-    getApps()[0] ??
-    initializeApp({
-      credential: cert(sa),
-      projectId: sa.project_id,
-    });
+  try {
+    adminApp =
+      getApps()[0] ??
+      initializeApp({
+        credential: cert(sa),
+        projectId: sa.project_id,
+      });
+  } catch {
+    // credencial malformada (ex.: private_key quebrada ao colar no env da
+    // Vercel) — trata como "não configurado" para as APIs responderem
+    // JSON 503 em vez de estourar HTML 500.
+    adminApp = null;
+  }
   return adminApp;
 }
 
@@ -85,4 +92,14 @@ export function revive<T>(value: T): T {
     return out as unknown as T;
   }
   return value;
+}
+
+/**
+ * Remove chaves com valor `undefined` antes de gravar no Firestore —
+ * ele rejeita `undefined` dentro de documentos ("Cannot use undefined
+ * as a Firestore value"), então campos opcionais ausentes (ex.:
+ * compareAt de um produto novo) precisam sair do objeto por completo.
+ */
+export function plainDoc<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
 }

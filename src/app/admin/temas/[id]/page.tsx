@@ -39,7 +39,7 @@ export default function AdminThemeEditorPage() {
           <button type="button" onClick={reload} className="btn btn-ghost">
             Tentar novamente
           </button>
-          <Link href="/admin" className="btn btn-primary">
+          <Link href="/admin/temas" className="btn btn-primary">
             Voltar aos modelos
           </Link>
         </div>
@@ -51,7 +51,7 @@ export default function AdminThemeEditorPage() {
     <ThemeEditor
       theme={theme}
       onSaved={reload}
-      onDeleted={() => router.push("/admin")}
+      onDeleted={() => router.push("/admin/temas")}
     />
   );
 }

@@ -20,7 +20,7 @@ interface NavGroup {
 }
 
 const ADMIN_NAV: NavGroup[] = [
-  { title: "Geral", items: [{ label: "Dashboard" }] },
+  { title: "Geral", items: [{ label: "Dashboard", href: "/admin" }] },
   {
     title: "Catálogo",
     items: [
@@ -58,7 +58,7 @@ const ADMIN_NAV: NavGroup[] = [
   {
     title: "Conteúdo",
     items: [
-      { label: "Modelos", href: "/admin" },
+      { label: "Modelos", href: "/admin/temas" },
       { label: "Banners" },
       { label: "Página inicial" },
       { label: "Notícias" },

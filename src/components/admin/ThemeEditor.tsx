@@ -250,7 +250,7 @@ export function ThemeEditor({
         {/* barra de ações */}
         <div className="sticky top-2 z-20 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)]/95 p-3 backdrop-blur">
           <Link
-            href="/admin"
+            href="/admin/temas"
             className="btn btn-ghost inline-flex items-center gap-1.5 px-4 py-2 text-[11px]"
           >
             <IconArrowLeft className="h-3.5 w-3.5" />

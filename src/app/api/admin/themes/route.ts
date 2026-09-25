@@ -1,4 +1,4 @@
-import { getAdminDb } from "@/lib/firebase-admin";
+import { getAdminDb, plainDoc } from "@/lib/firebase-admin";
 import { isGateResponse as isResponse, requireAdmin } from "@/lib/admin-guard";
 import { normalizeTheme, readThemesFromDb } from "@/lib/themes";
 import { THEME_SCHEMA_VERSION } from "@/lib/theme-css";import type { ThemeModel } from "@/lib/types";
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
         );
       }
 
-      await db.collection("themes").doc(theme.id).set(theme, { merge: false });
+      await db.collection("themes").doc(theme.id).set(plainDoc(theme), { merge: false });
       return Response.json({ ok: true, theme });
     }
 
@@ -117,7 +117,7 @@ export async function POST(request: Request) {
         updatedAt: now,
       };
 
-      await db.collection("themes").doc(copy.id).set(copy);
+      await db.collection("themes").doc(copy.id).set(plainDoc(copy));
       return Response.json({ ok: true, theme: copy });
     }
 

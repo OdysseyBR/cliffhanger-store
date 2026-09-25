@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { isGateResponse, requireAdmin } from "@/lib/admin-guard";
-import { getAdminDb } from "@/lib/firebase-admin";
+import { getAdminDb, plainDoc } from "@/lib/firebase-admin";
 import { invalidateCatalog } from "@/lib/data";
 import { sanitizeProduct } from "@/lib/product-fields";
 
@@ -60,7 +60,7 @@ export async function PUT(request: Request, { params }: RouteCtx) {
     );
   }
 
-  await ref.set(product);
+  await ref.set(plainDoc(product));
   invalidateCatalog();
   revalidatePath("/", "layout");
 

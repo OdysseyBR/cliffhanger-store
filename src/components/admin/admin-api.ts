@@ -1,7 +1,7 @@
 "use client";
 
 import { getClientAuth, firebaseEnabled } from "@/lib/firebase";
-import type { Product, ThemeModel } from "@/lib/types";
+import type { Order, Product, ThemeModel } from "@/lib/types";
 
 /**
  * Cliente da API do Theme Engine — anexa o ID token do Firebase e
@@ -118,4 +118,9 @@ export function deleteProduct(id: string) {
   return adminFetch<{ ok: boolean }>(`/api/products/${id}`, {
     method: "DELETE",
   });
+}
+
+/** Pedidos (Doc Mestre 11.1 — Dashboard/módulo Pedidos) — exige super admin. */
+export function fetchOrders() {
+  return adminFetch<{ orders: Order[] }>("/api/orders");
 }
