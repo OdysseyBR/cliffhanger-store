@@ -8,7 +8,7 @@ import { Newsletter } from "@/components/Newsletter";
 import { Page } from "@/components/Page";
 import { ProductCard } from "@/components/ProductCard";
 import { Section } from "@/components/Section";
-import { ThemeBanner } from "@/components/ThemeBanner";
+import { HomeBanner } from "@/components/HomeBanner";
 import { ThemeZones } from "@/components/ThemeZones";
 import {
   bestSellers,
@@ -16,6 +16,7 @@ import {
   launches,
   offers,
 } from "@/lib/data";
+import { getActiveBanner } from "@/lib/banners";
 import { HOME_SECTION_ORDER } from "@/lib/theme-css";
 import { getActiveTheme } from "@/lib/themes";
 import type { HomeSectionKey, Product } from "@/lib/types";
@@ -34,11 +35,16 @@ export const revalidate = 300;
  * Home — arquitetura fixa (Documento Mestre, seção 3):
  * BANNER → HEADER → MENU BUTTONS → DESTAQUES (side scroll) → restante.
  *
- * Banner, destaques e ordem/habilitação das seções vêm do padrão ativo
- * (src/data/themes.ts).
+ * O banner vem do módulo Banners do painel — arte final única por upload
+ * (Documento de Correção §5). Destaques, ordem/habilitação das seções e
+ * zonas vêm do padrão ativo (src/data/themes.ts).
  */
 export default async function HomePage() {
-  const [catalog, theme] = await Promise.all([getCatalog(), getActiveTheme()]);
+  const [catalog, theme, banner] = await Promise.all([
+    getCatalog(),
+    getActiveTheme(),
+    getActiveBanner(),
+  ]);
   const { products, works, universes, authors, collections } = catalog;
 
   // 3.5 Destaques — curadoria do modelo ou seleção automática
@@ -200,8 +206,8 @@ export default async function HomePage() {
 
   return (
     <Page
-      beforeHeader={<ThemeBanner banner={theme.home.banner} />}
-      hideHeader={!theme.home.banner.showHeader}
+      beforeHeader={<HomeBanner banner={banner} />}
+      hideHeader={!banner.showHeader}
     >
       {/* 3.4 Menu Buttons */}
       <MenuButtons />

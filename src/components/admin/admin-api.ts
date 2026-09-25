@@ -1,7 +1,7 @@
 "use client";
 
 import { getClientAuth, firebaseEnabled } from "@/lib/firebase";
-import type { Order, Product } from "@/lib/types";
+import type { Banner, Order, Product } from "@/lib/types";
 
 /**
  * Cliente da API do painel — anexa o ID token do Firebase e
@@ -98,4 +98,22 @@ export function deleteProduct(id: string) {
 /** Pedidos (Doc Mestre 11.1 — Dashboard/módulo Pedidos) — exige super admin. */
 export function fetchOrders() {
   return adminFetch<{ orders: Order[] }>("/api/orders");
+}
+
+/** Banners (Documento de Correção §5) — arte final única por upload. */
+export function fetchBanners() {
+  return adminFetch<{ banners: Banner[] }>("/api/admin/banners");
+}
+
+export function saveBanner(banner: Banner, isNew: boolean) {
+  return adminFetch<{ banner: Banner }>(
+    isNew ? "/api/admin/banners" : `/api/admin/banners/${banner.id}`,
+    { method: isNew ? "POST" : "PUT", body: JSON.stringify({ banner }) },
+  );
+}
+
+export function deleteBanner(id: string) {
+  return adminFetch<{ ok: boolean }>(`/api/admin/banners/${id}`, {
+    method: "DELETE",
+  });
 }

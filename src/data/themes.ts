@@ -61,24 +61,6 @@ export const themes: ThemeModel[] = [
       borderStyle: "clean",
     },
     home: {
-      banner: {
-        eyebrow: "Pré-venda aberta · envio em 05/12/2026",
-        title: "Valeharts III",
-        highlight: "A Trégua das Espadas",
-        description:
-          "O volume que fecha a primeira trilogia chegou à loja em pré-venda. Reserve agora e garanta exemplar numerado, capa dura e envio prioritário.",
-        primaryCta: {
-          label: "Reservar agora",
-          href: "/produtos/valeharts-iii-a-tregua-das-espadas-livro-fisico",
-        },
-        secondaryCta: { label: "Ver todos os livros", href: "/livros" },
-        stats: [
-          { label: "Universo", value: "Valeharts" },
-          { label: "Formatos", value: "3" },
-          { label: "Avaliação", value: "5,0" },
-        ],
-        showHeader: true,
-      },
       destaques: [],
       sections: ALL_SECTIONS,
       zones: [],
@@ -123,24 +105,6 @@ export const themes: ThemeModel[] = [
       borderStyle: "clean",
     },
     home: {
-      banner: {
-        eyebrow: "Pré-venda aberta · envio em 05/12/2026",
-        title: "Valeharts III",
-        highlight: "A Trégua das Espadas",
-        description:
-          "O volume que fecha a primeira trilogia chegou à loja em pré-venda. Reserve agora e garanta exemplar numerado, capa dura e envio prioritário.",
-        primaryCta: {
-          label: "Reservar agora",
-          href: "/produtos/valeharts-iii-a-tregua-das-espadas-livro-fisico",
-        },
-        secondaryCta: { label: "Ver todos os livros", href: "/livros" },
-        stats: [
-          { label: "Universo", value: "Valeharts" },
-          { label: "Formatos", value: "3" },
-          { label: "Avaliação", value: "5,0" },
-        ],
-        showHeader: true,
-      },
       destaques: [],
       sections: ALL_SECTIONS,
       zones: [],

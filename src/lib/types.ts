@@ -247,28 +247,6 @@ export interface ThemeCta {
   href: string;
 }
 
-export interface ThemeBanner {
-  eyebrow?: string;
-  title: string;
-  /** segunda linha do título (gradiente) */
-  highlight?: string;
-  description?: string;
-  primaryCta?: ThemeCta;
-  secondaryCta?: ThemeCta;
-  /** imagem em /public (ex.: /cliffhanger-club.png) */
-  image?: string;
-  /** vídeo (.mp4/.webm) — Doc Mestre 3.1: banner pode suportar vídeo; substitui a imagem no quadro */
-  video?: string;
-  imageCaption?: string;
-  imageCta?: ThemeCta;
-  /** ISO — exibe contagem regressiva */
-  countdown?: string;
-  /** métricas exibidas no banner (Universo/Formatos/Avaliação…) */
-  stats?: { label: string; value: string }[];
-  /** false = Modo Somente Banner (3.3): header oculto na Home */
-  showHeader: boolean;
-}
-
 export type HomeSectionKey =
   | "novidades"
   | "mais-vendidos"
@@ -329,9 +307,8 @@ export interface ThemeZone {
   countdown?: string;
 }
 
-/** CMS da Home (4.4): banner, destaques, seções e zonas do modelo. */
+/** CMS da Home (4.4): destaques, seções e zonas do modelo. */
 export interface ThemeHome {
-  banner: ThemeBanner;
   /** productIds; vazio = seleção automática */
   destaques: string[];
   sections: ThemeHomeSection[];
@@ -359,4 +336,49 @@ export interface ThemeModel {
   updatedAt: string;
   identity: ThemeIdentity;
   home: ThemeHome;
+}
+
+/**
+ * Banner da Home — Documento de Correção §5.
+ *
+ * O banner é uma ARTE FINAL ÚNICA enviada por upload pelo admin
+ * (sem construtor e sem camadas editáveis). O sistema apenas controla
+ * exibição, destino, ativação, ordenação, agendamento e demais
+ * configurações funcionais.
+ */
+export type BannerDestinationType =
+  | "produto"
+  | "obra"
+  | "colecao"
+  | "lancamento"
+  | "campanha"
+  | "pagina"
+  | "externo";
+
+export interface Banner {
+  id: string;
+  /** rótulo interno do banner no painel */
+  name: string;
+  /** arte final única — URL (Cloudinary ou /public) */
+  image: string;
+  /** versão mobile da arte (quando necessário) */
+  imageMobile?: string;
+  /** texto alternativo — acessibilidade (§25) */
+  alt: string;
+  destinationType: BannerDestinationType;
+  /** slug/id/caminho/URL conforme o tipo de destino */
+  destinationValue: string;
+  /** ordem de exibição (menor primeiro) */
+  order: number;
+  active: boolean;
+  /** ISO — início do agendamento (vazio = imediato) */
+  startsAt?: string;
+  /** ISO — fim do agendamento (vazio = sem término) */
+  endsAt?: string;
+  /** exibição fullscreen quando a experiência exigir (§5) */
+  fullscreen: boolean;
+  /** false = Modo Somente Banner (§3): header removido na Home */
+  showHeader: boolean;
+  createdAt: string;
+  updatedAt: string;
 }

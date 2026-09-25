@@ -5,7 +5,7 @@ import { uploadImage } from "@/components/admin/upload";
 
 /**
  * Campo de imagem do CMS: upload para o Cloudinary (preset unsigned) com
- * fallback de colagem de URL. Usado no banner do tema e nas zonas.
+ * fallback de colagem de URL. Usado no banner da Home (§5) e nas zonas.
  */
 export function ImageField({
   label,
