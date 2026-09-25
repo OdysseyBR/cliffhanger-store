@@ -7,30 +7,15 @@ import { AdminLogin } from "@/components/admin/AdminLogin";
 import { useAdminOrders } from "@/components/admin/useAdminOrders";
 import { useAdminProducts } from "@/components/admin/useAdminProducts";
 import { formatPrice } from "@/lib/format";
+import { ORDER_STATUS_LABEL, orderStatusClass } from "@/lib/order-status";
 import { PRODUCT_CATEGORY_OPTIONS } from "@/lib/product-fields";
-import type { Order, OrderStatus } from "@/lib/types";
+import type { Order } from "@/lib/types";
 
 /**
  * Dashboard do painel (Documento de Correção §12 — módulo 1).
  * Visão geral: KPIs do catálogo, alertas de estoque, distribuição por
  * categoria e pedidos recentes.
  */
-
-const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
-  aguardando_pagamento: "Aguardando pagamento",
-  pagamento_aprovado: "Pagamento aprovado",
-  em_separacao: "Em separação",
-  enviado: "Enviado",
-  entregue: "Entregue",
-  cancelado: "Cancelado",
-};
-
-function orderStatusClass(status: OrderStatus): string {
-  if (status === "cancelado") return "text-[var(--text-muted)]";
-  if (status === "aguardando_pagamento") return "text-orange-300";
-  if (status === "entregue" || status === "enviado") return "text-emerald-300";
-  return "text-violet-soft";
-}
 
 function KpiCard({
   label,

@@ -3,11 +3,10 @@
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { useStore } from "@/components/Providers";
-import { IconCheck, IconFacebookF, IconGoogleG } from "@/components/Icons";
+import { AuthCard } from "@/components/AuthCard";
+import { IconCheck } from "@/components/Icons";
 import { Page } from "@/components/Page";
 import { Section } from "@/components/Section";
-
-type Mode = "entrar" | "criar";
 
 const providerLabels: Record<string, string> = {
   "google.com": "Google",
@@ -48,12 +47,6 @@ export default function ContaPage() {
   const {
     user,
     authLoading,
-    authError,
-    firebaseReady,
-    signInGoogle,
-    signInFacebook,
-    signInEmail,
-    registerEmail,
     logout,
     changePassword,
     sendReset,
@@ -64,9 +57,6 @@ export default function ContaPage() {
     setTheme,
   } = useStore();
 
-  const [mode, setMode] = useState<Mode>("entrar");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [device] = useState(deviceLabel);
@@ -77,19 +67,6 @@ export default function ContaPage() {
     try {
       await changePassword(newPassword);
       setNewPassword("");
-    } catch {
-      /* erro já exibido pelo provider */
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const submit = async (event: FormEvent) => {
-    event.preventDefault();
-    setBusy(true);
-    try {
-      if (mode === "entrar") await signInEmail(email, password);
-      else await registerEmail(email, password);
     } catch {
       /* erro já exibido pelo provider */
     } finally {
@@ -117,8 +94,6 @@ export default function ContaPage() {
       await run(deleteAccount);
     }
   };
-
-  const facebookConfigured = Boolean(process.env.NEXT_PUBLIC_FACEBOOK_APP_ID);
 
   return (
     <Page>
@@ -188,94 +163,7 @@ export default function ContaPage() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-5">
-                <div className="flex gap-2">
-                  {(["entrar", "criar"] as Mode[]).map((m) => (
-                    <button
-                      key={m}
-                      type="button"
-                      onClick={() => setMode(m)}
-                      className={`flex-1 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wider transition ${
-                        mode === m ? "bg-violet text-white" : "border border-[var(--border)]"
-                      }`}
-                    >
-                      {m === "entrar" ? "Entrar" : "Criar conta"}
-                    </button>
-                  ))}
-                </div>
-
-                {!firebaseReady && (
-                  <p className="rounded-xl border border-gold/40 bg-gold/10 px-4 py-3 text-sm">
-                    Firebase não configurado: copie <code>.env.example</code> para{" "}
-                    <code>.env.local</code> e preencha as chaves para habilitar o login.
-                  </p>
-                )}
-
-                {authError && (
-                  <p className="rounded-xl bg-[#e5484d]/15 px-4 py-3 text-sm text-[#e5484d]">
-                    {authError}
-                  </p>
-                )}
-
-                <div className="grid gap-3">
-                  <button
-                    type="button"
-                    className="btn btn-ghost w-full"
-                    disabled={busy || !firebaseReady}
-                    onClick={() => void run(signInGoogle)}
-                  >
-                    <IconGoogleG className="h-4 w-4" />
-                    Continuar com Google
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-ghost w-full"
-                    disabled={busy || !firebaseReady || !facebookConfigured}
-                    onClick={() => void run(signInFacebook)}
-                    title={
-                      facebookConfigured
-                        ? "Entrar com Facebook"
-                        : "Defina NEXT_PUBLIC_FACEBOOK_APP_ID para habilitar"
-                    }
-                  >
-                    <IconFacebookF className="h-4 w-4" />
-                    {facebookConfigured ? "Continuar com Facebook" : "Facebook (não configurado)"}
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-3 text-xs text-[var(--text-muted)]">
-                  <span className="h-px flex-1 bg-[var(--border)]" />
-                  ou com e-mail
-                  <span className="h-px flex-1 bg-[var(--border)]" />
-                </div>
-
-                <form onSubmit={submit} className="space-y-3">
-                  <input
-                    type="email"
-                    className="field"
-                    placeholder="E-mail"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                  <input
-                    type="password"
-                    className="field"
-                    placeholder="Senha (mín. 6 caracteres)"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    minLength={6}
-                    required
-                  />
-                  <button
-                    type="submit"
-                    className="btn btn-primary w-full"
-                    disabled={busy || !firebaseReady}
-                  >
-                    {busy ? "Aguarde…" : mode === "entrar" ? "Entrar" : "Criar conta"}
-                  </button>
-                </form>
-              </div>
+              <AuthCard />
             )}
           </div>
 

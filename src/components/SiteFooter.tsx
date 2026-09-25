@@ -5,8 +5,8 @@ import { footerLinks, mainNav } from "@/lib/nav";
 /**
  * Logo do footer como máscara CSS: o desenho é pintado com `currentColor`
  * (a cor do texto do rodapé = text-paper). Assim ela reage ao fundo de cada
- * tema automaticamente — escura no Summer, clara nos temas escuros — sem
- * depender de uma lista de regras por modelo.
+ * padrão visual automaticamente — clara no Padrão Cliffhanger Claro, escura
+ * no Padrão Cliffhanger — sem depender de uma lista de regras por tema.
  */
 const logoMaskStyle: CSSProperties = {
   backgroundColor: "currentColor",
@@ -23,7 +23,7 @@ const logoMaskStyle: CSSProperties = {
 export function SiteFooter() {
   return (
     <footer className="mt-16 border-t border-[var(--border)] bg-ink text-paper">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-4 lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-5 lg:px-8">
         <div>
           <span
             role="img"

@@ -96,9 +96,20 @@ export const footerLinks: { title: string; items: NavItem[] }[] = [
     title: "Conta",
     items: [
       { label: "Minha conta", href: "/conta" },
+      { label: "Meus pedidos", href: "/pedidos" },
       { label: "Biblioteca", href: "/biblioteca" },
       { label: "Wishlist", href: "/wishlist" },
       { label: "Carrinho", href: "/carrinho" },
+    ],
+  },
+  {
+    title: "Ajuda e legal",
+    items: [
+      { label: "Sobre a loja", href: "/sobre" },
+      { label: "Contato", href: "/contato" },
+      { label: "Perguntas frequentes", href: "/faq" },
+      { label: "Privacidade", href: "/privacidade" },
+      { label: "Termos de uso", href: "/termos" },
     ],
   },
 ];

@@ -1,7 +1,9 @@
 import { randomUUID } from "node:crypto";
+import { getAuth } from "firebase-admin/auth";
 import { isGateResponse, requireAdmin } from "@/lib/admin-guard";
-import { getAdminDb, revive } from "@/lib/firebase-admin";
+import { getAdminApp, getAdminDb, revive } from "@/lib/firebase-admin";
 import { getProducts } from "@/lib/data";
+import { normalizeStatus } from "@/lib/order-status";
 import type { Order, OrderItem, OrderStatus } from "@/lib/types";
 
 interface CheckoutPayload {
@@ -82,6 +84,20 @@ export async function POST(request: Request) {
   const status: OrderStatus = "aguardando_pagamento";
   const now = new Date().toISOString();
 
+  // Sessão opcional: quando o cliente está logado, anexa o dono ao pedido
+  // para o histórico de `/pedidos`. Token inválido segue como visitante.
+  let userId: string | null = null;
+  const authHeader = request.headers.get("authorization") ?? "";
+  const bearer = /^Bearer (.+)$/.exec(authHeader)?.[1];
+  if (bearer) {
+    try {
+      const app = getAdminApp();
+      if (app) userId = (await getAuth(app).verifyIdToken(bearer)).uid;
+    } catch {
+      /* sem sessão válida → compra de visitante */
+    }
+  }
+
   const order: Omit<Order, "id"> = {
     code: `CH-${randomUUID().slice(0, 8).toUpperCase()}`,
     email: payload.email,
@@ -101,7 +117,7 @@ export async function POST(request: Request) {
     try {
       const ref = await db.collection("orders").add({
         ...order,
-        userId: null,
+        userId,
         customer: {
           name: payload.name ?? "",
           phone: payload.phone ?? "",
@@ -126,32 +142,6 @@ export async function POST(request: Request) {
     persisted: Boolean(db),
     status,
   });
-}
-
-/** Status em inglês vindos de pedidos antigos (demo) → enum Doc Mestre. */
-const LEGACY_STATUS: Record<string, OrderStatus> = {
-  pending: "aguardando_pagamento",
-  paid: "pagamento_aprovado",
-  processing: "em_separacao",
-  shipped: "enviado",
-  delivered: "entregue",
-  cancelled: "cancelado",
-  canceled: "cancelado",
-};
-
-const KNOWN_STATUS: OrderStatus[] = [
-  "aguardando_pagamento",
-  "pagamento_aprovado",
-  "em_separacao",
-  "enviado",
-  "entregue",
-  "cancelado",
-];
-
-function normalizeStatus(value: unknown): OrderStatus {
-  const raw = typeof value === "string" ? value.trim() : "";
-  if (KNOWN_STATUS.includes(raw as OrderStatus)) return raw as OrderStatus;
-  return LEGACY_STATUS[raw.toLowerCase()] ?? (raw as OrderStatus);
 }
 
 /**
