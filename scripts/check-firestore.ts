@@ -49,7 +49,6 @@ async function main() {
     "orders",
     "wishlists",
     "reviews",
-    "themes",
     "campaigns",
     "launches",
     "preorders",

@@ -112,7 +112,7 @@ function PillGroup({
             onClick={() => onToggle(option.value)}
             className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
               active === option.value
-                ? "border-transparent bg-violet text-paper"
+                ? "border-transparent bg-violet text-white"
                 : "border-[var(--border)] hover:border-violet-soft"
             }`}
           >
@@ -395,7 +395,7 @@ export function CatalogBrowser({
                 onClick={() => setCategory("todos")}
                 className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                   category === "todos"
-                    ? "border-transparent bg-violet text-paper"
+                    ? "border-transparent bg-violet text-white"
                     : "border-[var(--border)] hover:border-violet-soft"
                 }`}
               >
@@ -408,7 +408,7 @@ export function CatalogBrowser({
                   onClick={() => setCategory(c)}
                   className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                     category === c
-                      ? "border-transparent bg-violet text-paper"
+                      ? "border-transparent bg-violet text-white"
                       : "border-[var(--border)] hover:border-violet-soft"
                   }`}
                 >

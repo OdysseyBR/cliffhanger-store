@@ -25,8 +25,8 @@ export const metadata: Metadata = {
 };
 
 /**
- * Theme Engine: revalida a cada 5 min para refletir o modelo ativo
- * (publicações e transições agendadas do Documento Mestre 4.6).
+ * Revalida a cada 5 min para refletir mudanças de catálogo e padrões
+ * sem novo deploy.
  */
 export const revalidate = 300;
 
@@ -34,8 +34,8 @@ export const revalidate = 300;
  * Home — arquitetura fixa (Documento Mestre, seção 3):
  * BANNER → HEADER → MENU BUTTONS → DESTAQUES (side scroll) → restante.
  *
- * Banner, destaques e ordem/habilitação das seções vêm do modelo ativo
- * do Theme Engine (CMS da Home — 4.4).
+ * Banner, destaques e ordem/habilitação das seções vêm do padrão ativo
+ * (src/data/themes.ts).
  */
 export default async function HomePage() {
   const [catalog, theme] = await Promise.all([getCatalog(), getActiveTheme()]);
@@ -215,7 +215,7 @@ export default async function HomePage() {
       {/* zonas de festival — após Destaques */}
       <ThemeZones zones={zones} placement="after-destaques" />
 
-      {/* 3.6 Restante da Home (ordem vinda do CMS do Theme Engine) */}
+      {/* 3.6 Restante da Home (ordem oficial das seções) */}
       {orderedSections.map((section) =>
         section.enabled && sectionNodes[section.key] ? (
           <Fragment key={section.key}>{sectionNodes[section.key]}</Fragment>

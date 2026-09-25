@@ -23,8 +23,8 @@ const bodyFace = Barlow({
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 /**
- * Theme Engine (Fase 2): o layout revalida a cada 5 min para aplicar
- * transições agendadas de modelo (Documento Mestre 4.6) sem novo deploy.
+ * Revalidação periódica do layout: mantém o HTML do shell atualizado
+ * sem novo deploy (padrões visuais via html[data-theme=…]).
  */
 export const revalidate = 300;
 

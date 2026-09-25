@@ -4,10 +4,10 @@ import { useEffect, useRef } from "react";
 import { useStore } from "@/components/Providers";
 
 /**
- * Aplica o override de tema do usuário (se houver) por cima do modelo
- * publicado definido no servidor. "" (Automático) mantém o modelo ativo.
+ * Aplica o override de padrão visual do usuário (se houver) por cima do
+ * padrão do servidor. "" (Padrão Cliffhanger) mantém o padrão ativo.
  * O valor vindo do servidor é memorizado no primeiro efeito para que
- * voltar a "Automático" restaure o modelo ativo em vez do último override.
+ * voltar a "" restaure o padrão do servidor em vez do último override.
  */
 export function ThemeSync() {
   const theme = useStore().theme;

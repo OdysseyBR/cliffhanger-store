@@ -6,15 +6,14 @@ import { useStore } from "@/components/Providers";
 import { AdminLogin } from "@/components/admin/AdminLogin";
 import { useAdminOrders } from "@/components/admin/useAdminOrders";
 import { useAdminProducts } from "@/components/admin/useAdminProducts";
-import { useAdminThemes } from "@/components/admin/useAdminThemes";
 import { formatPrice } from "@/lib/format";
 import { PRODUCT_CATEGORY_OPTIONS } from "@/lib/product-fields";
 import type { Order, OrderStatus } from "@/lib/types";
 
 /**
- * Dashboard do painel (Doc Mestre 11.1 — módulo 1).
+ * Dashboard do painel (Documento de Correção §12 — módulo 1).
  * Visão geral: KPIs do catálogo, alertas de estoque, distribuição por
- * categoria, status do Theme Engine e pedidos recentes.
+ * categoria e pedidos recentes.
  */
 
 const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
@@ -57,7 +56,6 @@ export default function AdminDashboardPage() {
   const { user, logout } = useStore();
   const { products, works, universes, authors, error, loading, reload } =
     useAdminProducts();
-  const { themes, error: themesError } = useAdminThemes();
   const { orders, error: ordersError } = useAdminOrders();
 
   const stats = useMemo(() => {
@@ -77,15 +75,6 @@ export default function AdminDashboardPage() {
       .slice(0, 6);
     return { items, outOfStock, lowStock, digital, categories, maxCount, recent };
   }, [products]);
-
-  const themeStats = useMemo(() => {
-    const list = themes ?? [];
-    return {
-      total: list.length,
-      live: list.filter((t) => t.status === "publicado").length,
-      drafts: list.filter((t) => t.status === "rascunho").length,
-    };
-  }, [themes]);
 
   const orderStats = useMemo(() => {
     const list = orders ?? [];
@@ -144,9 +133,6 @@ export default function AdminDashboardPage() {
           >
             Novo item
           </Link>
-          <Link href="/admin/temas" className="btn btn-ghost px-4 py-2 text-[11px]">
-            Modelos
-          </Link>
         </div>
       </div>
 
@@ -169,14 +155,12 @@ export default function AdminDashboardPage() {
           }
         />
         <KpiCard
-          label="Modelos / Theme Engine"
-          value={themes ? themeStats.total : "—"}
+          label="Categorias"
+          value={stats.categories.length}
           sub={
-            themes
-              ? `${themeStats.live} publicados · ${themeStats.drafts} rascunhos`
-              : themesError
-                ? "sem permissão para ler modelos"
-                : "carregando…"
+            stats.categories.length
+              ? `maior: ${stats.categories[0].label} (${stats.categories[0].count})`
+              : "nenhuma categoria com itens"
           }
         />
         <KpiCard
@@ -186,7 +170,7 @@ export default function AdminDashboardPage() {
         />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-3">
         {/* alertas de estoque */}
         <section className="card space-y-3 p-5">
           <p className="text-sm font-bold uppercase tracking-wider text-gold">
@@ -260,46 +244,6 @@ export default function AdminDashboardPage() {
               ))}
             </ul>
           )}
-        </section>
-
-        {/* theme engine */}
-        <section className="card space-y-3 p-5">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-sm font-bold uppercase tracking-wider text-gold">
-              Modelos / Theme Engine
-            </p>
-            <Link
-              href="/admin/temas"
-              className="btn btn-ghost shrink-0 px-3 py-1.5 text-[11px]"
-            >
-              Gerenciar
-            </Link>
-          </div>
-          {themesError ? (
-            <p className="text-sm text-[#e5484d]">{themesError.message}</p>
-          ) : !themes ? (
-            <p className="text-sm text-[var(--text-muted)]">
-              Carregando modelos…
-            </p>
-          ) : (
-            <ul className="space-y-1.5 text-sm">
-              <li className="flex justify-between">
-                <span>Publicados (no ar na loja)</span>
-                <span className="font-bold text-gold">{themeStats.live}</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Rascunhos</span>
-                <span className="font-bold text-gold">{themeStats.drafts}</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Total de modelos</span>
-                <span className="font-bold text-gold">{themeStats.total}</span>
-              </li>
-            </ul>
-          )}
-          <p className="text-xs text-[var(--text-muted)]">
-            Publicar um modelo aplica a loja em até 5 minutos.
-          </p>
         </section>
 
         {/* pedidos recentes */}
@@ -400,8 +344,12 @@ export default function AdminDashboardPage() {
       </section>
 
       <p className="text-xs text-[var(--text-muted)]">
-        Módulos ativos: Dashboard, Produtos e Modelos (Doc Mestre 11.1). Os
-        demais 24 módulos seguem o roadmap da seção 21.
+        Módulos do painel (Documento de Correção §12): Dashboard, Produtos,
+        Obras, Universos, Autores, Categorias, Coleções, Estoque, Pedidos,
+        Clientes, E-books, Audiobooks, Biblioteca Digital, Pré-vendas, Cupons,
+        Promoções, Cliffhanger Club, Avaliações, Banners, Home, Notícias,
+        Lançamentos, Notificações, Relatórios, Financeiro e Configurações.
+        Ativos hoje: Dashboard e Produtos — os demais seguem o roadmap.
       </p>
     </div>
   );

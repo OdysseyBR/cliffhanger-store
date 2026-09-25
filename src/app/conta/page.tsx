@@ -131,7 +131,7 @@ export default function ContaPage() {
             ) : user ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
-                  <div className="grid h-14 w-14 place-items-center rounded-full bg-violet text-lg font-extrabold text-paper">
+                  <div className="grid h-14 w-14 place-items-center rounded-full bg-violet text-lg font-extrabold text-white">
                     {(user.displayName ?? user.email ?? "?").slice(0, 2).toUpperCase()}
                   </div>
                   <div>
@@ -157,23 +157,22 @@ export default function ContaPage() {
 
                 <div className="border-t border-[var(--border)] pt-4">
                   <p className="mb-2 text-xs font-bold uppercase tracking-wider text-gold">
-                    Tema da loja (Theme Engine)
+                    Padrão visual da loja
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {(
                       [
-                        { key: "", label: "Automático" },
-                        { key: "winter-fest", label: "Winter Fest" },
-                        { key: "summer-fest", label: "Summer Fest" },
+                        { key: "", label: "Padrão Cliffhanger" },
+                        { key: "claro", label: "Padrão Cliffhanger Claro" },
                       ] as const
                     ).map((option) => (
                       <button
-                        key={option.key || "auto"}
+                        key={option.key || "padrao"}
                         type="button"
                         onClick={() => setTheme(option.key)}
                         className={`rounded-full border px-4 py-2 text-xs font-bold transition ${
                           theme === option.key
-                            ? "border-transparent bg-violet text-paper"
+                            ? "border-transparent bg-violet text-white"
                             : "border-[var(--border)]"
                         }`}
                       >
@@ -182,8 +181,9 @@ export default function ContaPage() {
                     ))}
                   </div>
                   <p className="mt-2 text-xs text-[var(--text-muted)]">
-                    “Automático” segue o modelo publicado no painel /admin (pode mudar por
-                    agendamento).
+                    “Padrão Cliffhanger” é a identidade oficial da loja; “Padrão Cliffhanger
+                    Claro” inverte as áreas escuras para claras. A escolha fica salva neste
+                    navegador.
                   </p>
                 </div>
               </div>
@@ -196,7 +196,7 @@ export default function ContaPage() {
                       type="button"
                       onClick={() => setMode(m)}
                       className={`flex-1 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wider transition ${
-                        mode === m ? "bg-violet text-paper" : "border border-[var(--border)]"
+                        mode === m ? "bg-violet text-white" : "border border-[var(--border)]"
                       }`}
                     >
                       {m === "entrar" ? "Entrar" : "Criar conta"}

@@ -9,8 +9,8 @@ import type { CartItem } from "@/lib/types";
  */
 
 /**
- * Nome de modelo para o override do usuário no navegador.
- * "" = seguir o modelo publicado/ativo (Theme Engine).
+ * Nome do padrão visual para o override do usuário no navegador.
+ * "" = seguir o padrão do servidor (Padrão Cliffhanger).
  */
 export type ThemeName = string;
 

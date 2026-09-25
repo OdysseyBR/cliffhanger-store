@@ -5,7 +5,7 @@ import type { ThemeBanner as BannerConfig } from "@/lib/types";
 
 /**
  * Banner da Home (Documento Mestre 3.1) — primeiro elemento visual.
- * Conteúdo dirigido pelo CMS do Theme Engine (modelo ativo): promoção,
+ * Conteúdo dirigido pelo padrão ativo da loja: promoção,
  * lançamento, festival, pré-venda ou campanha, com CTA, countdown e stats.
  */
 export function ThemeBanner({ banner }: { banner: BannerConfig }) {

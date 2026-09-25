@@ -116,7 +116,7 @@ export default async function ProdutoPage({ params }: Props) {
               <span className="text-gold">{typeLabels[product.type]}</span>
               {product.badge && (
                 <span
-                  className={`rounded-full px-2.5 py-1 ${badgeTone[product.badge] ?? "bg-violet text-paper"}`}
+                  className={`rounded-full px-2.5 py-1 ${badgeTone[product.badge] ?? "bg-violet text-white"}`}
                 >
                   {product.badge}
                 </span>
@@ -152,7 +152,7 @@ export default async function ProdutoPage({ params }: Props) {
                   Outros formatos da obra
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full border border-transparent bg-violet px-3 py-1.5 text-xs font-semibold text-paper">
+                  <span className="rounded-full border border-transparent bg-violet px-3 py-1.5 text-xs font-semibold text-white">
                     {typeLabels[product.type]} · {formatPrice(product.price)}
                   </span>
                   {sameFormats.map((format) => (

@@ -4,9 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 /**
- * Menu de módulos do painel — Doc Mestre 11.1 (lista dos27 módulos).
- * Os módulos de fases futuras (roadmap21) ficam visíveis porém
- * indisponíveis, para o painel já mostrar a estrutura completa.
+ * Menu de módulos do painel — Documento de Correção §12 (26 módulos
+ * oficiais; §2: sem módulo de Theme Engine/Modelos). Os módulos ainda não
+ * implementados ficam visíveis porém indisponíveis, para o painel já
+ * mostrar a estrutura completa.
  */
 
 interface NavItem {
@@ -43,7 +44,11 @@ const ADMIN_NAV: NavGroup[] = [
   },
   {
     title: "Digital",
-    items: [{ label: "E-books" }, { label: "Audiobooks" }, { label: "Biblioteca digital" }],
+    items: [
+      { label: "E-books" },
+      { label: "Audiobooks" },
+      { label: "Biblioteca Digital" },
+    ],
   },
   {
     title: "Marketing",
@@ -58,9 +63,8 @@ const ADMIN_NAV: NavGroup[] = [
   {
     title: "Conteúdo",
     items: [
-      { label: "Modelos", href: "/admin/temas" },
       { label: "Banners" },
-      { label: "Página inicial" },
+      { label: "Home" },
       { label: "Notícias" },
       { label: "Lançamentos" },
     ],
@@ -87,7 +91,7 @@ export function AdminNav() {
                 return (
                   <span
                     key={item.label}
-                    title="Em breve — módulo previsto no roadmap (seção 21)"
+                    title="Em breve — módulo do roadmap do Documento de Correção"
                     className="cursor-not-allowed rounded-full border border-dashed border-[var(--border)] px-3 py-1.5 text-[11px] text-[var(--text-muted)] opacity-60"
                   >
                     {item.label}
@@ -103,7 +107,7 @@ export function AdminNav() {
                   aria-current={active ? "page" : undefined}
                   className={`rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition ${
                     active
-                      ? "bg-gold text-[#0C0014]"
+                      ? "bg-gold text-ink"
                       : "border border-[var(--border)] text-[var(--text-muted)] hover:border-gold hover:text-gold"
                   }`}
                 >

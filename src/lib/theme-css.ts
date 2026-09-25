@@ -1,13 +1,10 @@
-// Cliffhanger Theme Engine — núcleo puro (sem dependências de servidor).
+// Cliffhanger — núcleo dos padrões visuais (sem dependências de servidor).
 // Usado pelo layout (SSR), pelo admin (preview no navegador) e pelo seed.
 
 import type {
   HomeSectionKey,
   ThemeModel,
-  ThemePhase,
   ThemeColors,
-  ThemeZonePlacement,
-  ThemeZoneType,
 } from "@/lib/types";
 
 export const THEME_SCHEMA_VERSION = 2;
@@ -43,21 +40,6 @@ export const HOME_SECTION_LABELS: Record<HomeSectionKey, string> = {
   ofertas: "Ofertas da semana",
 };
 
-/** Zonas novas da Home (festivais sazonais) — tipos e rótulos do admin. */
-export const ZONE_TYPE_LABELS: Record<ThemeZoneType, string> = {
-  marquee: "Faixa rolante",
-  "promo-grid": "Grade promocional",
-  "category-band": "Faixa de categorias",
-  editorial: "Bloco editorial",
-  countdown: "Contagem regressiva",
-};
-
-export const ZONE_PLACEMENT_LABELS: Record<ThemeZonePlacement, string> = {
-  "after-menu": "Após Menu Buttons",
-  "after-destaques": "Após Destaques",
-  end: "Fim da Home",
-};
-
 /** Tipografias de destaque (2.2) — pilhas CSS sem dependência de fonte externa. */
 export const FONT_STACKS: Record<string, string> = {
   bebas: `var(--font-display-face), "Arial Narrow", Impact, sans-serif`,
@@ -65,33 +47,6 @@ export const FONT_STACKS: Record<string, string> = {
   serif: `Georgia, "Times New Roman", serif`,
   mono: `"Courier New", ui-monospace, monospace`,
   system: `system-ui, -apple-system, "Segoe UI", sans-serif`,
-};
-
-export const FONT_STACK_LABELS: Record<string, string> = {
-  bebas: "Bebas Neue (padrão)",
-  condensed: "Condensada",
-  serif: "Serifa editorial",
-  mono: "Monoespaçada",
-  system: "Sistema",
-};
-
-export const THEME_KIND_LABELS: Record<ThemeModel["kind"], string> = {
-  default: "Default",
-  seasonal: "Sazonal",
-  festival: "Festival",
-  campaign: "Campanha",
-  launch: "Lançamento",
-  custom: "Custom",
-};
-
-export const THEME_PHASE_LABELS: Record<ThemePhase, string> = {
-  rascunho: "Rascunho",
-  preview: "Preview",
-  publicado: "Publicado",
-  agendado: "Agendado",
-  ativo: "Ativo",
-  expirado: "Expirado",
-  arquivado: "Arquivado",
 };
 
 /** Converte #rgb/#rrggbb em rgba(); outras formas retornam como estão. */
@@ -108,34 +63,6 @@ export function withAlpha(color: string, alpha: number): string {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
   return hex;
-}
-
-/**
- * Fase do modelo (4.5 ciclo de vida): autoria + derivadas de janela (4.6).
- */
-export function themePhase(theme: ThemeModel, now: Date = new Date()): ThemePhase {
-  if (theme.status !== "publicado") return theme.status;
-
-  const start = theme.scheduledStart ? Date.parse(theme.scheduledStart) : null;
-  const end = theme.scheduledEnd ? Date.parse(theme.scheduledEnd) : null;
-  const t = now.getTime();
-
-  if (start !== null && !Number.isNaN(start) && t < start) return "agendado";
-  if (end !== null && !Number.isNaN(end) && t > end) return "expirado";
-  if ((start !== null && !Number.isNaN(start)) || (end !== null && !Number.isNaN(end))) {
-    return "ativo";
-  }
-  return "publicado";
-}
-
-/** true se a janela de agendamento está aberta agora (ou não há janela). */
-export function isThemeInWindow(theme: ThemeModel, now: Date = new Date()): boolean {
-  const start = theme.scheduledStart ? Date.parse(theme.scheduledStart) : null;
-  const end = theme.scheduledEnd ? Date.parse(theme.scheduledEnd) : null;
-  const t = now.getTime();
-  if (start !== null && !Number.isNaN(start) && t < start) return false;
-  if (end !== null && !Number.isNaN(end) && t > end) return false;
-  return true;
 }
 
 /** Variáveis CSS do modelo (aplicadas em html[data-theme="<key>"]). */

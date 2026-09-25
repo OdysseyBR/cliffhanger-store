@@ -43,7 +43,7 @@ export default async function AutorPage({ params }: Props) {
     <Page>
       <section className="border-b border-[var(--border)] bg-glow/50">
         <div className="mx-auto grid max-w-6xl gap-6 px-4 py-12 sm:px-6 lg:grid-cols-[160px_1fr] lg:px-8">
-          <div className="grid h-32 w-32 place-items-center rounded-full bg-violet text-4xl font-extrabold text-paper lg:h-40 lg:w-40">
+          <div className="grid h-32 w-32 place-items-center rounded-full bg-violet text-4xl font-extrabold text-white lg:h-40 lg:w-40">
             {author.name
               .split(" ")
               .map((n) => n[0])

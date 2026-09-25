@@ -22,7 +22,7 @@ export default async function AutoresPage() {
               href={`/autores/${author.slug}`}
               className="card group p-6 transition hover:-translate-y-1 hover:border-violet-soft"
             >
-              <div className="mb-4 grid h-14 w-14 place-items-center rounded-full bg-violet text-xl font-extrabold text-paper">
+              <div className="mb-4 grid h-14 w-14 place-items-center rounded-full bg-violet text-xl font-extrabold text-white">
                 {author.name
                   .split(" ")
                   .map((n) => n[0])

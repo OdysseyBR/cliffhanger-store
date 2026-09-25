@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-/** Casca do painel (Doc Mestre 11 — módulos do admin), fora da loja pública. */
+/** Casca do painel (Documento de Correção §12 — módulos do admin), fora da loja pública. */
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
@@ -15,7 +15,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div>
           <p className="text-display text-3xl text-gold">Painel administrativo</p>
           <p className="text-xs text-[var(--text-muted)]">
-            Cliffhanger Store — módulos da seção 11
+            Cliffhanger Store — 26 módulos (Documento de Correção §12)
           </p>
         </div>
         <div className="flex flex-wrap gap-2">

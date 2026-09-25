@@ -165,7 +165,7 @@ function SiteNav() {
               href={item.href}
               className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
                 active
-                  ? "bg-violet text-paper"
+                  ? "bg-violet text-white"
                   : "text-[var(--text-muted)] hover:bg-[var(--surface-raised-2)] hover:text-gold"
               }`}
             >

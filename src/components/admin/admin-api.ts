@@ -1,10 +1,10 @@
 "use client";
 
 import { getClientAuth, firebaseEnabled } from "@/lib/firebase";
-import type { Order, Product, ThemeModel } from "@/lib/types";
+import type { Order, Product } from "@/lib/types";
 
 /**
- * Cliente da API do Theme Engine — anexa o ID token do Firebase e
+ * Cliente da API do painel — anexa o ID token do Firebase e
  * traduz os status HTTP em falhas amigáveis para o painel /admin.
  */
 
@@ -79,31 +79,6 @@ export async function adminFetch<T>(
   }
 
   return { ok: true, data: payload };
-}
-
-export function fetchThemes() {
-  return adminFetch<{ themes: ThemeModel[]; email?: string }>("/api/admin/themes");
-}
-
-export function saveTheme(theme: ThemeModel) {
-  return adminFetch<{ theme: ThemeModel }>("/api/admin/themes", {
-    method: "POST",
-    body: JSON.stringify({ action: "save", theme }),
-  });
-}
-
-export function duplicateTheme(sourceId: string, name?: string) {
-  return adminFetch<{ theme: ThemeModel }>("/api/admin/themes", {
-    method: "POST",
-    body: JSON.stringify({ action: "duplicate", sourceId, name }),
-  });
-}
-
-export function deleteTheme(id: string) {
-  return adminFetch<{ ok: boolean }>("/api/admin/themes", {
-    method: "POST",
-    body: JSON.stringify({ action: "delete", id }),
-  });
 }
 
 /** Criador de itens (Doc Mestre 11.2) — cria (POST) ou atualiza (PUT). */

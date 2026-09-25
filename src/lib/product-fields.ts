@@ -82,7 +82,7 @@ export const TYPE_CATEGORY: Record<ProductType, ProductCategory> = {
 const ID_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const HEX_COLOR = /^#[0-9a-fA-F]{3,8}$/;
 
-/** slug URL-friendly (mesma regra do ThemeEditor: sem acento, minúsculo). */
+/** slug URL-friendly (mesma regra do painel: sem acento, minúsculo). */
 export function productSlug(raw: string): string {
   return raw
     .toLowerCase()

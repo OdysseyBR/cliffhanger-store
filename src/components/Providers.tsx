@@ -71,7 +71,7 @@ interface StoreValue {
   toasts: Toast[];
   notify: (message: string, tone?: Toast["tone"]) => void;
   dismissToast: (id: number) => void;
-  // tema (Theme Engine — Default / Summer Fest)
+  // tema (Padrão Cliffhanger / Padrão Cliffhanger Claro)
   theme: ThemeName;
   setTheme: (theme: ThemeName) => void;
   // autenticação

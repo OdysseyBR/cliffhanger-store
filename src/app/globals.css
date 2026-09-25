@@ -17,9 +17,9 @@
 }
 
 :root {
-  /* Tema padrão: Inverno (fundo escuro, texto claro).
-     O Theme Engine (Fase 2) sobrepõe estas variáveis por modelo em
-     `html[data-theme="…"]` — ver src/lib/theme-css.ts. */
+  /* Padrão Cliffhanger (fundo escuro, texto claro). O bloco do padrão
+     escolhido sobrepõe estas variáveis em `html[data-theme="…"]` —
+     ver src/lib/theme-css.ts. */
   --surface: #0c0014;
   --surface-raised: #180a28;
   --surface-raised-2: #241038;
@@ -114,7 +114,7 @@ body {
 
 .btn-accent {
   background: var(--accent);
-  color: #0c0014;
+  color: var(--color-ink);
   box-shadow: 0 8px 24px -8px rgba(253, 197, 0, 0.7);
 }
 
@@ -162,7 +162,7 @@ body {
   box-shadow: 0 0 0 3px rgba(86, 3, 173, 0.25);
 }
 
-/* ---- zonas de festival (Theme Engine) ---- */
+/* ---- zonas de festival (temas de evento em código) ---- */
 
 .zone-marquee {
   overflow: hidden;
@@ -272,17 +272,9 @@ body {
   transform: translateX(120%);
 }
 
-/* ---- logo por tema (inverno = logo branca, verão = logo escura) ---- */
-/* O Theme Engine injeta as regras por modelo (html[data-theme=…] .logo-*),
+/* ---- logo por tema (padrão claro = logo escura) ---- */
+/* O layout injeta as regras por padrão (html[data-theme=…] .logo-*),
    geradas em src/lib/theme-css.ts conforme identity.mode. */
-
-[data-theme="summer"] .logo-white {
-  display: none;
-}
-
-[data-theme="summer"] .logo-dark {
-  display: block;
-}
 
 @media (prefers-reduced-motion: reduce) {
   *,

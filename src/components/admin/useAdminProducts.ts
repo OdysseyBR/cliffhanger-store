@@ -22,7 +22,7 @@ interface Failed {
  * selects de obra/universo/autor). Leitura pública de /api/products —
  * as ESCritas passam pela API guardada por super admin (admin-api).
  * Resultados ficam "taggeados" com o uid — logout/login não mostra
- * dados de outra sessão (mesmo padrão do useAdminThemes).
+ * dados de outra sessão (mesmo padrão das demais listas do painel).
  */
 export function useAdminProducts(): {
   products: Product[] | null;

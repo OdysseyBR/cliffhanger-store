@@ -1,9 +1,8 @@
 import type { ReactNode } from "react";
 
 /**
- * Primitivos de formulário do painel — extraídos do ThemeEditor para
- * serem reutilizados pelo criador de itens (Doc Mestre 11.2) e pelos
- * próximos módulos do admin.
+ * Primitivos de formulário do painel — campos reutilizados pelo criador
+ * de itens (Doc Mestre 11.2) e pelos próximos módulos do admin.
  */
 
 export function Field({

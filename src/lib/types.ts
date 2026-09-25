@@ -198,7 +198,7 @@ export interface Order {
 }
 
 // ---------------------------------------------------------------------------
-// Cliffhanger Theme Engine (Fase 2 — Documento Mestre, seção 4)
+// Padrões visuais da loja (Documento de Correção, Finalização e Ajustes — §4)
 // ---------------------------------------------------------------------------
 
 /** Estado de autoria do modelo (4.5). "Agendado"/"Ativo" são derivados da janela. */
@@ -255,7 +255,7 @@ export interface ThemeBanner {
   description?: string;
   primaryCta?: ThemeCta;
   secondaryCta?: ThemeCta;
-  /** imagem em /public (ex.: /winter-fest.png) */
+  /** imagem em /public (ex.: /cliffhanger-club.png) */
   image?: string;
   /** vídeo (.mp4/.webm) — Doc Mestre 3.1: banner pode suportar vídeo; substitui a imagem no quadro */
   video?: string;
@@ -348,7 +348,7 @@ export interface ThemeModel {
   /** ex.: "v1.0" (4.7 versionamento) */
   version: string;
   status: ThemeStatus;
-  /** 2 = schema Cliffhanger Theme Engine (ignora docs de implementações antigas) */
+  /** 2 = schema dos padrões visuais (ignora docs de implementações antigas) */
   schemaVersion: number;
   /** id do modelo do qual este foi duplicado */
   parentOf?: string | null;
