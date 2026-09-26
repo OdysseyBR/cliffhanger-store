@@ -8,9 +8,8 @@ import { ProductCard } from "@/components/ProductCard";
 import { Section } from "@/components/Section";
 import { ProductArt } from "@/components/ProductArt";
 import { formatPrice } from "@/lib/format";
+import { FREE_SHIPPING_FROM } from "@/lib/shipping";
 import type { Product } from "@/lib/types";
-
-const FREE_SHIPPING_FROM = 199;
 
 export default function CarrinhoPage() {
   const { cart, setQty, removeFromCart, clearCart } = useStore();

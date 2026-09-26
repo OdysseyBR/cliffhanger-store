@@ -5,7 +5,9 @@ import { getAdminApp, getAdminDb, revive } from "@/lib/firebase-admin";
 import { getProducts } from "@/lib/data";
 import { grantLibraryItems } from "@/lib/library";
 import { normalizeStatus } from "@/lib/order-status";
-import type { Order, OrderItem, OrderStatus } from "@/lib/types";
+import { evaluateCoupon, normalizeCouponCode } from "@/lib/coupons";
+import { fallbackShippingPrice, quoteShipping } from "@/lib/shipping";
+import type { Coupon, Order, OrderGift, OrderItem, OrderStatus } from "@/lib/types";
 
 interface CheckoutPayload {
   items: { productId: string; qty: number }[];
@@ -22,11 +24,13 @@ interface CheckoutPayload {
     state: string;
   };
   paymentMethod: Order["paymentMethod"];
+  /** modalidade escolhida no checkout — o preço é recalculado no servidor */
+  shippingOption?: "standard" | "express";
   shipping?: number;
   coupon?: string;
+  /** §17 — opção de presente (destinatário, recado, embrulho) */
+  gift?: OrderGift;
 }
-
-const FREE_SHIPPING_FROM = 199;
 
 /**
  * Cria um pedido (Checkout → Pedido concluído).
@@ -67,20 +71,67 @@ export async function POST(request: Request) {
       price: product.price,
       qty,
       digital: product.digital,
+      ...(product.badge === "PRÉ-VENDA" ? { preOrder: true } : {}),
     });
     subtotal += product.price * qty;
   }
 
+  // §17 — frete recalculado no servidor pelo CEP + modalidade escolhida;
+  // o valor enviado pelo cliente nunca é confiado. Só itens FÍSICOS pesam.
   const hasPhysical = orderItems.some((item) => !item.digital);
-  const requestedShipping = Number(payload.shipping) || 0;
-  const shipping =
-    hasPhysical && requestedShipping > 0
-      ? requestedShipping
-      : hasPhysical && subtotal >= FREE_SHIPPING_FROM
-        ? 0
-        : hasPhysical
-          ? 24.9
-          : 0;
+  const itemCount = orderItems
+    .filter((item) => !item.digital)
+    .reduce((sum, item) => sum + item.qty, 0);
+  const option = payload.shippingOption === "express" ? "express" : "standard";
+  const quote = quoteShipping({
+    cep: payload.address?.cep ?? "",
+    itemCount,
+    subtotal,
+  });
+  const shipping = hasPhysical
+    ? (quote?.options.find((o) => o.id === option)?.price ??
+      fallbackShippingPrice(subtotal, option))
+    : 0;
+
+  // §17 — cupom: revalidado no servidor; desconto aplicado ao total.
+  const db = getAdminDb();
+  let discount = 0;
+  let couponCode: string | null = null;
+  const requestedCoupon = normalizeCouponCode(payload.coupon ?? "");
+  if (requestedCoupon) {
+    if (!db) {
+      return Response.json(
+        { error: "Cupons indisponíveis neste ambiente — remova o cupom." },
+        { status: 503 },
+      );
+    }
+    const snap = await db.collection("coupons").doc(requestedCoupon).get();
+    if (!snap.exists) {
+      return Response.json({ error: "Cupom não encontrado." }, { status: 400 });
+    }
+    const coupon = { ...snap.data() } as Coupon;
+    const evaluation = evaluateCoupon(coupon, subtotal);
+    if (!evaluation.ok) {
+      return Response.json(
+        { error: evaluation.error ?? "Cupom inválido." },
+        { status: 400 },
+      );
+    }
+    discount = evaluation.discount ?? 0;
+    couponCode = typeof coupon.code === "string" && coupon.code ? coupon.code : requestedCoupon;
+  }
+
+  // §17 — opção de presente (só grava com destinatário preenchido).
+  const gift: OrderGift | null =
+    payload.gift && payload.gift.to.trim()
+      ? {
+          to: payload.gift.to.trim().slice(0, 80),
+          message: (payload.gift.message ?? "").trim().slice(0, 300),
+          wrap: Boolean(payload.gift.wrap),
+        }
+      : null;
+
+  const total = subtotal - discount + shipping;
 
   const status: OrderStatus = "aguardando_pagamento";
   const now = new Date().toISOString();
@@ -105,13 +156,15 @@ export async function POST(request: Request) {
     items: orderItems,
     subtotal: Number(subtotal.toFixed(2)),
     shipping: Number(shipping.toFixed(2)),
-    total: Number((subtotal + shipping).toFixed(2)),
+    total: Number(total.toFixed(2)),
     paymentMethod: payload.paymentMethod ?? "pix",
     status,
     createdAt: now,
+    couponCode,
+    discount: Number(discount.toFixed(2)),
+    gift,
   };
 
-  const db = getAdminDb();
   let id: string = randomUUID();
 
   if (db) {
@@ -124,10 +177,22 @@ export async function POST(request: Request) {
           phone: payload.phone ?? "",
         },
         address: payload.address ?? null,
-        coupon: payload.coupon ?? null,
         updatedAt: now,
       });
       id = ref.id;
+
+      // §17 — consome 1 uso do cupom após a gravação bem-sucedida
+      if (couponCode) {
+        try {
+          const { FieldValue } = await import("firebase-admin/firestore");
+          await db.collection("coupons").doc(couponCode).update({
+            usedCount: FieldValue.increment(1),
+            updatedAt: now,
+          });
+        } catch (error) {
+          console.warn("[orders] falha ao contabilizar uso do cupom:", error);
+        }
+      }
     } catch (error) {
       console.warn("[orders] falha ao gravar no Firestore:", error);
     }
@@ -149,6 +214,8 @@ export async function POST(request: Request) {
     code: order.code,
     total: order.total,
     shipping: order.shipping,
+    discount: order.discount,
+    gift: Boolean(gift),
     digitalItems: orderItems.filter((i) => i.digital).map((i) => i.productId),
     persisted: Boolean(db),
     status,

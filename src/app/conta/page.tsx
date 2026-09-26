@@ -122,6 +122,9 @@ export default function ContaPage() {
                   <Link href="/wishlist" className="btn btn-ghost">
                     Minha wishlist
                   </Link>
+                  <Link href="/pedidos" className="btn btn-ghost">
+                    Meus pedidos
+                  </Link>
                   <Link href="/carrinho" className="btn btn-ghost">
                     Carrinho
                   </Link>

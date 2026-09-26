@@ -53,7 +53,7 @@ const ADMIN_NAV: NavGroup[] = [
   {
     title: "Marketing",
     items: [
-      { label: "Cupons" },
+      { label: "Cupons", href: "/admin/cupons" },
       { label: "Promoções" },
       { label: "Cliffhanger Club" },
       { label: "Avaliações" },

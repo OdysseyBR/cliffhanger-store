@@ -9,6 +9,11 @@ import { Section } from "@/components/Section";
 import { ProductArt } from "@/components/ProductArt";
 import { formatPrice } from "@/lib/format";
 import { getClientAuth } from "@/lib/firebase";
+import {
+  FREE_SHIPPING_FROM,
+  fallbackShippingPrice,
+  type ShippingQuote,
+} from "@/lib/shipping";
 import type { Product } from "@/lib/types";
 
 type Step = "dados" | "entrega" | "pagamento" | "revisao" | "pedido";
@@ -24,6 +29,8 @@ const steps: { key: Step; label: string }[] = [
 interface OrderResult {
   code: string;
   total: number;
+  discount?: number;
+  gift?: boolean;
   digitalItems: string[];
 }
 
@@ -52,8 +59,21 @@ export default function CheckoutPage() {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [shippingOption, setShippingOption] = useState<"standard" | "express">("standard");
+  // frete — cotação por CEP (§17)
+  const [quote, setQuote] = useState<ShippingQuote | null>(null);
+  const [quoteError, setQuoteError] = useState<string | null>(null);
   // pagamento
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "credito" | "debito">("pix");
+  // cupom (§17)
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [couponBusy, setCouponBusy] = useState(false);
+  // opção de presente (§17)
+  const [giftOn, setGiftOn] = useState(false);
+  const [giftTo, setGiftTo] = useState("");
+  const [giftMessage, setGiftMessage] = useState("");
+  const [giftWrap, setGiftWrap] = useState(true);
 
   useEffect(() => {
     void (async () => {
@@ -74,10 +94,63 @@ export default function CheckoutPage() {
     );
 
   const subtotal = lines.reduce((sum, l) => sum + l.product.price * l.item.qty, 0);
+  // só itens FÍSICos contam para o frete (digitais não têm envio)
+  const itemCount = lines
+    .filter((l) => !l.product.digital)
+    .reduce((sum, l) => sum + l.item.qty, 0);
   const hasPhysical = lines.some((l) => !l.product.digital);
-  const freeShipping = subtotal >= 199;
-  const shipping = !hasPhysical ? 0 : freeShipping ? 0 : shippingOption === "express" ? 39.9 : 24.9;
-  const total = subtotal + shipping;
+  const freeShipping = subtotal >= FREE_SHIPPING_FROM;
+  const quotePrice = (option: "standard" | "express"): number =>
+    quote?.options.find((o) => o.id === option)?.price ??
+    fallbackShippingPrice(subtotal, option);
+  const shipping = !hasPhysical ? 0 : quotePrice(shippingOption);
+  const discount = appliedCoupon ? Math.min(appliedCoupon.discount, subtotal) : 0;
+  const total = subtotal - discount + shipping;
+
+  // §17 — cotação por CEP: busca quando o CEP está completo; falha de rede
+  // mantém a estimativa (o servidor recalcula na criação do pedido).
+  useEffect(() => {
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      if (!hasPhysical) {
+        setQuote(null);
+        setQuoteError(null);
+        return;
+      }
+      const digits = cep.replace(/\D/g, "");
+      if (digits.length !== 8) {
+        setQuote(null);
+        setQuoteError(null);
+        return;
+      }
+      fetch("/api/shipping", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cep: digits, itemCount, subtotal }),
+        signal: controller.signal,
+      })
+        .then(async (res) => {
+          const data = (await res.json()) as ShippingQuote & {
+            ok?: boolean;
+            error?: string;
+          };
+          if (!res.ok || !data.ok) throw new Error(data.error ?? "Falha na cotação.");
+          setQuote(data);
+          setQuoteError(null);
+        })
+        .catch((err: unknown) => {
+          if (controller.signal.aborted) return;
+          setQuote(null);
+          setQuoteError(
+            err instanceof Error ? err.message : "Não foi possível calcular o frete.",
+          );
+        });
+    }, 450);
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [cep, hasPhysical, itemCount, subtotal]);
 
   const goNext = (event: FormEvent) => {
     event.preventDefault();
@@ -92,6 +165,12 @@ export default function CheckoutPage() {
   };
 
   const submitOrder = async () => {
+    if (giftOn && !giftTo.trim()) {
+      const message = "Informe quem vai receber o presente (ou desmarque a opção).";
+      setError(message);
+      notify(message, "error");
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
@@ -109,7 +188,11 @@ export default function CheckoutPage() {
           name,
           phone,
           paymentMethod,
-          shipping,
+          shippingOption,
+          coupon: appliedCoupon?.code,
+          ...(giftOn && giftTo.trim()
+            ? { gift: { to: giftTo.trim(), message: giftMessage, wrap: giftWrap } }
+            : {}),
           address: hasPhysical
             ? { cep, street, number, complement, neighborhood, city, state }
             : undefined,
@@ -121,6 +204,8 @@ export default function CheckoutPage() {
         error?: string;
         code: string;
         total: number;
+        discount?: number;
+        gift?: boolean;
         digitalItems: string[];
       };
 
@@ -138,7 +223,13 @@ export default function CheckoutPage() {
         /* storage indisponível */
       }
 
-      setResult({ code: data.code, total: data.total, digitalItems: data.digitalItems });
+      setResult({
+        code: data.code,
+        total: data.total,
+        discount: data.discount ?? 0,
+        gift: Boolean(data.gift),
+        digitalItems: data.digitalItems,
+      });
       setStep("pedido");
       clearCart();
       notify("Pedido realizado com sucesso!", "success");
@@ -148,6 +239,31 @@ export default function CheckoutPage() {
       notify(message, "error");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const applyCoupon = async () => {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) return;
+    setCouponBusy(true);
+    setCouponError(null);
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, subtotal }),
+      });
+      const data = (await res.json()) as { ok?: boolean; error?: string; discount?: number };
+      if (!res.ok || !data.ok || typeof data.discount !== "number") {
+        throw new Error(data.error ?? "Cupom inválido.");
+      }
+      setAppliedCoupon({ code, discount: data.discount });
+      setCouponInput("");
+      notify("Cupom aplicado com sucesso!", "success");
+    } catch (err) {
+      setCouponError(err instanceof Error ? err.message : "Cupom inválido.");
+    } finally {
+      setCouponBusy(false);
     }
   };
 
@@ -162,6 +278,16 @@ export default function CheckoutPage() {
               {paymentMethod === "pix" &&
                 " O QR Code PIX seria exibido aqui — após a confirmação, os itens digitais liberam na Biblioteca."}
             </p>
+            {(result.discount ?? 0) > 0 && (
+              <p className="text-sm text-gold">
+                Cupom aplicado — desconto de {formatPrice(result.discount ?? 0)} já contabilizado.
+              </p>
+            )}
+            {result.gift && (
+              <p className="text-sm text-[var(--text-muted)]">
+                Presente configurado — destinatário e recado aparecem no acompanhamento do pedido.
+              </p>
+            )}
             <dl className="mx-auto grid max-w-sm gap-2 text-sm">
               <div className="flex justify-between">
                 <dt className="text-[var(--text-muted)]">Total</dt>
@@ -292,34 +418,65 @@ export default function CheckoutPage() {
                       <input className="field" placeholder="UF" maxLength={2} value={state} onChange={(e) => setState(e.target.value.toUpperCase())} required />
                     </div>
 
+                    <p
+                      className={`rounded-lg border px-3 py-2 text-xs ${
+                        freeShipping
+                          ? "border-gold/40 bg-gold/10 text-gold"
+                          : "border-[var(--border)] text-[var(--text-muted)]"
+                      }`}
+                    >
+                      {freeShipping
+                        ? "Você ganhou frete grátis neste pedido."
+                        : `Faltam ${formatPrice(FREE_SHIPPING_FROM - subtotal)} para o frete grátis.`}
+                    </p>
+
                     <fieldset className="space-y-2">
                       <legend className="mb-1 text-xs font-bold uppercase tracking-wider text-gold">
                         Opções de envio
                       </legend>
-                      <label className={`flex items-center justify-between rounded-xl border p-3 text-sm ${shippingOption === "standard" ? "border-violet-soft" : "border-[var(--border)]"}`}>
-                        <span className="flex items-center gap-2">
-                          <input
-                            type="radio"
-                            name="shipping"
-                            checked={shippingOption === "standard"}
-                            onChange={() => setShippingOption("standard")}
-                          />
-                          Padrão · 5 a 8 dias úteis
-                        </span>
-                        <strong className="text-gold">{freeShipping ? "Grátis" : formatPrice(24.9)}</strong>
-                      </label>
-                      <label className={`flex items-center justify-between rounded-xl border p-3 text-sm ${shippingOption === "express" ? "border-violet-soft" : "border-[var(--border)]"}`}>
-                        <span className="flex items-center gap-2">
-                          <input
-                            type="radio"
-                            name="shipping"
-                            checked={shippingOption === "express"}
-                            onChange={() => setShippingOption("express")}
-                          />
-                          Expressa · 2 a 3 dias úteis
-                        </span>
-                        <strong className="text-gold">{freeShipping ? "Grátis" : formatPrice(39.9)}</strong>
-                      </label>
+                      {quote && (
+                        <p className="text-xs text-[var(--text-muted)]">
+                          Cotação para {quote.cep}
+                          {quote.state ? ` · ${quote.state}` : ""} · região {quote.regionLabel}
+                        </p>
+                      )}
+                      {(["standard", "express"] as const).map((optionId) => {
+                        const option = quote?.options.find((o) => o.id === optionId);
+                        const label =
+                          option?.label ??
+                          (optionId === "standard"
+                            ? "Padrão · 5 a 8 dias úteis"
+                            : "Expressa · 2 a 3 dias úteis");
+                        const price = quotePrice(optionId);
+                        return (
+                          <label
+                            key={optionId}
+                            className={`flex items-center justify-between rounded-xl border p-3 text-sm ${
+                              shippingOption === optionId
+                                ? "border-violet-soft"
+                                : "border-[var(--border)]"
+                            }`}
+                          >
+                            <span className="flex items-center gap-2">
+                              <input
+                                type="radio"
+                                name="shipping"
+                                checked={shippingOption === optionId}
+                                onChange={() => setShippingOption(optionId)}
+                              />
+                              {label}
+                            </span>
+                            <strong className="text-gold">
+                              {price === 0 ? "Grátis" : formatPrice(price)}
+                            </strong>
+                          </label>
+                        );
+                      })}
+                      {quoteError && (
+                        <p className="text-xs text-[#e5484d]">
+                          Não foi possível cotar pelo CEP agora — estimativa exibida. ({quoteError})
+                        </p>
+                      )}
                     </fieldset>
                   </>
                 ) : (
@@ -374,6 +531,50 @@ export default function CheckoutPage() {
                 <p className="text-xs text-[var(--text-muted)]">
                   Ambiente de demonstração (PagBank sandbox) — nenhum pagamento real é processado.
                 </p>
+
+                <div className="rounded-xl border border-[var(--border)] p-4 text-sm">
+                  <p className="font-bold">Cupom de desconto</p>
+                  {appliedCoupon ? (
+                    <div className="mt-2 flex items-center justify-between gap-3">
+                      <span className="text-[var(--text-muted)]">
+                        <strong className="text-gold">{appliedCoupon.code}</strong> · −
+                        {formatPrice(appliedCoupon.discount)}
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-ghost"
+                        onClick={() => {
+                          setAppliedCoupon(null);
+                          setCouponInput("");
+                          setCouponError(null);
+                        }}
+                      >
+                        Remover
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <input
+                        className="field min-w-40 flex-1"
+                        placeholder="Código do cupom"
+                        value={couponInput}
+                        onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-ghost"
+                        disabled={couponBusy || !couponInput.trim()}
+                        onClick={() => void applyCoupon()}
+                      >
+                        {couponBusy ? "Validando…" : "Aplicar"}
+                      </button>
+                    </div>
+                  )}
+                  {couponError && (
+                    <p className="mt-2 text-xs text-[#e5484d]">{couponError}</p>
+                  )}
+                </div>
+
                 <div className="flex gap-3">
                   <button type="button" onClick={goBack} className="btn btn-ghost">
                     Voltar
@@ -397,7 +598,8 @@ export default function CheckoutPage() {
                         <span className="text-[var(--text-muted)]">
                           {item.qty}× {product.title}{" "}
                           <em className="not-italic opacity-70">
-                            ({product.digital ? "digital" : "envio"})
+                            ({product.digital ? "digital" : "envio"}
+                            {product.badge === "PRÉ-VENDA" ? " · pré-venda" : ""})
                           </em>
                         </span>
                         <span>{formatPrice(product.price * item.qty)}</span>
@@ -405,6 +607,13 @@ export default function CheckoutPage() {
                     ))}
                   </ul>
                 </div>
+
+                {lines.some((l) => l.product.badge === "PRÉ-VENDA") && (
+                  <p className="rounded-xl border border-gold/40 bg-gold/10 px-4 py-3 text-sm">
+                    Pré-venda: itens reservados — os físicos são enviados e os digitais liberados
+                    na data prevista de lançamento.
+                  </p>
+                )}
 
                 <div className="grid gap-4 text-sm sm:grid-cols-2">
                   <div className="rounded-xl border border-[var(--border)] p-4">
@@ -422,6 +631,49 @@ export default function CheckoutPage() {
                       <p className="mt-1 text-[var(--text-muted)]">Biblioteca Cliffhanger</p>
                     )}
                   </div>
+                </div>
+
+                <div className="rounded-xl border border-[var(--border)] p-4 text-sm">
+                  <label className="flex cursor-pointer items-center gap-2 font-bold">
+                    <input
+                      type="checkbox"
+                      checked={giftOn}
+                      onChange={(e) => setGiftOn(e.target.checked)}
+                    />
+                    É um presente
+                  </label>
+                  {giftOn && (
+                    <div className="mt-3 space-y-3">
+                      <input
+                        className="field"
+                        placeholder="Quem vai receber (destinatário)"
+                        value={giftTo}
+                        onChange={(e) => setGiftTo(e.target.value)}
+                      />
+                      <textarea
+                        className="field"
+                        rows={3}
+                        placeholder="Recado para quem recebe (opcional)"
+                        maxLength={300}
+                        value={giftMessage}
+                        onChange={(e) => setGiftMessage(e.target.value)}
+                      />
+                      {hasPhysical && (
+                        <label className="flex cursor-pointer items-center gap-2 text-[var(--text-muted)]">
+                          <input
+                            type="checkbox"
+                            checked={giftWrap}
+                            onChange={(e) => setGiftWrap(e.target.checked)}
+                          />
+                          Embrulhar para presente
+                        </label>
+                      )}
+                      <p className="text-xs text-[var(--text-muted)]">
+                        O pedido é registrado como presente — destinatário, recado e embrulho
+                        aparecem no acompanhamento em /pedidos.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="rounded-xl border border-[var(--border)] p-4 text-sm">
@@ -472,6 +724,12 @@ export default function CheckoutPage() {
                 <dt className="text-[var(--text-muted)]">Frete</dt>
                 <dd>{shipping === 0 ? "Grátis" : formatPrice(shipping)}</dd>
               </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-gold">
+                  <dt>Cupom {appliedCoupon?.code}</dt>
+                  <dd>−{formatPrice(discount)}</dd>
+                </div>
+              )}
               <div className="flex justify-between border-t border-[var(--border)] pt-2 font-bold">
                 <dt>Total</dt>
                 <dd className="text-gold">{formatPrice(total)}</dd>

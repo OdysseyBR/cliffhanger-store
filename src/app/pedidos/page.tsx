@@ -20,6 +20,79 @@ const PAYMENT_LABEL: Record<Order["paymentMethod"], string> = {
   debito: "Cartão de débito",
 };
 
+/** §17 — acompanhamento: etapas do pedido até a entrega. */
+const TRACK: { key: Order["status"]; label: string }[] = [
+  { key: "aguardando_pagamento", label: "Pagamento" },
+  { key: "pagamento_aprovado", label: "Aprovado" },
+  { key: "em_separacao", label: "Em separação" },
+  { key: "enviado", label: "Enviado" },
+  { key: "entregue", label: "Entregue" },
+];
+
+function StatusTimeline({ order }: { order: Order }) {
+  if (order.status === "cancelado") {
+    return (
+      <p className="mt-4 rounded-xl border border-[#e5484d]/40 bg-[#e5484d]/10 px-4 py-3 text-sm text-[#e5484d]">
+        Pedido cancelado — fale com o suporte em /contato se precisar de ajuda.
+      </p>
+    );
+  }
+  const found = TRACK.findIndex((step) => step.key === order.status);
+  const index = found === -1 ? 0 : found;
+  return (
+    <ol className="mt-4 flex flex-wrap items-start gap-y-2">
+      {TRACK.map((step, i) => {
+        const done = i < index;
+        const active = i === index;
+        return (
+          <li key={step.key} className="flex min-w-32 flex-1 items-center gap-2">
+            <span
+              className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border text-[10px] font-bold ${
+                done || active
+                  ? "border-transparent bg-gold text-ink"
+                  : "border-[var(--border)] text-[var(--text-muted)]"
+              }`}
+              aria-hidden="true"
+            >
+              {done ? (
+                <svg
+                  viewBox="0 0 12 12"
+                  className="h-3 w-3"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M2 6.5l2.5 2.5L10 3.5" />
+                </svg>
+              ) : (
+                i + 1
+              )}
+            </span>
+            <span
+              className={`whitespace-nowrap text-xs ${
+                active
+                  ? "font-bold text-gold"
+                  : done
+                    ? ""
+                    : "text-[var(--text-muted)]"
+              }`}
+            >
+              {step.label}
+            </span>
+            {i < TRACK.length - 1 && (
+              <span
+                className={`hidden h-px flex-1 sm:block ${done ? "bg-gold" : "bg-[var(--border)]"}`}
+              />
+            )}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
 function formatDate(iso: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "—";
@@ -53,6 +126,15 @@ function OrderCard({ order }: { order: Order }) {
         </span>
       </div>
 
+      <StatusTimeline order={order} />
+
+      {order.address && (
+        <p className="mt-3 text-xs text-[var(--text-muted)]">
+          Entrega: {order.address.street}, {order.address.number} — {order.address.neighborhood},{" "}
+          {order.address.city}/{order.address.state} · {order.address.cep}
+        </p>
+      )}
+
       <ul className="mt-4 divide-y divide-[var(--border)] border-y border-[var(--border)]">
         {order.items.map((item) => (
           <li key={item.productId} className="flex items-center justify-between gap-3 py-3 text-sm">
@@ -63,6 +145,11 @@ function OrderCard({ order }: { order: Order }) {
                   Digital
                 </span>
               )}
+              {item.preOrder && (
+                <span className="ml-2 rounded-full border border-gold/50 bg-gold/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-gold">
+                  Pré-venda
+                </span>
+              )}
             </span>
             <span className="shrink-0 text-[var(--text-muted)]">
               {item.qty} × {brl(item.price)}
@@ -71,11 +158,29 @@ function OrderCard({ order }: { order: Order }) {
         ))}
       </ul>
 
+      {order.gift && (
+        <div className="mt-4 rounded-xl border border-gold/40 bg-gold/10 p-3 text-sm">
+          <p className="font-bold text-gold">Presente para {order.gift.to}</p>
+          {order.gift.message && (
+            <p className="mt-1 text-[var(--text-muted)]">“{order.gift.message}”</p>
+          )}
+          {order.gift.wrap && (
+            <p className="mt-1 text-xs text-[var(--text-muted)]">Embrulhado para presente.</p>
+          )}
+        </div>
+      )}
+
       <dl className="mt-4 space-y-1 text-sm">
         <div className="flex justify-between">
           <dt className="text-[var(--text-muted)]">Subtotal</dt>
           <dd>{brl(order.subtotal)}</dd>
         </div>
+        {(order.discount ?? 0) > 0 && (
+          <div className="flex justify-between text-gold">
+            <dt>Cupom {order.couponCode}</dt>
+            <dd>−{brl(order.discount ?? 0)}</dd>
+          </div>
+        )}
         <div className="flex justify-between">
           <dt className="text-[var(--text-muted)]">Frete</dt>
           <dd>{order.shipping > 0 ? brl(order.shipping) : "Grátis"}</dd>

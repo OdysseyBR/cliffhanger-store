@@ -241,6 +241,8 @@ export interface OrderItem {
   price: number;
   qty: number;
   digital: boolean;
+  /** §17 — item comprado em pré-venda (reserva; envio na data prevista) */
+  preOrder?: boolean;
 }
 
 export type OrderStatus =
@@ -250,6 +252,23 @@ export type OrderStatus =
   | "enviado"
   | "entregue"
   | "cancelado";
+
+export interface OrderAddress {
+  cep: string;
+  street: string;
+  number: string;
+  complement?: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+}
+
+/** §17 — opção de presente no checkout (destinatário, recado e embrulho). */
+export interface OrderGift {
+  to: string;
+  message: string;
+  wrap: boolean;
+}
 
 export interface Order {
   id: string;
@@ -263,6 +282,32 @@ export interface Order {
   paymentMethod: "pix" | "credito" | "debito";
   status: OrderStatus;
   createdAt: string;
+  /** §17 — cupom aplicado e desconto concedido (validado no servidor) */
+  couponCode?: string | null;
+  discount?: number;
+  /** §17 — opção de presente gravada no pedido */
+  gift?: OrderGift | null;
+  address?: OrderAddress | null;
+  customer?: { name: string; phone: string } | null;
+}
+
+/** §17/§12 — cupom de desconto (coleção `coupons` no Firestore). */
+export interface Coupon {
+  code: string;
+  type: "percent" | "fixed";
+  /** percent: 10 = 10% · fixed: valor em R$ */
+  value: number;
+  /** subtotal mínimo para usar (0 = sem mínimo) */
+  minSubtotal: number;
+  description: string;
+  startsAt: string | null;
+  endsAt: string | null;
+  /** null = uso ilimitado */
+  maxUses: number | null;
+  usedCount: number;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // ---------------------------------------------------------------------------

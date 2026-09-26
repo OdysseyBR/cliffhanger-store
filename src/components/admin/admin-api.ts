@@ -1,7 +1,7 @@
 "use client";
 
 import { getClientAuth, firebaseEnabled } from "@/lib/firebase";
-import type { Banner, Order, Product } from "@/lib/types";
+import type { Banner, Coupon, Order, Product } from "@/lib/types";
 
 /**
  * Cliente da API do painel — anexa o ID token do Firebase e
@@ -114,6 +114,26 @@ export function saveBanner(banner: Banner, isNew: boolean) {
 
 export function deleteBanner(id: string) {
   return adminFetch<{ ok: boolean }>(`/api/admin/banners/${id}`, {
+    method: "DELETE",
+  });
+}
+
+/** Cupons (Documento de Correção §17/§12) — coleção `coupons`, id = código. */
+export type AdminCoupon = Coupon & { id: string };
+
+export function fetchCoupons() {
+  return adminFetch<{ coupons: AdminCoupon[] }>("/api/admin/coupons");
+}
+
+export function saveCoupon(coupon: Coupon, isNew: boolean) {
+  return adminFetch<{ coupon: AdminCoupon }>(
+    isNew ? "/api/admin/coupons" : `/api/admin/coupons/${coupon.code}`,
+    { method: isNew ? "POST" : "PUT", body: JSON.stringify({ coupon }) },
+  );
+}
+
+export function deleteCoupon(code: string) {
+  return adminFetch<{ ok: boolean }>(`/api/admin/coupons/${code}`, {
     method: "DELETE",
   });
 }
