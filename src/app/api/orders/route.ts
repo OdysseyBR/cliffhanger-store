@@ -3,6 +3,7 @@ import { getAuth } from "firebase-admin/auth";
 import { isGateResponse, requireAdmin } from "@/lib/admin-guard";
 import { getAdminApp, getAdminDb, revive } from "@/lib/firebase-admin";
 import { getProducts } from "@/lib/data";
+import { grantLibraryItems } from "@/lib/library";
 import { normalizeStatus } from "@/lib/order-status";
 import type { Order, OrderItem, OrderStatus } from "@/lib/types";
 
@@ -129,6 +130,16 @@ export async function POST(request: Request) {
       id = ref.id;
     } catch (error) {
       console.warn("[orders] falha ao gravar no Firestore:", error);
+    }
+  }
+
+  // §8 — compra logada: libera os itens digitais na biblioteca da conta
+  // (controle de acesso/licença). Visitante segue com o espelho local.
+  if (userId) {
+    try {
+      await grantLibraryItems(userId, orderItems, products, id);
+    } catch (error) {
+      console.warn("[orders] falha ao liberar itens na biblioteca:", error);
     }
   }
 

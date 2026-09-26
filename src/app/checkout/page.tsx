@@ -8,6 +8,7 @@ import { Page } from "@/components/Page";
 import { Section } from "@/components/Section";
 import { ProductArt } from "@/components/ProductArt";
 import { formatPrice } from "@/lib/format";
+import { getClientAuth } from "@/lib/firebase";
 import type { Product } from "@/lib/types";
 
 type Step = "dados" | "entrega" | "pagamento" | "revisao" | "pedido";
@@ -94,9 +95,14 @@ export default function CheckoutPage() {
     setSubmitting(true);
     setError(null);
     try {
+      // token (quando logado) → o servidor grava a licença na biblioteca §8
+      const token = await getClientAuth()?.currentUser?.getIdToken();
       const res = await fetch("/api/orders", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           items: cart,
           email,

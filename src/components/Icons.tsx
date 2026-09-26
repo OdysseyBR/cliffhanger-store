@@ -309,6 +309,106 @@ export function IconCheck(props: IconProps) {
   );
 }
 
+/* ---------- leitor/player digital (Doc Mestre §8) ---------- */
+
+/** Marcador de leitura (página/posiçao). */
+export function IconBookmark(props: IconProps) {
+  return (
+    <Stroke {...props}>
+      <path d="M6 4h12v17l-6-4.2L6 21V4Z" />
+    </Stroke>
+  );
+}
+
+/** Download (quando a licença permite). */
+export function IconDownload(props: IconProps) {
+  return (
+    <Stroke {...props}>
+      <path d="M12 3v11m0 0 4-4m-4 4-4-4" />
+      <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+    </Stroke>
+  );
+}
+
+/** Sumário/capítulos. */
+export function IconList(props: IconProps) {
+  return (
+    <Stroke {...props}>
+      <path d="M9 6h11M9 12h11M9 18h11" />
+      <path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01" />
+    </Stroke>
+  );
+}
+
+/** Play (player de audiobook). */
+export function IconPlay(props: IconProps) {
+  return (
+    <Stroke {...props}>
+      <path d="M8 5.2v13.6L19 12 8 5.2Z" />
+    </Stroke>
+  );
+}
+
+/** Pause (player de audiobook). */
+export function IconPause(props: IconProps) {
+  return (
+    <Stroke {...props}>
+      <path d="M9 5v14M15 5v14" />
+    </Stroke>
+  );
+}
+
+/** Voltar 15s (arco + rótulo embutido). */
+export function IconReplay15(props: IconProps) {
+  return (
+    <Stroke {...props}>
+      <path d="M12 4a8 8 0 1 0 8 8" />
+      <path d="M12 1.5V6.5" />
+      <text
+        x="12"
+        y="15.6"
+        textAnchor="middle"
+        fontSize="8"
+        fontWeight="700"
+        fill="currentColor"
+        stroke="none"
+      >
+        15
+      </text>
+    </Stroke>
+  );
+}
+
+/** Avançar 15s (arco + rótulo embutido). */
+export function IconForward15(props: IconProps) {
+  return (
+    <Stroke {...props}>
+      <path d="M12 4a8 8 0 1 1-8 8" />
+      <path d="M12 1.5V6.5" />
+      <text
+        x="12"
+        y="15.6"
+        textAnchor="middle"
+        fontSize="8"
+        fontWeight="700"
+        fill="currentColor"
+        stroke="none"
+      >
+        15
+      </text>
+    </Stroke>
+  );
+}
+
+/** Adicionar (marcador novo). */
+export function IconPlus(props: IconProps) {
+  return (
+    <Stroke {...props}>
+      <path d="M12 5v14M5 12h14" />
+    </Stroke>
+  );
+}
+
 /* ---------- logos de marca (login social) ---------- */
 
 /** Google "G" — monocromático (herda a cor do tema via currentColor). */

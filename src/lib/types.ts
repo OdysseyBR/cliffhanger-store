@@ -112,6 +112,74 @@ export interface Product {
   /** posição em mais vendidos (menor = mais vendido) */
   salesRank?: number;
   createdAt: string;
+  /** §8 — arquivos digitais (PDF do e-book / áudio do audiobook) */
+  files?: DigitalFile[];
+  /** §8 — sumário: páginas (e-book) ou segundos (audiobook) */
+  chapters?: Chapter[];
+}
+
+// ---------------------------------------------------------------------------
+// Produtos digitais — plataforma própria (Documento Mestre, seção 8)
+// ---------------------------------------------------------------------------
+
+/** Tipo de arquivo digital entregue na biblioteca. */
+export type DigitalKind = "pdf" | "audio";
+
+/** Arquivo de um produto digital (snapshot da licença ao comprar). */
+export interface DigitalFile {
+  kind: DigitalKind;
+  url: string;
+  name: string;
+  /** download direto é permitido? (controle de licença §8) */
+  allowDownload: boolean;
+}
+
+/** Capítulo/sumário — `start` = página (e-book) ou segundo (audiobook). */
+export interface Chapter {
+  title: string;
+  start: number;
+}
+
+/** Item comprado que habilita leitura/escuta na biblioteca digital. */
+export interface LibraryItem {
+  /** id estável `item-<productId>` (1 item por produto) */
+  id: string;
+  productId: string;
+  orderId?: string;
+  title: string;
+  slug?: string;
+  type: "ebook" | "audiobook";
+  image?: string;
+  files: DigitalFile[];
+  /** ISO */
+  purchasedAt: string;
+}
+
+/** Marcador de leitura/escuta (página ou segundo). */
+export interface Bookmark {
+  id: string;
+  label: string;
+  /** e-book: página */
+  page?: number;
+  /** audiobook: posição em segundos */
+  position?: number;
+  createdAt: string;
+}
+
+/** Progresso sincronizado entre dispositivos (Firestore `libraries/{uid}/progress`). */
+export interface ReadingProgress {
+  productId: string;
+  kind: "ebook" | "audiobook";
+  /** e-book: página atual (1-based) */
+  page?: number;
+  /** e-book: total de páginas */
+  pages?: number;
+  /** 0–100 */
+  percent: number;
+  /** audiobook: posição em segundos */
+  position?: number;
+  bookmarks: Bookmark[];
+  updatedAt: string;
 }
 
 export interface Collection {
