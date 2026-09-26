@@ -24,7 +24,9 @@ import type {
  */
 
 const CACHE_KEY = "__cliffhanger_catalog__";
-const globalCache = globalThis as unknown as Record<string, Promise<Catalog> | undefined>;
+const CACHE_TTL_MS = 30_000;
+type CatalogCache = { promise: Promise<Catalog>; at: number };
+const globalCache = globalThis as unknown as Record<string, CatalogCache | undefined>;
 
 function collectionOf<T>(data: Record<string, unknown>, name: string): T[] {
   const value = data[name];
@@ -68,11 +70,17 @@ async function loadCatalog(): Promise<Catalog> {
   }
 }
 
+/**
+ * Catálogo em memória com TTL. O `invalidateCatalog()` só limpa o processo que
+ * chamou a API — na Vercel as páginas e os handlers rodam em lambdas separadas
+ * — então o TTL limita a estabilidade: no pior caso a loja enxerga a escrita em
+ * 30s mesmo sem invalidação cruzada.
+ */
 export function getCatalog(): Promise<Catalog> {
-  if (!globalCache[CACHE_KEY]) {
-    globalCache[CACHE_KEY] = loadCatalog();
-  }
-  return globalCache[CACHE_KEY]!;
+  const entry = globalCache[CACHE_KEY];
+  if (entry && Date.now() - entry.at < CACHE_TTL_MS) return entry.promise;
+  globalCache[CACHE_KEY] = { promise: loadCatalog(), at: Date.now() };
+  return globalCache[CACHE_KEY]!.promise;
 }
 
 /**
@@ -143,7 +151,25 @@ export async function getLaunches(): Promise<Launch[]> {
   return [...launches].sort((a, b) => b.releaseDate.localeCompare(a.releaseDate));
 }
 
+/**
+ * Pré-venda por slug com leitura ao vivo (§15). A página pública é dinâmica e
+ * precisa refletir criação, edição e exclusão na hora: o cache do catálogo é
+ * por processo e o `invalidateCatalog()` das APIs não alcança o processo que
+ * renderiza a página. Sem Firestore (ou coleção vazia) cai no catálogo local.
+ */
 export async function getLaunchBySlug(slug: string): Promise<Launch | undefined> {
+  if (process.env.CATALOG_SOURCE !== "local") {
+    const db = getAdminDb();
+    if (db) {
+      try {
+        const snap = await db.collection("launches").limit(500).get();
+        const docs = snap.docs.map((doc) => revive({ id: doc.id, ...doc.data() }) as Launch);
+        if (docs.length > 0) return docs.find((l) => l.slug === slug);
+      } catch (error) {
+        console.warn("[launch] Firestore indisponível, usando catálogo local:", error);
+      }
+    }
+  }
   const launches = await getLaunches();
   return launches.find((l) => l.slug === slug);
 }
