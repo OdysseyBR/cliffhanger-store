@@ -24,6 +24,19 @@ function notFound() {
   return Response.json({ error: "Lançamento não encontrado." }, { status: 404 });
 }
 
+/**
+ * Além do layout, purga as URLs públicas afetadas: sem a purga alvo o CDN
+ * continua servindo a página da pré-venda (inclusive a de uma pré-venda já
+ * excluída) até estourar o stale de 300s.
+ */
+function revalidateLaunchPages(...slugs: (string | undefined)[]) {
+  revalidatePath("/", "layout");
+  revalidatePath("/lancamentos");
+  for (const slug of slugs) {
+    if (slug) revalidatePath(`/lancamentos/${slug}`);
+  }
+}
+
 export async function PUT(request: Request, { params }: RouteCtx) {
   const gate = await requireAdmin(request, "preorders.edit");
   if (isGateResponse(gate)) return gate;
@@ -81,7 +94,7 @@ export async function PUT(request: Request, { params }: RouteCtx) {
   }
 
   invalidateCatalog();
-  revalidatePath("/", "layout");
+  revalidateLaunchPages(previous.slug, launch.slug);
   await auditLaunchChange(gate, "editar", launch, changed, previous);
 
   return Response.json({ ok: true, changed: true, item: launch });
@@ -113,7 +126,7 @@ export async function DELETE(request: Request, { params }: RouteCtx) {
   }
 
   invalidateCatalog();
-  revalidatePath("/", "layout");
+  revalidateLaunchPages(previous.slug);
   await auditLaunchChange(gate, "excluir", previous, [], previous);
 
   return Response.json({ ok: true });

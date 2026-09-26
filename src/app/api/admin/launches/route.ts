@@ -86,6 +86,9 @@ export async function POST(request: Request) {
 
   invalidateCatalog();
   revalidatePath("/", "layout");
+  // purga a lista e a URL nova (também cobre um 404 anteriormente em cache)
+  revalidatePath("/lancamentos");
+  revalidatePath(`/lancamentos/${launch.slug}`);
   await auditLaunchChange(gate, "criar", launch, []);
 
   return Response.json({ item: launch });
