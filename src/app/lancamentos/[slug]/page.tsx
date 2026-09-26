@@ -18,6 +18,14 @@ export async function generateStaticParams() {
   return launches.map((l) => ({ slug: l.slug }));
 }
 
+/**
+ * §15 — sem cache no CDN: uma pré-venda excluída precisa sumir da URL na hora.
+ * Com ISR herdado do layout (300s) a página continuava respondendo 200 com o
+ * HTML antigo (X-Vercel-Cache: HIT) até o stale estourar; `revalidatePath` não
+ * purga entradas renderizadas sob demanda.
+ */
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const launch = await getLaunchBySlug(slug);
