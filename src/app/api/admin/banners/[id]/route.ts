@@ -1,12 +1,15 @@
 import { revalidatePath } from "next/cache";
+import { writeAudit } from "@/lib/audit";
 import { sanitizeBanner } from "@/lib/banner-fields";
 import { invalidateBanners } from "@/lib/banners";
 import { isGateResponse, requireAdmin } from "@/lib/admin-guard";
 import { getAdminDb, plainDoc } from "@/lib/firebase-admin";
+import type { Banner } from "@/lib/types";
 
 /**
- * Edição/exclusão de um banner pelo painel (Documento de Correção §5).
- * Params de rota são Promise nesta versão do Next — sempre `await params`.
+ * Edição/exclusão de um banner pelo painel (Documento de Correção §5;
+ * §13 — `banners.edit`). Params de rota são Promise nesta versão do
+ * Next — sempre `await params`.
  */
 
 type RouteCtx = { params: Promise<{ id: string }> };
@@ -16,7 +19,7 @@ function notFound() {
 }
 
 export async function PUT(request: Request, { params }: RouteCtx) {
-  const gate = await requireAdmin(request);
+  const gate = await requireAdmin(request, "banners.edit");
   if (isGateResponse(gate)) return gate;
 
   const db = getAdminDb();
@@ -48,8 +51,8 @@ export async function PUT(request: Request, { params }: RouteCtx) {
     );
   }
 
-  const previous = existing.data() as { createdAt?: string } | undefined;
-  const record = {
+  const previous = existing.data() as Partial<Banner> & { createdAt?: string };
+  const record: Banner = {
     ...banner,
     createdAt:
       typeof previous?.createdAt === "string" && previous.createdAt
@@ -62,11 +65,35 @@ export async function PUT(request: Request, { params }: RouteCtx) {
   invalidateBanners();
   revalidatePath("/", "layout");
 
+  const bits: string[] = [];
+  if (previous.active !== record.active) bits.push(record.active ? "ativado" : "desativado");
+  if (previous.name !== record.name) bits.push(`nome → “${record.name}”`);
+  if (previous.destinationValue !== record.destinationValue || previous.destinationType !== record.destinationType) {
+    bits.push(`destino → ${record.destinationType}: ${record.destinationValue}`);
+  }
+  if (previous.order !== record.order) bits.push(`ordem → ${record.order}`);
+  if (previous.startsAt !== record.startsAt || previous.endsAt !== record.endsAt) {
+    bits.push("agendamento alterado");
+  }
+
+  await writeAudit({
+    actor: gate.email,
+    uid: gate.uid,
+    role: gate.role,
+    action: record.active === false ? "desativar" : "editar",
+    module: "Banners",
+    entity: "banner",
+    entityId: id,
+    summary: `Atualizou o banner “${record.name}”: ${bits.join(", ") || "configuração revisada"}`,
+    before: previous,
+    after: record,
+  });
+
   return Response.json({ ok: true, banner: record });
 }
 
 export async function DELETE(_request: Request, { params }: RouteCtx) {
-  const gate = await requireAdmin(_request);
+  const gate = await requireAdmin(_request, "banners.edit");
   if (isGateResponse(gate)) return gate;
 
   const db = getAdminDb();
@@ -79,11 +106,25 @@ export async function DELETE(_request: Request, { params }: RouteCtx) {
 
   const { id } = await params;
   const ref = db.collection("banners").doc(id);
-  if (!(await ref.get()).exists) return notFound();
+  const existing = await ref.get();
+  if (!existing.exists) return notFound();
 
+  const previous = existing.data() as Partial<Banner>;
   await ref.delete();
   invalidateBanners();
   revalidatePath("/", "layout");
+
+  await writeAudit({
+    actor: gate.email,
+    uid: gate.uid,
+    role: gate.role,
+    action: "excluir",
+    module: "Banners",
+    entity: "banner",
+    entityId: id,
+    summary: `Excluiu o banner “${previous.name ?? id}”`,
+    before: previous,
+  });
 
   return Response.json({ ok: true });
 }

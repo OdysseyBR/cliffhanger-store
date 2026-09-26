@@ -1,10 +1,11 @@
+import { writeAudit } from "@/lib/audit";
 import { isGateResponse, requireAdmin } from "@/lib/admin-guard";
 import { getAdminDb, plainDoc } from "@/lib/firebase-admin";
 import { sanitizeCoupon } from "@/lib/coupons";
 import type { Coupon } from "@/lib/types";
 
 /**
- * Edição/exclusão de um cupom pelo painel (Documento de Correção §12).
+ * Edição/exclusão de um cupom pelo painel (§13 — `coupons.edit`).
  * Params de rota são Promise nesta versão do Next — sempre `await params`.
  */
 
@@ -14,8 +15,16 @@ function notFound() {
   return Response.json({ error: "Cupom não encontrado." }, { status: 404 });
 }
 
+function describe(coupon: Coupon): string {
+  const value =
+    coupon.type === "percent"
+      ? `${coupon.value}%`
+      : coupon.value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  return `${coupon.code} (${value}${coupon.minSubtotal > 0 ? ` acima de ${coupon.minSubtotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}` : ""})`;
+}
+
 export async function PUT(request: Request, { params }: RouteCtx) {
-  const gate = await requireAdmin(request);
+  const gate = await requireAdmin(request, "coupons.edit");
   if (isGateResponse(gate)) return gate;
 
   const db = getAdminDb();
@@ -62,11 +71,36 @@ export async function PUT(request: Request, { params }: RouteCtx) {
   };
 
   await ref.set(plainDoc(record));
+
+  const bits: string[] = [];
+  if (previous?.active !== record.active) bits.push(record.active ? "ativado" : "desativado");
+  if (previous?.value !== record.value || previous?.type !== record.type) {
+    bits.push(`desconto → ${describe(record)}`);
+  }
+  if (previous?.minSubtotal !== record.minSubtotal) bits.push(`mínimo → R$ ${record.minSubtotal}`);
+  if (previous?.maxUses !== record.maxUses) {
+    bits.push(`limite de usos → ${record.maxUses ?? "ilimitado"}`);
+  }
+  if (previous?.endsAt !== record.endsAt) bits.push("prazo de validade alterado");
+
+  await writeAudit({
+    actor: gate.email,
+    uid: gate.uid,
+    role: gate.role,
+    action: record.active === false ? "desativar" : "editar",
+    module: "Cupons",
+    entity: "coupon",
+    entityId: record.code,
+    summary: `Atualizou o cupom ${record.code}: ${bits.join(", ") || "configuração revisada"}`,
+    before: previous,
+    after: record,
+  });
+
   return Response.json({ ok: true, coupon: { id: record.code, ...record } });
 }
 
 export async function DELETE(_request: Request, { params }: RouteCtx) {
-  const gate = await requireAdmin(_request);
+  const gate = await requireAdmin(_request, "coupons.edit");
   if (isGateResponse(gate)) return gate;
 
   const db = getAdminDb();
@@ -79,8 +113,23 @@ export async function DELETE(_request: Request, { params }: RouteCtx) {
 
   const { id } = await params;
   const ref = db.collection("coupons").doc(id.toUpperCase());
-  if (!(await ref.get()).exists) return notFound();
+  const existing = await ref.get();
+  if (!existing.exists) return notFound();
 
+  const previous = existing.data() as Coupon;
   await ref.delete();
+
+  await writeAudit({
+    actor: gate.email,
+    uid: gate.uid,
+    role: gate.role,
+    action: "excluir",
+    module: "Cupons",
+    entity: "coupon",
+    entityId: previous.code ?? id.toUpperCase(),
+    summary: `Excluiu o cupom ${describe(previous)}`,
+    before: previous,
+  });
+
   return Response.json({ ok: true });
 }

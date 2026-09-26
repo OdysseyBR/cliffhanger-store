@@ -1,4 +1,5 @@
 import { revalidatePath } from "next/cache";
+import { writeAudit } from "@/lib/audit";
 import { sanitizeBanner } from "@/lib/banner-fields";
 import { getBanners, invalidateBanners } from "@/lib/banners";
 import { isGateResponse, requireAdmin } from "@/lib/admin-guard";
@@ -6,11 +7,11 @@ import { getAdminDb, plainDoc } from "@/lib/firebase-admin";
 
 /**
  * Módulo Banners do painel (Documento de Correção §5) — lista e criação de
- * banners (arte final única por upload). Super admin (requireAdmin).
+ * banners (arte final única por upload). §13: `banners.view` / `banners.edit`.
  */
 
 export async function GET(request: Request) {
-  const gate = await requireAdmin(request);
+  const gate = await requireAdmin(request, "banners.view");
   if (isGateResponse(gate)) return gate;
 
   const db = getAdminDb();
@@ -23,7 +24,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const gate = await requireAdmin(request);
+  const gate = await requireAdmin(request, "banners.edit");
   if (isGateResponse(gate)) return gate;
 
   const db = getAdminDb();
@@ -61,6 +62,18 @@ export async function POST(request: Request) {
   await ref.set(plainDoc(record));
   invalidateBanners();
   revalidatePath("/", "layout");
+
+  await writeAudit({
+    actor: gate.email,
+    uid: gate.uid,
+    role: gate.role,
+    action: "criar",
+    module: "Banners",
+    entity: "banner",
+    entityId: id,
+    summary: `Criou o banner “${record.name}” com destino ${record.destinationType}`,
+    after: record,
+  });
 
   return Response.json({ ok: true, banner: record });
 }

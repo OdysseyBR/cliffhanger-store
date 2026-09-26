@@ -1,16 +1,18 @@
 import { revalidatePath } from "next/cache";
+import { writeAudit } from "@/lib/audit";
 import { isGateResponse, requireAdmin } from "@/lib/admin-guard";
 import { getAdminDb, plainDoc } from "@/lib/firebase-admin";
 import { getCatalog, invalidateCatalog } from "@/lib/data";
 import { sanitizeProduct } from "@/lib/product-fields";
+import type { Product } from "@/lib/types";
 
 /**
  * API do catálogo (Doc Mestre 11.2 — cadastro de produtos).
  *
  * GET  → leitura do catálogo para carrinho/wishlist/biblioteca e para o
  *        formulário do painel (referências de obras/universos/autores).
- * POST → cria item (super admin) e invalida o cache do catálogo para a
- *        loja refletir a alteração sem esperar restart do processo.
+ * POST → cria item (papel com `products.edit`, §13) e invalida o cache do
+ *        catálogo para a loja refletir a alteração sem esperar restart.
  */
 export async function GET() {
   const { products, works, universes, authors } = await getCatalog();
@@ -18,7 +20,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const gate = await requireAdmin(request);
+  const gate = await requireAdmin(request, "products.edit");
   if (isGateResponse(gate)) return gate;
 
   const db = getAdminDb();
@@ -29,7 +31,7 @@ export async function POST(request: Request) {
     );
   }
 
-  let product = null;
+  let product: Product | null = null;
   try {
     const body = (await request.json()) as { product?: unknown };
     product = sanitizeProduct(body?.product);
@@ -59,6 +61,18 @@ export async function POST(request: Request) {
   await ref.set(plainDoc(product));
   invalidateCatalog();
   revalidatePath("/", "layout");
+
+  await writeAudit({
+    actor: gate.email,
+    uid: gate.uid,
+    role: gate.role,
+    action: "criar",
+    module: "Produtos",
+    entity: "product",
+    entityId: product.id,
+    summary: `Criou o produto “${product.title}” (${product.type})`,
+    after: product,
+  });
 
   return Response.json({ ok: true, product });
 }

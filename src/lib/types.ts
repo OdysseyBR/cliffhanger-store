@@ -1,6 +1,8 @@
 // Cliffhanger Store — modelo de dados (Fase 0/1)
 // Universo → Obra → Produtos/Edições/Formatos (Documento Mestre, seção 5.1)
 
+import type { AdminRole } from "@/lib/roles";
+
 export type ProductCategory =
   | "livros"
   | "ebooks"
@@ -494,4 +496,45 @@ export interface Banner {
   showHeader: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+
+/**
+ * Conta com acesso ao painel — Documento de Correção §13.
+ * Colecao \dminUsers\ (id = e-mail normalizado). O super admin unico
+ * (SUPER_ADMIN_EMAIL) NAO precisa de registro: e implicitamente
+ * "administrador".
+ */
+export interface AdminUser {
+  /** e-mail normalizado (minusculo) — id do documento */
+  email: string;
+  /** uid do Firebase Auth, quando ja resolvido */
+  uid?: string;
+  /** nome exibido no painel */
+  name?: string;
+  /** papel da §13 */
+  role: AdminRole;
+  /** false = acesso suspenso sem apagar o historico */
+  active: boolean;
+  /** e-mail de quem concedeu o acesso */
+  grantedBy?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Registro de auditoria — Documento de Correção §13 (colecao \uditLogs\). */
+export interface AuditLogEntry {
+  id: string;
+  /** ISO */
+  at: string;
+  actor: string;
+  uid?: string;
+  role?: string;
+  action: string;
+  module: string;
+  entity: string;
+  entityId: string;
+  summary: string;
+  before?: unknown;
+  after?: unknown;
 }

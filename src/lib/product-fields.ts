@@ -1,7 +1,9 @@
 import type {
   Badge,
+  Chapter,
   Cover,
   CoverMotif,
+  DigitalFile,
   Product,
   ProductCategory,
   ProductType,
@@ -201,6 +203,43 @@ export function sanitizeProduct(input: unknown): Product | null {
   const salesRank =
     salesRankRaw !== null && salesRankRaw >= 1 ? Math.round(salesRankRaw) : undefined;
 
+  // §8 — arquivos digitais e sumário precisam SOBREVIVER à edição no
+  // painel: sem eles o item sairia da biblioteca do cliente. O editor de
+  // produto não altera esses campos, então eles são validados e
+  // propagados como estão (sem eles, cada gravação apagaria o e-book/
+  // audiobook cadastrado na plataforma digital).
+  const files: DigitalFile[] = Array.isArray(p.files)
+    ? p.files
+        .map((entry) => {
+          const file = entry as Partial<DigitalFile> | null;
+          const kind = str(file?.kind);
+          const url = str(file?.url);
+          if ((kind === "pdf" || kind === "audio") && url) {
+            return {
+              kind,
+              url,
+              name: str(file?.name) || (kind === "pdf" ? "Arquivo PDF" : "Áudio"),
+              allowDownload: file?.allowDownload !== false,
+            } satisfies DigitalFile;
+          }
+          return null;
+        })
+        .filter((file): file is DigitalFile => file !== null)
+    : [];
+
+  const chapters: Chapter[] = Array.isArray(p.chapters)
+    ? p.chapters
+        .map((entry) => {
+          const chapter = entry as Partial<Chapter> | null;
+          const title = str(chapter?.title);
+          const start = num(chapter?.start);
+          return title && start !== null && start >= 0
+            ? { title, start: Math.round(start) }
+            : null;
+        })
+        .filter((chapter): chapter is Chapter => chapter !== null)
+    : [];
+
   return {
     id,
     slug,
@@ -223,5 +262,7 @@ export function sanitizeProduct(input: unknown): Product | null {
     releaseDate,
     salesRank,
     createdAt: str(p.createdAt) || new Date().toISOString(),
+    ...(files.length > 0 ? { files } : {}),
+    ...(chapters.length > 0 ? { chapters } : {}),
   };
 }

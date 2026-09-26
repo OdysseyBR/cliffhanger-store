@@ -1,7 +1,8 @@
 "use client";
 
 import { getClientAuth, firebaseEnabled } from "@/lib/firebase";
-import type { Banner, Coupon, Order, Product } from "@/lib/types";
+import type { AdminPermission, AdminRole } from "@/lib/roles";
+import type { AdminUser, AuditLogEntry, Banner, Coupon, Order, Product } from "@/lib/types";
 
 /**
  * Cliente da API do painel — anexa o ID token do Firebase e
@@ -60,7 +61,7 @@ export async function adminFetch<T>(
     return {
       ok: false,
       failure: "sem-permissao",
-      message: "Esta conta não é o super admin autorizado para o painel.",
+      message: "Seu papel não tem permissão para esta operação do painel (§13).",
     };
   }
   if (res.status === 503) {
@@ -136,4 +137,52 @@ export function deleteCoupon(code: string) {
   return adminFetch<{ ok: boolean }>(`/api/admin/coupons/${code}`, {
     method: "DELETE",
   });
+}
+
+/** §13 — papel e permissões da sessão corrente. */
+export interface AdminMe {
+  email: string;
+  uid: string;
+  role: AdminRole;
+  roleLabel: string;
+  permissions: AdminPermission[];
+}
+
+export function fetchMe() {
+  return adminFetch<AdminMe>("/api/admin/me");
+}
+
+/** §13 — equipe administrativa (papéis). */
+export function fetchAdmins() {
+  return adminFetch<{ admins: AdminUser[]; superAdmin: string }>("/api/admin/users");
+}
+
+export function grantAdmin(input: { email: string; role: AdminRole; name?: string }) {
+  return adminFetch<{ ok: boolean; admin: AdminUser }>("/api/admin/users", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
+export function updateAdmin(email: string, patch: { role?: AdminRole; active?: boolean; name?: string }) {
+  return adminFetch<{ ok: boolean; admin: AdminUser }>(
+    `/api/admin/users/${encodeURIComponent(email)}`,
+    { method: "PUT", body: JSON.stringify(patch) },
+  );
+}
+
+export function removeAdmin(email: string) {
+  return adminFetch<{ ok: boolean }>(
+    `/api/admin/users/${encodeURIComponent(email)}`,
+    { method: "DELETE" },
+  );
+}
+
+/** §13 — registro/auditoria de alterações administrativas. */
+export function fetchAudit(params?: { module?: string; limit?: number }) {
+  const query = new URLSearchParams();
+  if (params?.module) query.set("module", params.module);
+  if (params?.limit) query.set("limit", String(params.limit));
+  const suffix = query.toString() ? `?${query.toString()}` : "";
+  return adminFetch<{ entries: AuditLogEntry[] }>(`/api/admin/audit${suffix}`);
 }

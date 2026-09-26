@@ -2,17 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAdminPermissions } from "@/components/admin/AdminRoleProvider";
+import type { AdminPermission } from "@/lib/roles";
 
 /**
  * Menu de módulos do painel — Documento de Correção §12 (26 módulos
- * oficiais; §2: sem módulo de Theme Engine/Modelos). Os módulos ainda não
- * implementados ficam visíveis porém indisponíveis, para o painel já
- * mostrar a estrutura completa.
+ * oficiais; §2: sem módulo de Theme Engine/Modelos) + §13 (segurança).
+ *
+ * Os módulos ainda não implementados ficam visíveis porém indisponíveis,
+ * para o painel já mostrar a estrutura completa. Módulos implementados
+ * cujo papel da sessão não possui a permissão de leitura também ficam
+ * indisponíveis, com o motivo no `title` (§13).
  */
 
 interface NavItem {
   label: string;
   href?: string;
+  /** permissão de leitura exigida (§13) — só faz sentido com href */
+  perm?: AdminPermission;
 }
 
 interface NavGroup {
@@ -21,11 +28,11 @@ interface NavGroup {
 }
 
 const ADMIN_NAV: NavGroup[] = [
-  { title: "Geral", items: [{ label: "Dashboard", href: "/admin" }] },
+  { title: "Geral", items: [{ label: "Dashboard", href: "/admin", perm: "dashboard.view" }] },
   {
     title: "Catálogo",
     items: [
-      { label: "Produtos", href: "/admin/produtos" },
+      { label: "Produtos", href: "/admin/produtos", perm: "products.view" },
       { label: "Obras" },
       { label: "Universos" },
       { label: "Autores" },
@@ -53,7 +60,7 @@ const ADMIN_NAV: NavGroup[] = [
   {
     title: "Marketing",
     items: [
-      { label: "Cupons", href: "/admin/cupons" },
+      { label: "Cupons", href: "/admin/cupons", perm: "coupons.view" },
       { label: "Promoções" },
       { label: "Cliffhanger Club" },
       { label: "Avaliações" },
@@ -63,7 +70,7 @@ const ADMIN_NAV: NavGroup[] = [
   {
     title: "Conteúdo",
     items: [
-      { label: "Banners", href: "/admin/banners" },
+      { label: "Banners", href: "/admin/banners", perm: "banners.view" },
       { label: "Home" },
       { label: "Notícias" },
       { label: "Lançamentos" },
@@ -73,10 +80,18 @@ const ADMIN_NAV: NavGroup[] = [
     title: "Dados",
     items: [{ label: "Relatórios" }, { label: "Financeiro" }, { label: "Configurações" }],
   },
+  {
+    title: "Segurança",
+    items: [
+      { label: "Equipe", href: "/admin/equipe", perm: "admins.view" },
+      { label: "Auditoria", href: "/admin/auditoria", perm: "audit.view" },
+    ],
+  },
 ];
 
 export function AdminNav() {
   const pathname = usePathname();
+  const { me, can } = useAdminPermissions();
 
   return (
     <nav aria-label="Módulos do painel" className="mb-6 space-y-3 border-b border-[var(--border)] pb-5">
@@ -87,11 +102,17 @@ export function AdminNav() {
           </span>
           <div className="flex flex-wrap gap-1.5">
             {group.items.map((item) => {
-              if (!item.href) {
+              const blocked = Boolean(item.href && item.perm && me && !can(item.perm));
+
+              if (!item.href || blocked) {
                 return (
                   <span
                     key={item.label}
-                    title="Em breve — módulo do roadmap do Documento de Correção"
+                    title={
+                      blocked
+                        ? `Sem permissão — papel ${me?.roleLabel ?? ""} não acessa este módulo (§13)`
+                        : "Em breve — módulo do roadmap do Documento de Correção"
+                    }
                     className="cursor-not-allowed rounded-full border border-dashed border-[var(--border)] px-3 py-1.5 text-[11px] text-[var(--text-muted)] opacity-60"
                   >
                     {item.label}

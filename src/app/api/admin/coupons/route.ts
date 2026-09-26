@@ -1,3 +1,4 @@
+import { writeAudit } from "@/lib/audit";
 import { isGateResponse, requireAdmin } from "@/lib/admin-guard";
 import { getAdminDb, plainDoc } from "@/lib/firebase-admin";
 import { sanitizeCoupon } from "@/lib/coupons";
@@ -5,11 +6,12 @@ import type { Coupon } from "@/lib/types";
 
 /**
  * Módulo Cupons do painel (Documento de Correção §12; §17 — checkout).
- * Super admin (requireAdmin). Coleção `coupons`, id = código normalizado.
+ * Papéis da §13: leitura exige `coupons.view`, escrita `coupons.edit`.
+ * Coleção `coupons`, id = código normalizado.
  */
 
 export async function GET(request: Request) {
-  const gate = await requireAdmin(request);
+  const gate = await requireAdmin(request, "coupons.view");
   if (isGateResponse(gate)) return gate;
 
   const db = getAdminDb();
@@ -25,7 +27,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const gate = await requireAdmin(request);
+  const gate = await requireAdmin(request, "coupons.edit");
   if (isGateResponse(gate)) return gate;
 
   const db = getAdminDb();
@@ -64,5 +66,18 @@ export async function POST(request: Request) {
   }
 
   await ref.set(plainDoc(coupon));
+
+  await writeAudit({
+    actor: gate.email,
+    uid: gate.uid,
+    role: gate.role,
+    action: "criar",
+    module: "Cupons",
+    entity: "coupon",
+    entityId: coupon.code,
+    summary: `Criou o cupom ${coupon.code} (${coupon.type === "percent" ? `${coupon.value}%` : `R$ ${coupon.value}`})`,
+    after: coupon,
+  });
+
   return Response.json({ ok: true, coupon: { id: coupon.code, ...coupon } });
 }

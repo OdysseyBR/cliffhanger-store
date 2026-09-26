@@ -224,10 +224,10 @@ export async function POST(request: Request) {
 
 /**
  * Lista pedidos para o painel (Doc Mestre 11.1 — Dashboard e módulo
- * Pedidos). Dados de cliente: exige super admin no servidor.
+ * Pedidos). Dados de cliente: exige papel com `orders.view` (§13).
  */
 export async function GET(request: Request) {
-  const gate = await requireAdmin(request);
+  const gate = await requireAdmin(request, "orders.view");
   if (isGateResponse(gate)) return gate;
 
   const db = getAdminDb();
