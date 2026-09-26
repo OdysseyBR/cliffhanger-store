@@ -101,6 +101,10 @@ export interface Product {
   reviewCount: number;
   /** unidades em estoque; 0 = esgotado */
   stock: number;
+  /** §14 — unidades reservadas (pré-venda e pedidos em separação) */
+  reserved?: number;
+  /** §14 — alerta de estoque baixo quando `stock <= minStock` (0 = sem alerta) */
+  minStock?: number;
   /** true = entrega digital (biblioteca), false = envio físico */
   digital: boolean;
   workId?: string;
@@ -242,7 +246,22 @@ export interface Launch {
   universeId?: string;
   /** edições do lançamento */
   productIds: string[];
+  /** §15 — lotes de pré-venda (janela de vendas com quantidade) */
+  lots?: LaunchLot[];
+  /** ISO — previsão de envio comunicada ao cliente na pré-venda */
+  shipForecast?: string;
+  /** §15 — avisar assinantes na data de lançamento */
+  notifyOnRelease?: boolean;
   createdAt: string;
+}
+
+/** §15 — lote de uma pré-venda: nome, volume e preço da janela. */
+export interface LaunchLot {
+  name: string;
+  qty: number;
+  price?: number;
+  /** ISO — encerramento do lote (opcional) */
+  closesAt?: string;
 }
 
 export interface Catalog {
@@ -313,6 +332,56 @@ export interface Order {
   gift?: OrderGift | null;
   address?: OrderAddress | null;
   customer?: { name: string; phone: string } | null;
+  /** ISO — última alteração (ex.: mudança de status no painel §12) */
+  updatedAt?: string;
+}
+
+/** §14 — movimentação de estoque: histórico com motivo, autor e valores. */
+export type StockKind = "entrada" | "saida" | "ajuste";
+
+export interface StockMovement {
+  id: string;
+  productId: string;
+  productTitle: string;
+  kind: StockKind;
+  /** entradas/saídas: unidades; ajuste: valor absoluto após o ajuste */
+  qty: number;
+  before: number;
+  after: number;
+  /** §14 — motivo obrigatório do ajuste */
+  reason: string;
+  /** e-mail do administrador que moveu o estoque */
+  actor: string;
+  at: string;
+}
+
+/**
+ * §12 — módulo Clientes: leitura agregada dos pedidos (não existe coleção
+ * própria; o cliente nasce do pedido) — por isso só há permissão de leitura.
+ */
+export interface AdminCustomer {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  orders: number;
+  items: number;
+  /** soma dos pedidos não cancelados */
+  spent: number;
+  firstOrderAt: string;
+  lastOrderAt: string;
+  /** null = conta sem pedidos ainda */
+  lastStatus: OrderStatus | null;
+  /** últimos pedidos do cliente (módulo Clientes §12) */
+  recent: AdminCustomerOrder[];
+}
+
+export interface AdminCustomerOrder {
+  id: string;
+  code: string;
+  createdAt: string;
+  status: OrderStatus;
+  total: number;
 }
 
 /** §17/§12 — cupom de desconto (coleção `coupons` no Firestore). */

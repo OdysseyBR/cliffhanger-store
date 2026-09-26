@@ -1,5 +1,5 @@
 import { getAdminDb, revive } from "@/lib/firebase-admin";
-import { normalizeStatus } from "@/lib/order-status";
+import { normalizeOrder } from "@/lib/order-fields";
 import { isUserGateResponse, requireUser } from "@/lib/user-guard";
 import type { Order } from "@/lib/types";
 
@@ -32,8 +32,8 @@ export async function GET(request: Request) {
 
     const merged = new Map<string, Order>();
     for (const doc of byUid.docs) {
-      const order = revive({ id: doc.id, ...doc.data() }) as Order;
-      merged.set(order.id, { ...order, status: normalizeStatus(order.status) });
+      const order = normalizeOrder(revive({ id: doc.id, ...doc.data() }));
+      merged.set(order.id, order);
     }
 
     if (gate.email) {
@@ -43,8 +43,8 @@ export async function GET(request: Request) {
         .limit(50)
         .get();
       for (const doc of byEmail.docs) {
-        const order = revive({ id: doc.id, ...doc.data() }) as Order;
-        merged.set(order.id, { ...order, status: normalizeStatus(order.status) });
+        const order = normalizeOrder(revive({ id: doc.id, ...doc.data() }));
+        merged.set(order.id, order);
       }
     }
 

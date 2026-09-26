@@ -43,10 +43,10 @@ const ADMIN_NAV: NavGroup[] = [
   {
     title: "Operação",
     items: [
-      { label: "Estoque" },
-      { label: "Pedidos" },
-      { label: "Clientes" },
-      { label: "Pré-vendas" },
+      { label: "Estoque", href: "/admin/estoque", perm: "stock.view" },
+      { label: "Pedidos", href: "/admin/pedidos", perm: "orders.view" },
+      { label: "Clientes", href: "/admin/clientes", perm: "customers.view" },
+      { label: "Pré-vendas", href: "/admin/pre-vendas", perm: "preorders.view" },
     ],
   },
   {

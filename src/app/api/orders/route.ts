@@ -4,7 +4,7 @@ import { isGateResponse, requireAdmin } from "@/lib/admin-guard";
 import { getAdminApp, getAdminDb, revive } from "@/lib/firebase-admin";
 import { getProducts } from "@/lib/data";
 import { grantLibraryItems } from "@/lib/library";
-import { normalizeStatus } from "@/lib/order-status";
+import { normalizeOrder } from "@/lib/order-fields";
 import { evaluateCoupon, normalizeCouponCode } from "@/lib/coupons";
 import { fallbackShippingPrice, quoteShipping } from "@/lib/shipping";
 import type { Coupon, Order, OrderGift, OrderItem, OrderStatus } from "@/lib/types";
@@ -244,10 +244,9 @@ export async function GET(request: Request) {
       .orderBy("createdAt", "desc")
       .limit(50)
       .get();
-    const orders = snap.docs.map((doc) => {
-      const order = revive({ id: doc.id, ...doc.data() }) as Order;
-      return { ...order, status: normalizeStatus(order.status) };
-    });
+    const orders = snap.docs.map((doc) =>
+      normalizeOrder(revive({ id: doc.id, ...doc.data() })),
+    );
     return Response.json({ orders });
   } catch {
     return Response.json(

@@ -34,6 +34,23 @@ export const launches: Launch[] = [
     workId: "wkb-valeharts-3",
     universeId: "uni-valeharts",
     productIds: ["prd-vh3-livro", "prd-vh3-ebook"],
+    // §15 — janelas da pré-venda, envio comunicado e aviso na data
+    lots: [
+      {
+        name: "Lote 1 — exemplares numerados",
+        qty: 300,
+        price: 89.9,
+        closesAt: "2026-12-05T23:59:00.000Z",
+      },
+      {
+        name: "Lote 2 — kit comemorativo",
+        qty: 150,
+        price: 119.9,
+        closesAt: "2026-12-20T23:59:00.000Z",
+      },
+    ],
+    shipForecast: "2026-12-08",
+    notifyOnRelease: true,
     createdAt: "2026-08-15T12:00:00.000Z",
   },
   {
@@ -49,6 +66,8 @@ export const launches: Launch[] = [
     workId: "wkb-alvorada",
     universeId: "uni-neon-sertao",
     productIds: ["prd-ae-audio"],
+    // lançamento digital: sem lotes nem envio físico, só o aviso na data
+    notifyOnRelease: true,
     createdAt: "2026-09-10T12:00:00.000Z",
   },
 ];

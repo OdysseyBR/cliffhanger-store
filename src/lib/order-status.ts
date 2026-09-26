@@ -25,6 +25,9 @@ const KNOWN_STATUS: OrderStatus[] = [
   "cancelado",
 ];
 
+/** Lista oficial — validação do servidor no módulo Pedidos do painel (§12). */
+export const ORDER_STATUS_LIST: OrderStatus[] = KNOWN_STATUS;
+
 /** Normaliza o valor gravado (inclusive legados) para o enum oficial. */
 export function normalizeStatus(value: unknown): OrderStatus {
   const raw = typeof value === "string" ? value.trim() : "";

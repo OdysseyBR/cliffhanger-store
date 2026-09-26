@@ -3,7 +3,9 @@
 import { getClientAuth, firebaseEnabled } from "@/lib/firebase";
 import type { AdminPermission, AdminRole } from "@/lib/roles";
 import type { CatalogEntity } from "@/lib/catalog-fields";
+import type { AdminStockItem, StockAdjustInput } from "@/lib/stock-fields";
 import type {
+  AdminCustomer,
   AdminUser,
   AuditLogEntry,
   Author,
@@ -11,8 +13,11 @@ import type {
   Category,
   Collection,
   Coupon,
+  Launch,
   Order,
+  OrderStatus,
   Product,
+  StockMovement,
   Universe,
   Work,
 } from "@/lib/types";
@@ -175,6 +180,52 @@ export function saveCatalogItem<T extends AdminCatalogItem>(
 export function deleteCatalogItem(entity: CatalogEntity, id: string) {
   return adminFetch<{ ok: boolean }>(
     `/api/admin/catalog/${entity}/${encodeURIComponent(id)}`,
+    { method: "DELETE" },
+  );
+}
+
+/** §12/§14 — Estoque: leitura de saldos + histórico e movimentação (§15/§14). */
+export function fetchStock() {
+  return adminFetch<{ products: AdminStockItem[]; movements: StockMovement[] }>(
+    "/api/admin/stock",
+  );
+}
+
+export function adjustStock(productId: string, input: StockAdjustInput) {
+  return adminFetch<{ stock: number; reserved: number; minStock: number; movement: StockMovement }>(
+    `/api/admin/stock/${encodeURIComponent(productId)}`,
+    { method: "PUT", body: JSON.stringify({ input }) },
+  );
+}
+
+/** §12 — Pedidos: mudança de status pelo painel (histórico preservado). */
+export function updateOrderStatus(id: string, status: OrderStatus) {
+  return adminFetch<{ ok: boolean; changed: boolean; status: OrderStatus }>(
+    `/api/admin/orders/${encodeURIComponent(id)}`,
+    { method: "PUT", body: JSON.stringify({ status }) },
+  );
+}
+
+/** §12 — Clientes: leitura agregada dos pedidos (sem coleção própria). */
+export function fetchCustomers() {
+  return adminFetch<{ customers: AdminCustomer[] }>("/api/admin/customers");
+}
+
+/** §12/§15 — Pré-vendas (coleção `launches`). */
+export function fetchLaunches() {
+  return adminFetch<{ items: Launch[] }>("/api/admin/launches");
+}
+
+export function saveLaunch(launch: Launch, isNew: boolean) {
+  return adminFetch<{ item: Launch }>(
+    isNew ? "/api/admin/launches" : `/api/admin/launches/${encodeURIComponent(launch.id)}`,
+    { method: isNew ? "POST" : "PUT", body: JSON.stringify({ item: launch }) },
+  );
+}
+
+export function deleteLaunch(id: string) {
+  return adminFetch<{ ok: boolean }>(
+    `/api/admin/launches/${encodeURIComponent(id)}`,
     { method: "DELETE" },
   );
 }

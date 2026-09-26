@@ -121,6 +121,48 @@ export function NumberInput({
   );
 }
 
+/** Data (`type="date"`) — previsão de envio e encerramento de lotes (§15). */
+export function DateInput({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <input
+      type="date"
+      value={value}
+      disabled={disabled}
+      onChange={(event) => onChange(event.target.value)}
+      className="field w-full"
+    />
+  );
+}
+
+/** Data e hora (`type="datetime-local"`) — lançamento e countdown (§15). */
+export function DateTimeInput({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <input
+      type="datetime-local"
+      value={value}
+      disabled={disabled}
+      onChange={(event) => onChange(event.target.value)}
+      className="field w-full"
+    />
+  );
+}
+
 export function Card({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="card p-5">

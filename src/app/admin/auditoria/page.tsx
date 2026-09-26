@@ -77,6 +77,7 @@ export default function AdminAuditPage() {
       "Equipe",
       "Pedidos",
       "Estoque",
+      "Pré-vendas",
       "Lançamentos",
       "Notícias",
       "Configurações",
