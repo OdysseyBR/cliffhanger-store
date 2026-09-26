@@ -67,6 +67,11 @@ export default function AdminAuditPage() {
   const modules = useMemo(() => {
     const set = new Set<string>([
       "Produtos",
+      "Obras",
+      "Universos",
+      "Autores",
+      "Categorias",
+      "Coleções",
       "Cupons",
       "Banners",
       "Equipe",

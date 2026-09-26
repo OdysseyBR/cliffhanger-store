@@ -33,11 +33,11 @@ const ADMIN_NAV: NavGroup[] = [
     title: "Catálogo",
     items: [
       { label: "Produtos", href: "/admin/produtos", perm: "products.view" },
-      { label: "Obras" },
-      { label: "Universos" },
-      { label: "Autores" },
-      { label: "Categorias" },
-      { label: "Coleções" },
+      { label: "Obras", href: "/admin/obras", perm: "catalog.view" },
+      { label: "Universos", href: "/admin/universos", perm: "catalog.view" },
+      { label: "Autores", href: "/admin/autores", perm: "catalog.view" },
+      { label: "Categorias", href: "/admin/categorias", perm: "catalog.view" },
+      { label: "Coleções", href: "/admin/colecoes", perm: "catalog.view" },
     ],
   },
   {

@@ -193,6 +193,28 @@ export interface Collection {
   createdAt: string;
 }
 
+/**
+ * Categoria de produto do painel (Documento de Correção §12 — módulo
+ * Categorias; coleção `categories`). `slug` é o valor usado em
+ * `Product.category` quando a categoria já participa da loja (ex.:
+ * livros, ebooks, audiobooks).
+ */
+export type CategoryType = "fisico" | "digital" | "hibrido";
+
+export interface Category {
+  id: string;
+  slug: string;
+  name: string;
+  /** formato dominante dos produtos da categoria */
+  typeId: CategoryType;
+  description: string;
+  /** URL da arte de destaque (opcional) */
+  image: string;
+  /** posição na listagem (menor = primeiro) */
+  sort: number;
+  createdAt: string;
+}
+
 /** Página de lançamento (Documento Mestre 13.1 — coleção `launches`). */
 export interface LaunchSocial {
   label: string;

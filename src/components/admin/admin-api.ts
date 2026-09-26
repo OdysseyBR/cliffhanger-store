@@ -2,7 +2,20 @@
 
 import { getClientAuth, firebaseEnabled } from "@/lib/firebase";
 import type { AdminPermission, AdminRole } from "@/lib/roles";
-import type { AdminUser, AuditLogEntry, Banner, Coupon, Order, Product } from "@/lib/types";
+import type { CatalogEntity } from "@/lib/catalog-fields";
+import type {
+  AdminUser,
+  AuditLogEntry,
+  Author,
+  Banner,
+  Category,
+  Collection,
+  Coupon,
+  Order,
+  Product,
+  Universe,
+  Work,
+} from "@/lib/types";
 
 /**
  * Cliente da API do painel — anexa o ID token do Firebase e
@@ -137,6 +150,33 @@ export function deleteCoupon(code: string) {
   return adminFetch<{ ok: boolean }>(`/api/admin/coupons/${code}`, {
     method: "DELETE",
   });
+}
+
+/** §12 — grupo Catálogo (Obras, Universos, Autores, Categorias, Coleções). */
+export type AdminCatalogItem = Work | Universe | Author | Category | Collection;
+
+export function fetchCatalogItems<T extends AdminCatalogItem = AdminCatalogItem>(
+  entity: CatalogEntity,
+) {
+  return adminFetch<{ items: T[] }>(`/api/admin/catalog/${entity}`);
+}
+
+export function saveCatalogItem<T extends AdminCatalogItem>(
+  entity: CatalogEntity,
+  item: T,
+  isNew: boolean,
+) {
+  return adminFetch<{ item: T }>(
+    isNew ? `/api/admin/catalog/${entity}` : `/api/admin/catalog/${entity}/${item.id}`,
+    { method: isNew ? "POST" : "PUT", body: JSON.stringify({ item }) },
+  );
+}
+
+export function deleteCatalogItem(entity: CatalogEntity, id: string) {
+  return adminFetch<{ ok: boolean }>(
+    `/api/admin/catalog/${entity}/${encodeURIComponent(id)}`,
+    { method: "DELETE" },
+  );
 }
 
 /** §13 — papel e permissões da sessão corrente. */
