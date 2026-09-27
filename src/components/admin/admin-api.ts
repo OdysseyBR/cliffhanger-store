@@ -13,13 +13,18 @@ import type {
   Author,
   Banner,
   Category,
+  ClubBenefit,
+  ClubMember,
   Collection,
   Coupon,
   Launch,
   Order,
   OrderStatus,
   Product,
+  Promotion,
+  Review,
   StockMovement,
+  StoreNotification,
   Universe,
   Work,
 } from "@/lib/types";
@@ -315,5 +320,91 @@ export function revokeDigitalItem(uid: string, productId: string) {
   return adminFetch<{ ok: boolean }>(
     `/api/admin/digital/libraries/${encodeURIComponent(uid)}`,
     { method: "DELETE", body: JSON.stringify({ productId }) },
+  );
+}
+
+/** §12/§16 — Promoções (campanhas que combinam produtos, coleção, cupom e banner). */
+export function fetchPromotions() {
+  return adminFetch<{ items: Promotion[] }>("/api/admin/promotions");
+}
+
+export function savePromotion(promotion: Promotion, isNew: boolean) {
+  return adminFetch<{ ok: boolean; changed?: boolean; item: Promotion }>(
+    isNew ? "/api/admin/promotions" : `/api/admin/promotions/${encodeURIComponent(promotion.id)}`,
+    { method: isNew ? "POST" : "PUT", body: JSON.stringify({ item: promotion }) },
+  );
+}
+
+export function deletePromotion(id: string) {
+  return adminFetch<{ ok: boolean }>(
+    `/api/admin/promotions/${encodeURIComponent(id)}`,
+    { method: "DELETE" },
+  );
+}
+
+/** §12/§18 — Cliffhanger Club (membros/pontos e benefícios). */
+export function fetchClub() {
+  return adminFetch<{ members: ClubMember[]; benefits: ClubBenefit[] }>(
+    "/api/admin/club/benefits",
+  );
+}
+
+export function adjustClubPoints(uid: string, adjust: { delta: number; reason: string }) {
+  return adminFetch<{ ok: boolean; member: ClubMember }>(
+    `/api/admin/club/members/${encodeURIComponent(uid)}`,
+    { method: "PUT", body: JSON.stringify({ adjust }) },
+  );
+}
+
+export function saveBenefit(benefit: ClubBenefit, isNew: boolean) {
+  return adminFetch<{ ok: boolean; item: ClubBenefit }>(
+    isNew ? "/api/admin/club/benefits" : `/api/admin/club/benefits/${encodeURIComponent(benefit.id)}`,
+    { method: isNew ? "POST" : "PUT", body: JSON.stringify({ item: benefit }) },
+  );
+}
+
+export function deleteBenefit(id: string) {
+  return adminFetch<{ ok: boolean }>(
+    `/api/admin/club/benefits/${encodeURIComponent(id)}`,
+    { method: "DELETE" },
+  );
+}
+
+/** §12/§19 — Avaliações (moderação; envio pelo cliente em POST /api/reviews). */
+export function fetchReviews(status?: string) {
+  const suffix = status ? `?status=${encodeURIComponent(status)}` : "";
+  return adminFetch<{ items: Review[] }>(`/api/admin/reviews${suffix}`);
+}
+
+export function moderateReview(id: string, status: Review["status"]) {
+  return adminFetch<{ ok: boolean; changed: boolean; item: Review }>(
+    `/api/admin/reviews/${encodeURIComponent(id)}`,
+    { method: "PUT", body: JSON.stringify({ status }) },
+  );
+}
+
+export function deleteReview(id: string) {
+  return adminFetch<{ ok: boolean }>(
+    `/api/admin/reviews/${encodeURIComponent(id)}`,
+    { method: "DELETE" },
+  );
+}
+
+/** §12/§16 — Notificações (rascunho → agendada → enviada). */
+export function fetchNotifications() {
+  return adminFetch<{ items: StoreNotification[] }>("/api/admin/notifications");
+}
+
+export function saveNotification(item: StoreNotification, isNew: boolean) {
+  return adminFetch<{ ok: boolean; item: StoreNotification }>(
+    isNew ? "/api/admin/notifications" : `/api/admin/notifications/${encodeURIComponent(item.id)}`,
+    { method: isNew ? "POST" : "PUT", body: JSON.stringify({ item }) },
+  );
+}
+
+export function deleteNotification(id: string) {
+  return adminFetch<{ ok: boolean }>(
+    `/api/admin/notifications/${encodeURIComponent(id)}`,
+    { method: "DELETE" },
   );
 }

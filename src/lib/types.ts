@@ -434,6 +434,102 @@ export interface Coupon {
 }
 
 // ---------------------------------------------------------------------------
+// Marketing — Promoções, Club, Avaliações e Notificações (§12/§16/§18/§19)
+// ---------------------------------------------------------------------------
+
+/**
+ * §16 — campanha que combina produtos, coleção, cupom, banner e período.
+ * O desconto em si continua sendo o do cupom vinculado e o do `compareAt`
+ * dos produtos (página /ofertas); a promoção organiza e agenda a campanha.
+ */
+export interface Promotion {
+  id: string;
+  title: string;
+  description: string;
+  productIds: string[];
+  /** coleção em destaque (opcional) */
+  collectionId?: string;
+  /** cupom da campanha (opcional — precisa existir em `coupons`) */
+  couponCode?: string;
+  /** banner da campanha (opcional — precisa existir em `banners`) */
+  bannerId?: string;
+  /** ISO | null = sem início/fim */
+  startsAt: string | null;
+  endsAt: string | null;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Fase exibida no painel: derivada da janela + flag `active`. */
+export type PromotionPhase = "ativa" | "agendada" | "expirada" | "inativa";
+
+/** §18 — benefício trocável por pontos do Cliffhanger Club. */
+export interface ClubBenefit {
+  id: string;
+  title: string;
+  description: string;
+  /** custo em pontos */
+  cost: number;
+  /** §18: cupons, frete, produtos exclusivos e conteúdo digital */
+  kind: "cupom" | "frete" | "produto" | "conteudo";
+  /** cupom entregue no resgate (só quando kind = "cupom") */
+  couponCode?: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** §18 — membro do clube (documento `clubMembers/{uid}`). */
+export interface ClubMember {
+  uid: string;
+  name?: string;
+  email?: string;
+  points: number;
+  updatedAt: string;
+}
+
+/** Nível derivado dos pontos (§18). */
+export type ClubTier = "Farol" | "Maré" | "Lenda";
+
+/**
+ * §19 — avaliação de cliente (coleção `reviews`). `verified` = compra
+ * verificada (e-mail + produto em `orders`); `status` é a moderação do
+ * painel (atendimento/administrador).
+ */
+export interface Review {
+  id: string;
+  productId: string;
+  productTitle?: string;
+  authorName: string;
+  email?: string;
+  /** 1–5 */
+  rating: number;
+  comment: string;
+  /** URLs de fotos (máx. 3) */
+  photos: string[];
+  verified: boolean;
+  status: "pendente" | "aprovada" | "rejeitada";
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** §16 — comunicado do painel (coleção `notifications`). */
+export interface StoreNotification {
+  id: string;
+  title: string;
+  body: string;
+  channels: Array<"email" | "in_app" | "push">;
+  /** "all" = toda a base · "club" = membros do clube */
+  targetAudience: "all" | "club";
+  status: "draft" | "scheduled" | "sent";
+  /** ISO | null — exigido quando agendada */
+  scheduledAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ---------------------------------------------------------------------------
 // Padrões visuais da loja (Documento de Correção, Finalização e Ajustes — §4)
 // ---------------------------------------------------------------------------
 

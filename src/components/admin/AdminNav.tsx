@@ -61,10 +61,10 @@ const ADMIN_NAV: NavGroup[] = [
     title: "Marketing",
     items: [
       { label: "Cupons", href: "/admin/cupons", perm: "coupons.view" },
-      { label: "Promoções" },
-      { label: "Cliffhanger Club" },
-      { label: "Avaliações" },
-      { label: "Notificações" },
+      { label: "Promoções", href: "/admin/promocoes", perm: "promotions.view" },
+      { label: "Cliffhanger Club", href: "/admin/clube", perm: "club.view" },
+      { label: "Avaliações", href: "/admin/avaliacoes", perm: "reviews.view" },
+      { label: "Notificações", href: "/admin/notificacoes", perm: "notifications.view" },
     ],
   },
   {
