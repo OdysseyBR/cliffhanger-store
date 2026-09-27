@@ -4,6 +4,7 @@ import { getClientAuth, firebaseEnabled } from "@/lib/firebase";
 import type { AdminPermission, AdminRole } from "@/lib/roles";
 import type { CatalogEntity } from "@/lib/catalog-fields";
 import type { DigitalFormState, DigitalModuleKind } from "@/lib/digital-fields";
+import type { LaunchContentForm } from "@/lib/content-fields";
 import type { AdminStockItem, StockAdjustInput } from "@/lib/stock-fields";
 import type {
   AdminCustomer,
@@ -17,7 +18,9 @@ import type {
   ClubMember,
   Collection,
   Coupon,
+  HomeOverride,
   Launch,
+  NewsItem,
   Order,
   OrderStatus,
   Product,
@@ -405,6 +408,49 @@ export function saveNotification(item: StoreNotification, isNew: boolean) {
 export function deleteNotification(id: string) {
   return adminFetch<{ ok: boolean }>(
     `/api/admin/notifications/${encodeURIComponent(id)}`,
+    { method: "DELETE" },
+  );
+}
+
+/** §12/§20 — Lançamentos (conteúdo editorial; mecânica em Pré-vendas). */
+export function fetchLaunchContent() {
+  return adminFetch<{ items: Launch[] }>("/api/admin/launch-content");
+}
+
+export function saveLaunchContent(id: string, content: LaunchContentForm) {
+  return adminFetch<{ ok: boolean; changed: boolean }>(
+    `/api/admin/launch-content/${encodeURIComponent(id)}`,
+    { method: "PUT", body: JSON.stringify({ content }) },
+  );
+}
+
+/** §12/§3 — Home (curadoria sobre o padrão ativo). */
+export function fetchHomeOverride() {
+  return adminFetch<{ override: HomeOverride | null }>("/api/admin/home");
+}
+
+export function saveHomeOverride(input: { destaques: string[]; sections: Array<{ key: string; enabled: boolean }> }) {
+  return adminFetch<{ ok: boolean; override: HomeOverride }>(
+    "/api/admin/home",
+    { method: "PUT", body: JSON.stringify({ input }) },
+  );
+}
+
+/** §12 — Notícias (vitrine pública em etapa futura). */
+export function fetchNews() {
+  return adminFetch<{ items: NewsItem[] }>("/api/admin/news");
+}
+
+export function saveNews(item: NewsItem, isNew: boolean) {
+  return adminFetch<{ ok: boolean; changed?: boolean; item: NewsItem }>(
+    isNew ? "/api/admin/news" : `/api/admin/news/${encodeURIComponent(item.id)}`,
+    { method: isNew ? "POST" : "PUT", body: JSON.stringify({ item }) },
+  );
+}
+
+export function deleteNews(id: string) {
+  return adminFetch<{ ok: boolean }>(
+    `/api/admin/news/${encodeURIComponent(id)}`,
     { method: "DELETE" },
   );
 }

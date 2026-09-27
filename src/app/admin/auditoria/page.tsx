@@ -85,6 +85,8 @@ export default function AdminAuditPage() {
       "Cliffhanger Club",
       "Avaliações",
       "Notificações",
+      "Home",
+      "Notícias",
       "Lançamentos",
       "Notícias",
       "Configurações",

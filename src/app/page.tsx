@@ -19,6 +19,7 @@ import {
 import { getActiveBanner } from "@/lib/banners";
 import { HOME_SECTION_ORDER } from "@/lib/theme-css";
 import { getActiveTheme } from "@/lib/themes";
+import { getHomeOverride } from "@/lib/home-override";
 import type { HomeSectionKey, Product } from "@/lib/types";
 
 export const metadata: Metadata = {
@@ -37,27 +38,34 @@ export const revalidate = 300;
  *
  * O banner vem do módulo Banners do painel — arte final única por upload
  * (Documento de Correção §5). Destaques, ordem/habilitação das seções e
- * zonas vêm do padrão ativo (src/data/themes.ts).
+ * zonas vêm do padrão ativo (src/data/themes.ts), com a curadoria do
+ * módulo Home (`site/home`) assumindo quando preenchida (§12/§3).
  */
 export default async function HomePage() {
-  const [catalog, theme, banner] = await Promise.all([
+  const [catalog, theme, banner, homeOverride] = await Promise.all([
     getCatalog(),
     getActiveTheme(),
     getActiveBanner(),
+    getHomeOverride(),
   ]);
   const { products, works, universes, authors, collections } = catalog;
 
-  // 3.5 Destaques — curadoria do modelo ou seleção automática
+  // 3.5 Destaques — curadoria do painel, do modelo ou seleção automática
+  const overrideDestaques = (homeOverride?.destaques ?? [])
+    .map((id) => products.find((p) => p.id === id))
+    .filter((p): p is Product => Boolean(p));
   const autoDestaques = [
     ...bestSellers(products).slice(0, 6),
     ...launches(products).filter((p) => !bestSellers(products).includes(p)).slice(0, 4),
   ].slice(0, 10);
 
-  const destaques: Product[] = theme.home.destaques.length
-    ? theme.home.destaques
-        .map((id) => products.find((p) => p.id === id))
-        .filter((p): p is Product => Boolean(p))
-    : autoDestaques;
+  const destaques: Product[] = overrideDestaques.length
+    ? overrideDestaques
+    : theme.home.destaques.length
+      ? theme.home.destaques
+          .map((id) => products.find((p) => p.id === id))
+          .filter((p): p is Product => Boolean(p))
+      : autoDestaques;
 
   // 3.6 Restante da Home — seções montadas a partir do catálogo
   const novidades = launches(products).slice(0, 8);
@@ -195,11 +203,14 @@ export default async function HomePage() {
       ) : null,
   };
 
-  // ordem e habilitação das seções conforme o modelo ativo do CMS;
-  // chaves ausentes ficam desativadas (lista vazia cai na ordem oficial 3.6)
-  const orderedSections = theme.home.sections.length
-    ? theme.home.sections
-    : HOME_SECTION_ORDER.map((key) => ({ key, enabled: true }));
+  // ordem e habilitação das seções: curadoria do painel, modelo ativo ou
+  // ordem oficial (§3.6); chaves ausentes ficam desativadas
+  const orderedSections =
+    homeOverride && homeOverride.sections.length
+      ? homeOverride.sections
+      : theme.home.sections.length
+        ? theme.home.sections
+        : HOME_SECTION_ORDER.map((key) => ({ key, enabled: true }));
 
   // zonas novas (festivais sazonais) — vazio no modelo default
   const zones = theme.home.zones ?? [];

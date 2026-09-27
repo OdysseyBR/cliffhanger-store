@@ -530,6 +530,56 @@ export interface StoreNotification {
 }
 
 // ---------------------------------------------------------------------------
+// Conteúdo — Home, Notícias e Lançamentos (§12/§3/§20)
+// ---------------------------------------------------------------------------
+
+/**
+ * §12/§20 — conteúdo editorial de um lançamento (o que a página pública
+ * `/lancamentos/[slug]` exibe além da mecânica de pré-venda). A mecânica
+ * (título, slug, data, lotes, produtos, notificação, envio) pertence ao
+ * módulo Pré-vendas (`LAUNCH_PREORDER_FIELDS`); aqui entra arte, sinopse,
+ * trailer, redes sociais e os vínculos com obra/universo.
+ */
+export interface LaunchContent {
+  highlight: string;
+  cover: Cover;
+  synopsis: string;
+  trailerUrl: string;
+  socials: LaunchSocial[];
+  workId: string;
+  universeId: string;
+}
+
+/**
+ * §12/§3 — composição da Home (documento único `site/home`). Camada de
+ * curadoria sobre o padrão visual ativo: quando vazia, a loja usa o
+ * automático do tema; quando preenchida, o painel assume.
+ */
+export interface HomeOverride {
+  /** ids de produtos dos Destaques (máx. 10; vazio = automático) */
+  destaques: string[];
+  /** ordem e habilitação das seções (vazio = padrão do tema) */
+  sections: ThemeHomeSection[];
+  updatedAt: string;
+}
+
+/** §12 — notícia do painel (coleção `news`; vitrine pública em etapa futura). */
+export interface NewsItem {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  body: string;
+  /** URL da imagem de capa (opcional) */
+  coverImage: string;
+  status: "draft" | "published";
+  /** ISO — fixado na primeira publicação */
+  publishedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ---------------------------------------------------------------------------
 // Padrões visuais da loja (Documento de Correção, Finalização e Ajustes — §4)
 // ---------------------------------------------------------------------------
 

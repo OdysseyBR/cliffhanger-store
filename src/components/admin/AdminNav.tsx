@@ -71,9 +71,9 @@ const ADMIN_NAV: NavGroup[] = [
     title: "Conteúdo",
     items: [
       { label: "Banners", href: "/admin/banners", perm: "banners.view" },
-      { label: "Home" },
-      { label: "Notícias" },
-      { label: "Lançamentos" },
+      { label: "Home", href: "/admin/home", perm: "home.view" },
+      { label: "Notícias", href: "/admin/noticias", perm: "news.view" },
+      { label: "Lançamentos", href: "/admin/lancamentos", perm: "launches.view" },
     ],
   },
   {
