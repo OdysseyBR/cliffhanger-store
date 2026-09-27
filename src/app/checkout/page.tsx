@@ -59,6 +59,36 @@ export default function CheckoutPage() {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [shippingOption, setShippingOption] = useState<"standard" | "express">("standard");
+  const [addressFilled, setAddressFilled] = useState(false);
+
+  // §6 — endereço principal entra sozinho (dá para trocar na compra)
+  useEffect(() => {
+    if (!user || addressFilled) return;
+    void (async () => {
+      try {
+        const token = await getClientAuth()?.currentUser?.getIdToken();
+        if (!token) return;
+        const res = await fetch("/api/account/addresses", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const data = (await res.json()) as { addresses?: import("@/lib/account-fields").CustomerAddress[] };
+        const primary = (data.addresses ?? []).find((address) => address.isDefault);
+        if (!primary) return;
+        setCep(primary.cep);
+        setStreet(primary.street);
+        setNumber(primary.number);
+        setComplement(primary.complement ?? "");
+        setNeighborhood(primary.district);
+        setCity(primary.city);
+        setState(primary.state);
+        setAddressFilled(true);
+      } catch {
+        /* segue manual */
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
   // frete — cotação por CEP (§17)
   const [quote, setQuote] = useState<ShippingQuote | null>(null);
   const [quoteError, setQuoteError] = useState<string | null>(null);

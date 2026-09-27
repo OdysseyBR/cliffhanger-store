@@ -1,7 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useState, type FormEvent } from "react";
+import { FacebookAuthProvider, GoogleAuthProvider, linkWithPopup, unlink } from "firebase/auth";
 import { useStore } from "@/components/Providers";
+import { getClientAuth } from "@/lib/firebase";
 import { IconCheck } from "@/components/Icons";
 
 /**
@@ -49,11 +52,11 @@ function deviceLabel(): string {
 export function SecuritySection() {
   const {
     user,
+    notify,
     logout,
     changePassword,
     sendReset,
     verifyEmail,
-    deleteAccount,
     revokeSessions,
   } = useStore();
 
@@ -87,13 +90,51 @@ export function SecuritySection() {
     }
   };
 
-  const confirmDelete = async () => {
-    if (
-      window.confirm(
-        "Excluir sua conta Cliffhanger? Perfil, wishlist e biblioteca vinculada serão removidos. Esta ação não pode ser desfeita.",
-      )
-    ) {
-      await run(deleteAccount);
+  /** Vincula Google/Facebook à conta atual (§8 — mesma Cliffhanger Account). */
+  const linkProvider = async (providerId: "google.com" | "facebook.com") => {
+    const current = getClientAuth()?.currentUser;
+    if (!current) {
+      notify("Sessão expirada — entre novamente.", "error");
+      return;
+    }
+    setBusy(true);
+    try {
+      const provider =
+        providerId === "google.com" ? new GoogleAuthProvider() : new FacebookAuthProvider();
+      await linkWithPopup(current, provider);
+      notify("Método vinculado à sua conta.", "success");
+    } catch (error) {
+      notify(
+        error instanceof Error && "code" in error && (error as { code: string }).code === "auth/credential-already-in-use"
+          ? "Este login já pertence a outra conta."
+          : "Falha ao vincular — tente novamente.",
+        "error",
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  /** Desvincula — nunca o último método (evita conta sem acesso). */
+  const unlinkProvider = async (providerId: string) => {
+    const current = getClientAuth()?.currentUser;
+    if (!current) {
+      notify("Sessão expirada — entre novamente.", "error");
+      return;
+    }
+    if (user && user.providers.length <= 1) {
+      notify("Não dá para remover o único método de acesso.", "error");
+      return;
+    }
+    if (!window.confirm("Desvincular este método de login?")) return;
+    setBusy(true);
+    try {
+      await unlink(current, providerId);
+      notify("Método desvinculado.", "success");
+    } catch {
+      notify("Falha ao desvincular — tente novamente.", "error");
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -109,15 +150,51 @@ export function SecuritySection() {
               user.providers.map((providerId) => (
                 <span
                   key={providerId}
-                  className="rounded-full border border-violet/50 bg-violet/10 px-3 py-1 text-xs font-semibold"
+                  className="inline-flex items-center gap-1 rounded-full border border-violet/50 bg-violet/10 px-3 py-1 text-xs font-semibold"
                 >
                   {providerLabels[providerId] ?? providerId}
+                  {user.providers.length > 1 && (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => void unlinkProvider(providerId)}
+                      className="ml-1 text-[var(--text-muted)] hover:text-[#e5484d]"
+                      aria-label={`Desvincular ${providerLabels[providerId] ?? providerId}`}
+                    >
+                      ×
+                    </button>
+                  )}
                 </span>
               ))
             ) : (
               <span className="text-sm text-[var(--text-muted)]">Nenhum método vinculado.</span>
             )}
           </div>
+          {(!user.providers.includes("google.com") ||
+            !user.providers.includes("facebook.com")) && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {!user.providers.includes("google.com") && (
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void linkProvider("google.com")}
+                  className="btn btn-ghost px-4 py-2 text-xs"
+                >
+                  Vincular Google
+                </button>
+              )}
+              {!user.providers.includes("facebook.com") && (
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void linkProvider("facebook.com")}
+                  className="btn btn-ghost px-4 py-2 text-xs"
+                >
+                  Vincular Facebook
+                </button>
+              )}
+            </div>
+          )}
           <p className="mt-1.5 text-xs text-[var(--text-muted)]">
             Todos apontam para a mesma Cliffhanger Account.
           </p>
@@ -216,22 +293,13 @@ export function SecuritySection() {
           )}
         </div>
 
-        <div className="rounded-xl border border-[#e5484d]/40 p-4">
-          <p className="mb-1.5 text-xs font-bold uppercase tracking-wider text-[#e5484d]">
-            Exclusão de conta
-          </p>
-          <p className="text-xs text-[var(--text-muted)]">
-            Remove perfil, wishlist e dados vinculados. Não afeta pedidos já feitos.
-          </p>
-          <button
-            type="button"
-            onClick={() => void confirmDelete()}
-            disabled={busy}
-            className="mt-3 btn btn-ghost border-[#e5484d]/40 px-4 py-2 text-xs text-[#e5484d]"
-          >
-            Excluir conta
-          </button>
-        </div>
+        <p className="text-xs text-[var(--text-muted)]">
+          Excluir a conta? Isso mora em{" "}
+          <Link href="/conta/configuracoes/privacidade" className="text-gold underline">
+            Privacidade
+          </Link>
+          , com as consequências explicadas.
+        </p>
       </div>
     </div>
   );

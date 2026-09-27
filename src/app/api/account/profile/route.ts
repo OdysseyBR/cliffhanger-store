@@ -23,11 +23,13 @@ export async function GET(request: Request) {
   try {
     const snap = await db.collection("customers").doc(user.uid).get();
     if (!snap.exists) return Response.json({ profile: null });
-    const data = snap.data() as { phone?: unknown; email?: unknown };
+    const data = snap.data() as { phone?: unknown; email?: unknown; surname?: unknown; doc?: unknown };
     return Response.json({
       profile: {
         phone: typeof data.phone === "string" ? data.phone : "",
         email: typeof data.email === "string" ? data.email : user.email,
+        surname: typeof data.surname === "string" ? data.surname : "",
+        doc: typeof data.doc === "string" ? data.doc : "",
       },
     });
   } catch {
@@ -48,7 +50,7 @@ export async function PUT(request: Request) {
     );
   }
 
-  let body: { name?: unknown; photo?: unknown; phone?: unknown };
+  let body: { name?: unknown; photo?: unknown; phone?: unknown; surname?: unknown; doc?: unknown };
   try {
     body = (await request.json()) as typeof body;
   } catch {
@@ -70,6 +72,16 @@ export async function PUT(request: Request) {
     return Response.json({ error: "Telefone inválido." }, { status: 400 });
   }
 
+  // sobrenome e documento moram só no perfil da loja (§5/§6 detalhe)
+  const surname = str(body?.surname);
+  if (surname.length > 80) {
+    return Response.json({ error: "Sobrenome muito longo." }, { status: 400 });
+  }
+  const doc = str(body?.doc).replace(/[^\d]/g, "");
+  if (doc && (doc.length < 8 || doc.length > 14)) {
+    return Response.json({ error: "Documento inválido." }, { status: 400 });
+  }
+
   try {
     await auth.updateUser(user.uid, {
       displayName: name,
@@ -89,6 +101,8 @@ export async function PUT(request: Request) {
           name,
           photo: photo || undefined,
           phone: phone || undefined,
+          surname: surname || undefined,
+          doc: doc || undefined,
           email: user.email,
           updatedAt: new Date().toISOString(),
         }),
@@ -98,5 +112,5 @@ export async function PUT(request: Request) {
     /* Auth atualizado; perfil da loja sincroniza no próximo login */
   }
 
-  return Response.json({ ok: true, profile: { name, photo, phone } });
+  return Response.json({ ok: true, profile: { name, photo, phone, surname, doc } });
 }
