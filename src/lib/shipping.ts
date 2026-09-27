@@ -98,6 +98,8 @@ export interface ShippingQuote {
   regionLabel: string;
   /** UF resolvida via ViaCEP quando acessível (exibição) */
   state?: string | null;
+  /** limite usado na cotação (Configurações §12) */
+  freeShippingFrom?: number;
   options: ShippingOptionQuote[];
 }
 
@@ -107,6 +109,8 @@ interface QuoteInput {
   itemCount: number;
   /** subtotal do pedido em R$ */
   subtotal: number;
+  /** limite do frete grátis (padrão: `FREE_SHIPPING_FROM`, editável em Configurações §12) */
+  freeShippingFrom?: number;
 }
 
 function round2(value: number): number {
@@ -117,13 +121,14 @@ function round2(value: number): number {
  * Cotação com as duas modalidades. Retorna `null` para CEP inválido —
  * o chamador decide o fallback.
  */
-export function quoteShipping({ cep, itemCount, subtotal }: QuoteInput): ShippingQuote | null {
+export function quoteShipping({ cep, itemCount, subtotal, freeShippingFrom }: QuoteInput): ShippingQuote | null {
   const region = regionFromCep(cep);
   if (!region) return null;
   const plan = REGIONS[region];
   const qty = Math.max(1, Math.min(99, Math.floor(itemCount) || 1));
   const extra = (qty - 1) * ADDITIONAL_ITEM_FEE;
-  const free = subtotal >= FREE_SHIPPING_FROM;
+  const threshold = freeShippingFrom ?? FREE_SHIPPING_FROM;
+  const free = subtotal >= threshold;
 
   const build = (
     id: ShippingOptionId,
@@ -142,12 +147,17 @@ export function quoteShipping({ cep, itemCount, subtotal }: QuoteInput): Shippin
     cep: formatCep(cep),
     region,
     regionLabel: plan.label,
+    freeShippingFrom: threshold,
     options: [build("standard", "Padrão", plan.standard), build("express", "Expressa", plan.express)],
   };
 }
 
 /** preço de um pedido físico sem cotação (fallback determinístico) */
-export function fallbackShippingPrice(subtotal: number, option: ShippingOptionId): number {
-  if (subtotal >= FREE_SHIPPING_FROM) return 0;
+export function fallbackShippingPrice(
+  subtotal: number,
+  option: ShippingOptionId,
+  freeShippingFrom: number = FREE_SHIPPING_FROM,
+): number {
+  if (subtotal >= freeShippingFrom) return 0;
   return option === "express" ? 39.9 : 24.9;
 }

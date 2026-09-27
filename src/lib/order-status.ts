@@ -28,6 +28,14 @@ const KNOWN_STATUS: OrderStatus[] = [
 /** Lista oficial — validação do servidor no módulo Pedidos do painel (§12). */
 export const ORDER_STATUS_LIST: OrderStatus[] = KNOWN_STATUS;
 
+/** Status que compõem receita (Financeiro/Relatórios §12): tudo que passou do pagamento. */
+export const REVENUE_STATUS: OrderStatus[] = [
+  "pagamento_aprovado",
+  "em_separacao",
+  "enviado",
+  "entregue",
+];
+
 /** Normaliza o valor gravado (inclusive legados) para o enum oficial. */
 export function normalizeStatus(value: unknown): OrderStatus {
   const raw = typeof value === "string" ? value.trim() : "";

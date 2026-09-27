@@ -18,6 +18,7 @@ import type {
   ClubMember,
   Collection,
   Coupon,
+  FinanceSummary,
   HomeOverride,
   Launch,
   NewsItem,
@@ -25,7 +26,9 @@ import type {
   OrderStatus,
   Product,
   Promotion,
+  ReportSummary,
   Review,
+  ShopSettings,
   StockMovement,
   StoreNotification,
   Universe,
@@ -452,5 +455,27 @@ export function deleteNews(id: string) {
   return adminFetch<{ ok: boolean }>(
     `/api/admin/news/${encodeURIComponent(id)}`,
     { method: "DELETE" },
+  );
+}
+
+/** §12 — Dados: Relatórios e Financeiro (somente leitura) e Configurações. */
+export function fetchReport(days?: number) {
+  const suffix = days ? `?days=${encodeURIComponent(days)}` : "";
+  return adminFetch<{ report: ReportSummary }>(`/api/admin/reports${suffix}`);
+}
+
+export function fetchFinance(days?: number) {
+  const suffix = days ? `?days=${encodeURIComponent(days)}` : "";
+  return adminFetch<{ finance: FinanceSummary }>(`/api/admin/finance${suffix}`);
+}
+
+export function fetchSettings() {
+  return adminFetch<{ settings: ShopSettings; defaults?: boolean }>("/api/admin/settings");
+}
+
+export function saveSettings(settings: ShopSettings) {
+  return adminFetch<{ ok: boolean; settings: ShopSettings }>(
+    "/api/admin/settings",
+    { method: "PUT", body: JSON.stringify({ settings }) },
   );
 }

@@ -78,7 +78,11 @@ const ADMIN_NAV: NavGroup[] = [
   },
   {
     title: "Dados",
-    items: [{ label: "Relatórios" }, { label: "Financeiro" }, { label: "Configurações" }],
+    items: [
+      { label: "Relatórios", href: "/admin/relatorios", perm: "reports.view" },
+      { label: "Financeiro", href: "/admin/financeiro", perm: "finance.view" },
+      { label: "Configurações", href: "/admin/configuracoes", perm: "settings.view" },
+    ],
   },
   {
     title: "Segurança",

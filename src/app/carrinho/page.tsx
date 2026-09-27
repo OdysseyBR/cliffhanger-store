@@ -15,6 +15,7 @@ export default function CarrinhoPage() {
   const { cart, setQty, removeFromCart, clearCart } = useStore();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [freeFrom, setFreeFrom] = useState(FREE_SHIPPING_FROM);
 
   useEffect(() => {
     void (async () => {
@@ -28,6 +29,18 @@ export default function CarrinhoPage() {
         setLoading(false);
       }
     })();
+    // limite do frete grátis (Configurações §12); constante de reserva
+    void (async () => {
+      try {
+        const res = await fetch("/api/settings");
+        const data = (await res.json()) as { freeShippingFrom?: number };
+        if (Number.isFinite(data.freeShippingFrom)) {
+          setFreeFrom(Number(data.freeShippingFrom));
+        }
+      } catch {
+        /* mantém a constante */
+      }
+    })();
   }, []);
 
   const lines = cart
@@ -39,10 +52,10 @@ export default function CarrinhoPage() {
   const subtotal = lines.reduce((sum, l) => sum + l.product.price * l.item.qty, 0);
   const hasPhysical = lines.some((l) => !l.product.digital);
   const missingForFreeShipping = hasPhysical
-    ? Math.max(0, FREE_SHIPPING_FROM - subtotal)
+    ? Math.max(0, freeFrom - subtotal)
     : 0;
   const progress = hasPhysical
-    ? Math.min(100, Math.round((subtotal / FREE_SHIPPING_FROM) * 100))
+    ? Math.min(100, Math.round((subtotal / freeFrom) * 100))
     : 100;
 
   // Recomendações relacionadas (Doc Mestre 7.1): mesma obra → mesmo universo →
@@ -177,7 +190,7 @@ export default function CarrinhoPage() {
               {hasPhysical && (
                 <div>
                   <div className="mb-1 flex justify-between text-xs">
-                    <span className="text-[var(--text-muted)]">Frete grátis acima de {formatPrice(FREE_SHIPPING_FROM)}</span>
+                    <span className="text-[var(--text-muted)]">Frete grátis acima de {formatPrice(freeFrom)}</span>
                     <span className="font-bold text-gold">{progress}%</span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-[var(--surface-raised-2)]">

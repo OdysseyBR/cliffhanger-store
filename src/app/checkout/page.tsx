@@ -99,10 +99,12 @@ export default function CheckoutPage() {
     .filter((l) => !l.product.digital)
     .reduce((sum, l) => sum + l.item.qty, 0);
   const hasPhysical = lines.some((l) => !l.product.digital);
-  const freeShipping = subtotal >= FREE_SHIPPING_FROM;
+  // limite do frete grátis vem da cotação (Configurações §12); constante de reserva
+  const freeFrom = quote?.freeShippingFrom ?? FREE_SHIPPING_FROM;
+  const freeShipping = subtotal >= freeFrom;
   const quotePrice = (option: "standard" | "express"): number =>
     quote?.options.find((o) => o.id === option)?.price ??
-    fallbackShippingPrice(subtotal, option);
+    fallbackShippingPrice(subtotal, option, freeFrom);
   const shipping = !hasPhysical ? 0 : quotePrice(shippingOption);
   const discount = appliedCoupon ? Math.min(appliedCoupon.discount, subtotal) : 0;
   const total = subtotal - discount + shipping;
@@ -427,7 +429,7 @@ export default function CheckoutPage() {
                     >
                       {freeShipping
                         ? "Você ganhou frete grátis neste pedido."
-                        : `Faltam ${formatPrice(FREE_SHIPPING_FROM - subtotal)} para o frete grátis.`}
+                        : `Faltam ${formatPrice(freeFrom - subtotal)} para o frete grátis.`}
                     </p>
 
                     <fieldset className="space-y-2">

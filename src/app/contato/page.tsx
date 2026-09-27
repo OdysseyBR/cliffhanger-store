@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Page } from "@/components/Page";
 import { Section } from "@/components/Section";
+import { getShopSettings } from "@/lib/shop-settings";
 
 export const metadata: Metadata = {
   title: "Contato",
@@ -9,15 +10,10 @@ export const metadata: Metadata = {
     "Fale com a Cliffhanger Store: suporte a pedidos, trocas, digitais, clube e parcerias.",
 };
 
-const CHANNELS: { title: string; lines: string[] }[] = [
-  {
-    title: "Suporte a pedidos",
-    lines: [
-      "suporte@cliffhangerstore.xyz",
-      "Segunda a sexta, das 9h às 18h",
-      "Resposta em até 1 dia útil",
-    ],
-  },
+/** Reflete o e-mail de suporte (Configurações §12) em até 5 minutos. */
+export const revalidate = 300;
+
+const STATIC_CHANNELS: { title: string; lines: string[] }[] = [
   {
     title: "Contas e digitais",
     lines: [
@@ -37,7 +33,19 @@ const CHANNELS: { title: string; lines: string[] }[] = [
 ];
 
 /** Rota obrigatória §22 — canais de atendimento. */
-export default function ContatoPage() {
+export default async function ContatoPage() {
+  const settings = await getShopSettings();
+  const channels = [
+    {
+      title: "Suporte a pedidos",
+      lines: [
+        settings.supportEmail,
+        "Segunda a sexta, das 9h às 18h",
+        "Resposta em até 1 dia útil",
+      ],
+    },
+    ...STATIC_CHANNELS,
+  ];
   return (
     <Page>
       <Section
@@ -45,7 +53,7 @@ export default function ContatoPage() {
         subtitle="Escolha o canal certo — quanto mais específico, mais rápido respondemos."
       >
         <div className="grid gap-6 lg:grid-cols-3">
-          {CHANNELS.map((channel) => (
+          {channels.map((channel) => (
             <div key={channel.title} className="card space-y-2 p-6">
               <h2 className="text-display text-xl text-gold">{channel.title}</h2>
               {channel.lines.map((line, index) => (

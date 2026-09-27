@@ -20,6 +20,7 @@ import { getActiveBanner } from "@/lib/banners";
 import { HOME_SECTION_ORDER } from "@/lib/theme-css";
 import { getActiveTheme } from "@/lib/themes";
 import { getHomeOverride } from "@/lib/home-override";
+import { getShopSettings } from "@/lib/shop-settings";
 import type { HomeSectionKey, Product } from "@/lib/types";
 
 export const metadata: Metadata = {
@@ -42,11 +43,12 @@ export const revalidate = 300;
  * módulo Home (`site/home`) assumindo quando preenchida (§12/§3).
  */
 export default async function HomePage() {
-  const [catalog, theme, banner, homeOverride] = await Promise.all([
+  const [catalog, theme, banner, homeOverride, settings] = await Promise.all([
     getCatalog(),
     getActiveTheme(),
     getActiveBanner(),
     getHomeOverride(),
+    getShopSettings(),
   ]);
   const { products, works, universes, authors, collections } = catalog;
 
@@ -215,11 +217,22 @@ export default async function HomePage() {
   // zonas novas (festivais sazonais) — vazio no modelo default
   const zones = theme.home.zones ?? [];
 
+  // aviso da loja (Configurações §12) — texto curto sobre o banner
+  const announcement =
+    settings.announcementActive && settings.announcementText
+      ? settings.announcementText
+      : null;
+
   return (
     <Page
       beforeHeader={<HomeBanner banner={banner} />}
       hideHeader={!banner.showHeader}
     >
+      {announcement && (
+        <p className="mb-4 rounded-full border border-gold/40 bg-gold/10 px-5 py-2 text-center text-xs font-bold uppercase tracking-wider text-gold">
+          {announcement}
+        </p>
+      )}
       {/* 3.4 Menu Buttons */}
       <MenuButtons />
 

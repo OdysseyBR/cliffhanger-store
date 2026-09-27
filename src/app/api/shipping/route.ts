@@ -2,8 +2,8 @@ import {
   cepDigits,
   formatCep,
   quoteShipping,
-  FREE_SHIPPING_FROM,
 } from "@/lib/shipping";
+import { getShopSettings } from "@/lib/shop-settings";
 
 /**
  * Cálculo de frete por CEP (Documento de Correção §17).
@@ -51,7 +51,8 @@ export async function POST(request: Request) {
   const itemCount = Math.max(1, Math.min(99, Number(payload.itemCount) || 1));
   const subtotal = Math.max(0, Number(payload.subtotal) || 0);
 
-  const quote = quoteShipping({ cep: digits, itemCount, subtotal });
+  const settings = await getShopSettings();
+  const quote = quoteShipping({ cep: digits, itemCount, subtotal, freeShippingFrom: settings.freeShippingFrom });
   if (!quote) {
     return Response.json(
       { error: "CEP fora das faixas atendidas." },
@@ -67,7 +68,7 @@ export async function POST(request: Request) {
     state,
     region: quote.region,
     regionLabel: quote.regionLabel,
-    freeShippingFrom: FREE_SHIPPING_FROM,
+    freeShippingFrom: settings.freeShippingFrom,
     options: quote.options,
   });
 }

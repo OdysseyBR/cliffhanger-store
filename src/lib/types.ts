@@ -580,6 +580,74 @@ export interface NewsItem {
 }
 
 // ---------------------------------------------------------------------------
+// Dados — Relatórios, Financeiro e Configurações (§12)
+// ---------------------------------------------------------------------------
+
+/** §12 — configurações da loja (documento único `site/settings`). */
+export interface ShopSettings {
+  /** subtotal em R$ a partir do qual o frete sai grátis (padrão 199) */
+  freeShippingFrom: number;
+  /** e-mail de suporte exibido na página de contato */
+  supportEmail: string;
+  /** aviso no topo da home (vazio/inativo = sem aviso) */
+  announcementText: string;
+  announcementActive: boolean;
+  updatedAt: string;
+}
+
+/** §12 — Relatórios: agregados somente leitura sobre o banco. */
+export interface ReportSummary {
+  days: number;
+  /** ISO — início do período ("" = desde sempre) */
+  since: string;
+  sales: {
+    orders: number;
+    revenue: number;
+    avgTicket: number;
+    discounts: number;
+    shipping: number;
+    byStatus: Record<string, number>;
+    byPayment: Record<string, number>;
+  };
+  topProducts: Array<{ productId: string; title: string; qty: number; revenue: number }>;
+  stock: { skus: number; units: number; low: number; out: number };
+  digital: { libraries: number; items: number; withProgress: number; avgProgress: number };
+  marketing: {
+    couponsActive: number;
+    couponsUsed: number;
+    promotionsActive: number;
+    reviewsAvg: number;
+    reviewsPending: number;
+    notificationsSent: number;
+  };
+}
+
+/** §12 — Financeiro: visão de receita sobre os pedidos (somente leitura). */
+export interface FinanceSummary {
+  days: number;
+  since: string;
+  revenue: number;
+  pending: number;
+  cancelledOrders: number;
+  cancelledValue: number;
+  discounts: number;
+  shipping: number;
+  avgTicket: number;
+  byMethod: Record<string, { orders: number; revenue: number }>;
+  entries: Array<{
+    id: string;
+    code: string;
+    createdAt: string;
+    status: string;
+    total: number;
+    discount: number;
+    shipping: number;
+    paymentMethod: string;
+    customer: string;
+  }>;
+}
+
+// ---------------------------------------------------------------------------
 // Padrões visuais da loja (Documento de Correção, Finalização e Ajustes — §4)
 // ---------------------------------------------------------------------------
 

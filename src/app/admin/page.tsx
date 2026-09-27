@@ -333,8 +333,8 @@ export default function AdminDashboardPage() {
         Obras, Universos, Autores, Categorias, Coleções, Estoque, Pedidos,
         Clientes, E-books, Audiobooks, Biblioteca Digital, Pré-vendas, Cupons,
         Promoções, Cliffhanger Club, Avaliações, Banners, Home, Notícias,
-        Lançamentos, Notificações, Relatórios, Financeiro e Configurações.
-        Ativos hoje: Dashboard, Produtos, Banners e Cupons — os demais seguem o roadmap.
+        Lançamentos, Notificações, Relatórios, Financeiro e Configurações —
+        todos ativos.
       </p>
     </div>
   );

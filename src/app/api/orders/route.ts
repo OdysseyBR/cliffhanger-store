@@ -7,6 +7,7 @@ import { grantLibraryItems } from "@/lib/library";
 import { normalizeOrder } from "@/lib/order-fields";
 import { evaluateCoupon, normalizeCouponCode } from "@/lib/coupons";
 import { fallbackShippingPrice, quoteShipping } from "@/lib/shipping";
+import { getShopSettings } from "@/lib/shop-settings";
 import type { Coupon, Order, OrderGift, OrderItem, OrderStatus } from "@/lib/types";
 
 interface CheckoutPayload {
@@ -83,14 +84,16 @@ export async function POST(request: Request) {
     .filter((item) => !item.digital)
     .reduce((sum, item) => sum + item.qty, 0);
   const option = payload.shippingOption === "express" ? "express" : "standard";
+  const settings = await getShopSettings();
   const quote = quoteShipping({
     cep: payload.address?.cep ?? "",
     itemCount,
     subtotal,
+    freeShippingFrom: settings.freeShippingFrom,
   });
   const shipping = hasPhysical
     ? (quote?.options.find((o) => o.id === option)?.price ??
-      fallbackShippingPrice(subtotal, option))
+      fallbackShippingPrice(subtotal, option, settings.freeShippingFrom))
     : 0;
 
   // §17 — cupom: revalidado no servidor; desconto aplicado ao total.

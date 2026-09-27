@@ -90,6 +90,8 @@ export default function AdminAuditPage() {
       "Lançamentos",
       "Notícias",
       "Configurações",
+      "Relatórios",
+      "Financeiro",
     ]);
     entries?.forEach((entry) => set.add(entry.module));
     return [...set].sort((a, b) => a.localeCompare(b, "pt-BR"));
