@@ -1,364 +1,151 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { useStore } from "@/components/Providers";
-import { AuthCard } from "@/components/AuthCard";
-import { IconCheck } from "@/components/Icons";
-import { Page } from "@/components/Page";
-import { Section } from "@/components/Section";
+import { getClientAuth } from "@/lib/firebase";
+import type { LibraryItem, Order, ReadingProgress } from "@/lib/types";
 
-const providerLabels: Record<string, string> = {
-  "google.com": "Google",
-  "facebook.com": "Facebook",
-  password: "E-mail e senha",
-};
+/**
+ * §2 — Centro da Conta: dashboard pessoal (visão geral da relação com a
+ * loja). Topo com avatar/nome/e-mail/Plus; resumos de coleção, digitais,
+ * pedidos e wishlist; continuidade do último ebook/audiobook.
+ */
 
-/** Rótulo amigável do dispositivo atual (9.5 — visualização de sessões). */
-function deviceLabel(): string {
-  if (typeof navigator === "undefined") return "";
-  const ua = navigator.userAgent;
-  const browser = /Edg\//.test(ua)
-    ? "Edge"
-    : /OPR\//.test(ua)
-      ? "Opera"
-      : /Firefox\//.test(ua)
-        ? "Firefox"
-        : /Chrome\//.test(ua)
-          ? "Chrome"
-          : /Safari\//.test(ua)
-            ? "Safari"
-            : "Navegador";
-  const os = /Windows/.test(ua)
-    ? "Windows"
-    : /Mac OS X/.test(ua)
-      ? "macOS"
-      : /Android/.test(ua)
-        ? "Android"
-        : /iPhone|iPad/.test(ua)
-          ? "iOS"
-          : /Linux/.test(ua)
-            ? "Linux"
-            : "outro sistema";
-  return `${browser} em ${os}`;
+interface LibraryPayload {
+  items?: LibraryItem[];
+  progress?: Record<string, ReadingProgress>;
 }
 
-export default function ContaPage() {
-  const {
-    user,
-    authLoading,
-    logout,
-    changePassword,
-    sendReset,
-    verifyEmail,
-    deleteAccount,
-    revokeSessions,
-    theme,
-    setTheme,
-  } = useStore();
+function Stat({ label, value, href }: { label: string; value: string; href: string }) {
+  return (
+    <Link
+      href={href}
+      className="card block p-4 transition hover:border-gold/50"
+    >
+      <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+        {label}
+      </p>
+      <p className="text-lg font-bold text-gold">{value}</p>
+    </Link>
+  );
+}
 
-  const [busy, setBusy] = useState(false);
-  const [newPassword, setNewPassword] = useState("");
-  const [device] = useState(deviceLabel);
+export default function ContaDashboardPage() {
+  const { user, wishlist } = useStore();
+  const [items, setItems] = useState<LibraryItem[]>([]);
+  const [progress, setProgress] = useState<Record<string, ReadingProgress>>({});
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const submitPassword = async (event: FormEvent) => {
-    event.preventDefault();
-    setBusy(true);
-    try {
-      await changePassword(newPassword);
-      setNewPassword("");
-    } catch {
-      /* erro já exibido pelo provider */
-    } finally {
-      setBusy(false);
-    }
-  };
+  useEffect(() => {
+    if (!user) return;
+    void (async () => {
+      try {
+        const token = await getClientAuth()?.currentUser?.getIdToken();
+        const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+        const [libraryRes, ordersRes] = await Promise.all([
+          fetch("/api/library", { headers }),
+          fetch("/api/orders/mine", { headers }),
+        ]);
+        if (libraryRes.ok) {
+          const data = (await libraryRes.json()) as LibraryPayload;
+          setItems(data.items ?? []);
+          setProgress(data.progress ?? {});
+        }
+        if (ordersRes.ok) {
+          const data = (await ordersRes.json()) as { orders?: Order[] };
+          setOrders(data.orders ?? []);
+        }
+      } catch {
+        /* offline — resumos ficam zerados */
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [user]);
 
-  const run = async (action: () => Promise<void>) => {
-    setBusy(true);
-    try {
-      await action();
-    } catch {
-      /* erro já exibido pelo provider */
-    } finally {
-      setBusy(false);
-    }
-  };
+  if (!user) return null;
 
-  const confirmDelete = async () => {
-    if (
-      window.confirm(
-        "Excluir sua conta Cliffhanger? Perfil, wishlist e biblioteca vinculada serão removidos. Esta ação não pode ser desfeita.",
-      )
-    ) {
-      await run(deleteAccount);
-    }
-  };
+  const ebooks = items.filter((item) => item.type === "ebook").length;
+  const audiobooks = items.filter((item) => item.type === "audiobook").length;
+
+  const progressList = Object.values(progress);
+  const last = progressList.sort((a, b) =>
+    String(b.updatedAt ?? "").localeCompare(String(a.updatedAt ?? "")),
+  )[0];
+  const lastItem = last ? items.find((item) => item.productId === last.productId) : undefined;
+
+  const initials = (user.displayName ?? user.email ?? "?").slice(0, 2).toUpperCase();
 
   return (
-    <Page>
-      <Section title="Minha conta" subtitle="Uma única conta Cliffhanger para loja, biblioteca e clube.">
-        <div className="grid gap-8 lg:grid-cols-2">
-          {/* estado da sessão */}
-          <div className="card p-6">
-            {authLoading ? (
-              <p className="text-[var(--text-muted)]">Verificando sessão…</p>
-            ) : user ? (
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="grid h-14 w-14 place-items-center rounded-full bg-violet text-lg font-extrabold text-white">
-                    {(user.displayName ?? user.email ?? "?").slice(0, 2).toUpperCase()}
-                  </div>
-                  <div>
-                    <p className="text-lg font-bold">{user.displayName ?? "Leitor(a)"}</p>
-                    <p className="text-sm text-[var(--text-muted)]">{user.email}</p>
-                  </div>
-                </div>
+    <div className="space-y-5">
+      <div className="card flex flex-wrap items-center gap-4 p-5">
+        {user.photoURL ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={user.photoURL} alt="" className="h-16 w-16 rounded-full object-cover" />
+        ) : (
+          <span className="grid h-16 w-16 place-items-center rounded-full bg-violet text-xl font-extrabold text-white">
+            {initials}
+          </span>
+        )}
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-xl font-bold">{user.displayName ?? "Leitor(a)"}</p>
+          <p className="truncate text-sm text-[var(--text-muted)]">{user.email}</p>
+          <p className="mt-1 text-xs text-[var(--text-muted)]">
+            Cliffhanger+ não assinado —{" "}
+            <Link href="/conta/cliffhanger-plus" className="text-gold underline">
+              conhecer planos
+            </Link>
+          </p>
+        </div>
+        <Link href="/conta/perfil" className="btn btn-ghost px-4 py-2 text-xs">
+          Editar perfil
+        </Link>
+      </div>
 
-                <div className="grid gap-2">
-                  <Link href="/biblioteca" className="btn btn-primary">
-                    Minha biblioteca
-                  </Link>
-                  <Link href="/wishlist" className="btn btn-ghost">
-                    Minha wishlist
-                  </Link>
-                  <Link href="/pedidos" className="btn btn-ghost">
-                    Meus pedidos
-                  </Link>
-                  <Link href="/carrinho" className="btn btn-ghost">
-                    Carrinho
-                  </Link>
-                  <button type="button" onClick={() => void logout()} className="btn btn-ghost">
-                    Sair
-                  </button>
-                </div>
-
-                <div className="border-t border-[var(--border)] pt-4">
-                  <p className="mb-2 text-xs font-bold uppercase tracking-wider text-gold">
-                    Padrão visual da loja
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {(
-                      [
-                        { key: "", label: "Padrão Cliffhanger" },
-                        { key: "claro", label: "Padrão Cliffhanger Claro" },
-                      ] as const
-                    ).map((option) => (
-                      <button
-                        key={option.key || "padrao"}
-                        type="button"
-                        onClick={() => setTheme(option.key)}
-                        className={`rounded-full border px-4 py-2 text-xs font-bold transition ${
-                          theme === option.key
-                            ? "border-transparent bg-violet text-white"
-                            : "border-[var(--border)]"
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                  <p className="mt-2 text-xs text-[var(--text-muted)]">
-                    “Padrão Cliffhanger” é a identidade oficial da loja; “Padrão Cliffhanger
-                    Claro” inverte as áreas escuras para claras. A escolha fica salva neste
-                    navegador.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <AuthCard />
-            )}
+      {loading ? (
+        <p className="text-sm text-[var(--text-muted)]">Carregando seus resumos…</p>
+      ) : (
+        <>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <Stat label="E-books" value={String(ebooks)} href="/conta/biblioteca" />
+            <Stat label="Audiobooks" value={String(audiobooks)} href="/conta/biblioteca" />
+            <Stat label="Pedidos" value={String(orders.length)} href="/conta/pedidos" />
+            <Stat label="Wishlist" value={String(wishlist.length)} href="/conta/wishlist" />
           </div>
 
-          {/* benefícios */}
-          <div className="card space-y-4 p-6">
-            <h2 className="text-display text-3xl">Por que ter conta?</h2>
-            <ul className="space-y-3 text-sm text-[var(--text-muted)]">
-              <li className="flex gap-3">
-                <span className="mt-0.5 shrink-0 self-start text-gold"><IconCheck className="h-4 w-4" /></span> Biblioteca digital sincronizada entre
-                dispositivos.
-              </li>
-              <li className="flex gap-3">
-                <span className="mt-0.5 shrink-0 self-start text-gold"><IconCheck className="h-4 w-4" /></span> Wishlist compartilhável e alertas de reposição.
-              </li>
-              <li className="flex gap-3">
-                <span className="mt-0.5 shrink-0 self-start text-gold"><IconCheck className="h-4 w-4" /></span> Dados e endereço pré-preenchidos no checkout.
-              </li>
-              <li className="flex gap-3">
-                <span className="mt-0.5 shrink-0 self-start text-gold"><IconCheck className="h-4 w-4" /></span> Pontos no Cliffhanger Club a cada compra.
-              </li>
-              <li className="flex gap-3">
-                <span className="mt-0.5 shrink-0 self-start text-gold"><IconCheck className="h-4 w-4" /></span> Acesso antecipado a pré-vendas e edições
-                limitadas.
-              </li>
-            </ul>
-
-            <div className="rounded-xl border border-[var(--border)] p-4 text-xs text-[var(--text-muted)]">
-              Provedores: <strong className="text-gold">Google</strong>,{" "}
-              <strong className="text-gold">Facebook</strong> e{" "}
-              <strong className="text-gold">E-mail/senha</strong> — todos pela mesma Cliffhanger
-              Account (Firebase Authentication).
-            </div>
-          </div>
-
-          {/* segurança da conta (9.5) */}
-          {user && (
-            <div className="card space-y-6 p-6 lg:col-span-2">
-              <div className="flex flex-wrap items-end justify-between gap-3">
-                <h2 className="text-display text-3xl">Segurança da conta</h2>
-                <p className="text-xs text-[var(--text-muted)]">
-                  Verificação, métodos vinculados, sessões, senha e exclusão (Doc Mestre 9.5).
+          {last && lastItem && (
+            <div className="card flex flex-wrap items-center gap-4 p-5">
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                  Continue de onde parou
                 </p>
-              </div>
-
-              <div className="grid gap-6 sm:grid-cols-2">
-                {/* coluna esquerda: identidade e sessão */}
-                <div className="space-y-5">
-                  <div>
-                    <p className="mb-2 text-xs font-bold uppercase tracking-wider text-gold">
-                      Métodos vinculados
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {user.providers.length > 0 ? (
-                        user.providers.map((providerId) => (
-                          <span
-                            key={providerId}
-                            className="rounded-full border border-violet/50 bg-violet/10 px-3 py-1 text-xs font-semibold"
-                          >
-                            {providerLabels[providerId] ?? providerId}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="text-sm text-[var(--text-muted)]">
-                          Nenhum método vinculado.
-                        </span>
-                      )}
-                    </div>
-                    <p className="mt-1.5 text-xs text-[var(--text-muted)]">
-                      Todos apontam para a mesma Cliffhanger Account.
-                    </p>
+                <p className="truncate font-bold text-gold">{lastItem.title}</p>
+                <div className="mt-2 flex items-center gap-2">
+                  <div className="h-1.5 w-40 overflow-hidden rounded-full bg-[var(--surface-raised)]">
+                    <div
+                      className="h-full rounded-full bg-gold"
+                      style={{ width: `${Math.max(0, Math.min(100, last.percent))}%` }}
+                    />
                   </div>
-
-                  <div>
-                    <p className="mb-2 text-xs font-bold uppercase tracking-wider text-gold">
-                      E-mail
-                    </p>
-                    <p className="text-sm">{user.email}</p>
-                    {user.emailVerified ? (
-                      <p className="mt-1 inline-flex items-center gap-1.5 text-xs font-semibold text-gold">
-                        <IconCheck className="h-3.5 w-3.5" />
-                        E-mail verificado
-                      </p>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => void run(verifyEmail)}
-                        disabled={busy}
-                        className="mt-2 btn btn-ghost px-4 py-2 text-xs"
-                      >
-                        Verificar e-mail agora
-                      </button>
-                    )}
-                  </div>
-
-                  <div>
-                    <p className="mb-2 text-xs font-bold uppercase tracking-wider text-gold">
-                      Dispositivos e sessões
-                    </p>
-                    <p className="text-sm">
-                      <span className="inline-block h-2 w-2 rounded-full bg-gold align-middle" />{" "}
-                      Este dispositivo — {device || "…"}
-                    </p>
-                    <p className="mt-1 text-xs text-[var(--text-muted)]">
-                      Encerrar as sessões invalida os acessos em todos os outros dispositivos.
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={() => void run(revokeSessions)}
-                        disabled={busy}
-                        className="btn btn-ghost px-4 py-2 text-xs"
-                      >
-                        Sair de todos os dispositivos
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => void run(logout)}
-                        disabled={busy}
-                        className="btn btn-ghost px-4 py-2 text-xs"
-                      >
-                        Sair (esta sessão)
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* coluna direita: senha e exclusão */}
-                <div className="space-y-5">
-                  <div>
-                    <p className="mb-2 text-xs font-bold uppercase tracking-wider text-gold">
-                      Alterar senha
-                    </p>
-                    {user.providers.includes("password") ? (
-                      <form onSubmit={submitPassword} className="space-y-2">
-                        <input
-                          type="password"
-                          className="field"
-                          placeholder="Nova senha (mín. 6 caracteres)"
-                          value={newPassword}
-                          onChange={(event) => setNewPassword(event.target.value)}
-                          minLength={6}
-                          required
-                        />
-                        <div className="flex flex-wrap gap-2">
-                          <button
-                            type="submit"
-                            disabled={busy}
-                            className="btn btn-primary px-4 py-2 text-xs"
-                          >
-                            {busy ? "Aguarde…" : "Alterar senha"}
-                          </button>
-                          {user.email && (
-                            <button
-                              type="button"
-                              onClick={() => void run(() => sendReset(user.email ?? ""))}
-                              disabled={busy}
-                              className="btn btn-ghost px-4 py-2 text-xs"
-                            >
-                              Link de recuperação
-                            </button>
-                          )}
-                        </div>
-                      </form>
-                    ) : (
-                      <p className="text-sm text-[var(--text-muted)]">
-                        Esta conta não usa senha — entre pelos métodos vinculados acima.
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="rounded-xl border border-[#e5484d]/40 p-4">
-                    <p className="mb-1.5 text-xs font-bold uppercase tracking-wider text-[#e5484d]">
-                      Exclusão de conta
-                    </p>
-                    <p className="text-xs text-[var(--text-muted)]">
-                      Remove perfil, wishlist e dados vinculados. Não afeta pedidos já feitos.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => void confirmDelete()}
-                      disabled={busy}
-                      className="mt-3 btn btn-ghost border-[#e5484d]/40 px-4 py-2 text-xs text-[#e5484d]"
-                    >
-                      Excluir conta
-                    </button>
-                  </div>
+                  <span className="text-xs text-[var(--text-muted)]">{last.percent}%</span>
                 </div>
               </div>
+              <Link
+                href={
+                  lastItem.type === "audiobook"
+                    ? `/biblioteca/audiobook/${lastItem.productId}`
+                    : `/biblioteca/leitor/${lastItem.productId}`
+                }
+                className="btn btn-primary px-4 py-2 text-xs"
+              >
+                Continuar
+              </Link>
             </div>
           )}
-        </div>
-      </Section>
-    </Page>
+        </>
+      )}
+    </div>
   );
 }

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useStore } from "@/components/Providers";
-import { IconCart, IconHeart, IconMenu, IconSearch, IconUser } from "@/components/Icons";
+import { IconCart, IconHeart, IconMenu, IconSearch } from "@/components/Icons";
+import { ProfileMenu } from "@/components/ProfileMenu";
 import { menuButtons, megaMenu } from "@/lib/nav";
 
 /**
@@ -15,7 +16,7 @@ import { menuButtons, megaMenu } from "@/lib/nav";
  * seção 6.1 e não configuram um menu.
  */
 export function SiteHeader() {
-  const { cartCount, wishlist, user } = useStore();
+  const { cartCount, wishlist } = useStore();
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/";
@@ -79,13 +80,7 @@ export function SiteHeader() {
                 </span>
               )}
             </Link>
-            <Link
-              href="/conta"
-              className="grid h-10 w-10 place-items-center rounded-full transition hover:bg-[var(--surface-raised)]"
-              aria-label={user ? "Minha conta" : "Entrar"}
-            >
-              <IconUser logged={Boolean(user)} />
-            </Link>
+            <ProfileMenu />
             <Link
               href="/carrinho"
               className="relative grid h-10 w-10 place-items-center rounded-full transition hover:bg-[var(--surface-raised)]"
