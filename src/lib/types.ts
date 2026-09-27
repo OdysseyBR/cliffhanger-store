@@ -188,6 +188,36 @@ export interface ReadingProgress {
   updatedAt: string;
 }
 
+/** §12 — item da biblioteca na visão do módulo Biblioteca Digital. */
+export interface AdminLibraryItem {
+  id: string;
+  productId: string;
+  title: string;
+  type: "ebook" | "audiobook";
+  /** ISO */
+  purchasedAt: string;
+  /** pelo menos um arquivo com download liberado (licença §8) */
+  allowDownload: boolean;
+  /** o produto não existe mais no catálogo (item legado) */
+  missing: boolean;
+  progress?: ReadingProgress;
+}
+
+/** §12/§8 — biblioteca de um cliente (licenças digitais + progresso). */
+export interface AdminLibrary {
+  /** id do documento = uid da conta */
+  uid: string;
+  name?: string;
+  email?: string;
+  /** ISO */
+  updatedAt?: string;
+  items: AdminLibraryItem[];
+  /** itens com progresso gravado */
+  progressCount: number;
+  /** marcadores somados (§8) */
+  bookmarks: number;
+}
+
 export interface Collection {
   id: string;
   slug: string;

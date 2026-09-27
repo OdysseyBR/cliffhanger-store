@@ -233,8 +233,10 @@ export function sanitizeProduct(input: unknown): Product | null {
           const chapter = entry as Partial<Chapter> | null;
           const title = str(chapter?.title);
           const start = num(chapter?.start);
+          // `start` aceita fração (audiobook usa segundos como 22.67) —
+          // normaliza em 2 casas em vez de truncar para inteiro.
           return title && start !== null && start >= 0
-            ? { title, start: Math.round(start) }
+            ? { title, start: Math.round(start * 100) / 100 }
             : null;
         })
         .filter((chapter): chapter is Chapter => chapter !== null)

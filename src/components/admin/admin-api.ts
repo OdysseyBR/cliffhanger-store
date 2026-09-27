@@ -3,9 +3,11 @@
 import { getClientAuth, firebaseEnabled } from "@/lib/firebase";
 import type { AdminPermission, AdminRole } from "@/lib/roles";
 import type { CatalogEntity } from "@/lib/catalog-fields";
+import type { DigitalFormState, DigitalModuleKind } from "@/lib/digital-fields";
 import type { AdminStockItem, StockAdjustInput } from "@/lib/stock-fields";
 import type {
   AdminCustomer,
+  AdminLibrary,
   AdminUser,
   AuditLogEntry,
   Author,
@@ -276,4 +278,42 @@ export function fetchAudit(params?: { module?: string; limit?: number }) {
   if (params?.limit) query.set("limit", String(params.limit));
   const suffix = query.toString() ? `?${query.toString()}` : "";
   return adminFetch<{ entries: AuditLogEntry[] }>(`/api/admin/audit${suffix}`);
+}
+
+/** §12/§8 — grupo Digital: conteúdo dos produtos e licenças da biblioteca. */
+export function fetchDigitalProducts(kind: DigitalModuleKind) {
+  return adminFetch<{ items: Product[] }>(
+    `/api/admin/digital/products?kind=${encodeURIComponent(kind)}`,
+  );
+}
+
+export function saveDigitalProduct(
+  productId: string,
+  kind: DigitalModuleKind,
+  input: DigitalFormState,
+) {
+  return adminFetch<{ ok: boolean; changed: boolean }>(
+    `/api/admin/digital/products/${encodeURIComponent(productId)}`,
+    { method: "PUT", body: JSON.stringify({ kind, input }) },
+  );
+}
+
+export function fetchDigitalLibraries() {
+  return adminFetch<{ libraries: AdminLibrary[]; products: Product[] }>(
+    "/api/admin/digital/libraries",
+  );
+}
+
+export function grantDigitalItem(uid: string, productId: string) {
+  return adminFetch<{ ok: boolean; granted: boolean }>(
+    `/api/admin/digital/libraries/${encodeURIComponent(uid)}`,
+    { method: "POST", body: JSON.stringify({ productId }) },
+  );
+}
+
+export function revokeDigitalItem(uid: string, productId: string) {
+  return adminFetch<{ ok: boolean }>(
+    `/api/admin/digital/libraries/${encodeURIComponent(uid)}`,
+    { method: "DELETE", body: JSON.stringify({ productId }) },
+  );
 }

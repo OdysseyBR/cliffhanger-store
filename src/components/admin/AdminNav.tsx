@@ -52,9 +52,9 @@ const ADMIN_NAV: NavGroup[] = [
   {
     title: "Digital",
     items: [
-      { label: "E-books" },
-      { label: "Audiobooks" },
-      { label: "Biblioteca Digital" },
+      { label: "E-books", href: "/admin/e-books", perm: "digital.view" },
+      { label: "Audiobooks", href: "/admin/audiobooks", perm: "digital.view" },
+      { label: "Biblioteca Digital", href: "/admin/biblioteca-digital", perm: "digital.view" },
     ],
   },
   {

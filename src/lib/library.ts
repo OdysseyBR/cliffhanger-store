@@ -188,6 +188,51 @@ export async function claimLibraryItems(
   return merged ? merged.added : 0;
 }
 
+/**
+ * Concede manualmente um produto digital à biblioteca de um cliente
+ * (§8 — painel: reposição de acesso/licença fora da compra). Idempotente:
+ * `false` quando o item já estava concedido.
+ */
+export async function grantLibraryItem(uid: string, product: Product): Promise<boolean> {
+  const merged = await mergeItems(uid, [
+    itemFromProduct(product, undefined, new Date().toISOString()),
+  ]);
+  return merged !== null && merged.added > 0;
+}
+
+/**
+ * Revoga um item da biblioteca (§8 — painel: retirada de acesso). Devolve
+ * o item removido ou `null` quando o uid não tem biblioteca ou não possui
+ * o item.
+ */
+export async function revokeLibraryItem(
+  uid: string,
+  productId: string,
+): Promise<LibraryItem | null> {
+  const db = getAdminDb();
+  if (!db) return null;
+
+  const ref = db.collection("libraries").doc(uid);
+  const snap = await ref.get();
+  if (!snap.exists) return null;
+
+  const current = ((revive(snap.data()) as { items?: unknown[] }).items ?? [])
+    .map(normalizeLibraryItem)
+    .filter((item): item is LibraryItem => item !== null);
+
+  const removed = current.find((item) => item.productId === productId) ?? null;
+  if (!removed) return null;
+
+  await ref.set(
+    plainDoc({
+      items: current.filter((item) => item.productId !== productId),
+      updatedAt: new Date().toISOString(),
+    }),
+    { merge: true },
+  );
+  return removed;
+}
+
 /** Grava progresso/marcadores de um produto (substitui o documento). */
 export async function saveProgress(
   uid: string,
