@@ -601,7 +601,7 @@ export interface ShopSettings {
   updatedAt: string;
 }
 
-/** §12 — Relatórios: agregados somente leitura sobre o banco. */
+/** §12/§36 — Relatórios: agregados somente leitura sobre o banco real. */
 export interface ReportSummary {
   days: number;
   /** ISO — início do período ("" = desde sempre) */
@@ -622,9 +622,96 @@ export interface ReportSummary {
     couponsActive: number;
     couponsUsed: number;
     promotionsActive: number;
+    promotionsScheduled: number;
+    promotionsTotal: number;
     reviewsAvg: number;
     reviewsPending: number;
     notificationsSent: number;
+  };
+  /** §36 — clientes */
+  clients: {
+    /** contas cadastradas + compradores sem cadastro */
+    total: number;
+    registered: number;
+    /** primeiro pedido dentro do período */
+    newInPeriod: number;
+    /** compradores com pedido pago no período */
+    buyers: number;
+    top: Array<{ email: string; name: string; orders: number; spent: number }>;
+  };
+  /** §36 — cancelamentos */
+  cancellations: { orders: number; value: number; rate: number };
+  /** §36 — pré-vendas */
+  preorders: {
+    launches: number;
+    products: number;
+    reservedUnits: number;
+    soldUnits: number;
+    revenue: number;
+  };
+  /** §36 — Cliffhanger+ e Drops */
+  plus: {
+    subscribers: number;
+    byPlan: Record<string, number>;
+    mrr: number;
+    cancelled: number;
+    drops: number;
+    dropsActive: number;
+    claims: number;
+    claimsTemp: number;
+    claimsPerma: number;
+  };
+  /** §36 — e-books, audiobooks e físicos */
+  formats: {
+    ebooks: { products: number; soldUnits: number; revenue: number };
+    audiobooks: { products: number; soldUnits: number; revenue: number };
+    physical: { products: number; soldUnits: number; revenue: number };
+  };
+  /** §36 — Clube do Leitor (caixas §26) e Cliffhanger Club (pontos §18) */
+  readerClub: {
+    boxes: number;
+    planned: number;
+    preparing: number;
+    shipped: number;
+    members: number;
+    points: number;
+    benefits: number;
+    benefitsActive: number;
+  };
+  /** §36 — wishlist */
+  wishlist: {
+    users: number;
+    items: number;
+    top: Array<{ productId: string; title: string; saves: number }>;
+  };
+  /** §36 — conversão (definição identificada explicitamente) */
+  conversion: {
+    definition: string;
+    ordersPlaced: number;
+    ordersPaid: number;
+    paidRate: number;
+    registered: number;
+    registeredBuyers: number;
+    buyerRate: number;
+  };
+  /** §37 — estado real da integração entre conta, site, app e admin */
+  integration: {
+    web: { orders: number; customers: number };
+    app: { content: boolean; highlights: number; scanner: boolean };
+    admin: { users: number; auditLogs: number };
+    account: {
+      libraries: number;
+      libraryItems: number;
+      collectionItems: number;
+      wishlistUsers: number;
+      wishlistItems: number;
+      plusActive: number;
+      reading: { entries: number; avgPercent: number };
+      listening: { entries: number; avgPercent: number };
+      benefits: number;
+      historyOrders: number;
+      lastOrderAt: string;
+    };
   };
 }
 
