@@ -7,6 +7,16 @@ import type { DigitalFormState, DigitalModuleKind } from "@/lib/digital-fields";
 import type { LaunchContentForm } from "@/lib/content-fields";
 import type { AdminStockItem, StockAdjustInput } from "@/lib/stock-fields";
 import type {
+  AdminDropRow,
+  ClubBox,
+  DropClaim,
+  PlusDrop,
+  PlusPlan,
+  PlusStats,
+} from "@/lib/plus-fields";
+import type { AppContent } from "@/lib/app-content";
+import type { QrCatalogOption, QrCodeEntry } from "@/lib/qr-fields";
+import type {
   AdminCustomer,
   AdminLibrary,
   AdminUser,
@@ -477,5 +487,102 @@ export function saveSettings(settings: ShopSettings) {
   return adminFetch<{ ok: boolean; settings: ShopSettings }>(
     "/api/admin/settings",
     { method: "PUT", body: JSON.stringify({ settings }) },
+  );
+}
+
+/** §16/§24–§26 — Cliffhanger+ no painel: planos, Drops e Clube do Leitor. */
+export interface PlusBoardResponse {
+  plans: PlusPlan[];
+  updatedAt?: string;
+  stats: PlusStats;
+}
+
+export function fetchPlusBoard() {
+  return adminFetch<PlusBoardResponse>("/api/admin/plus/plans");
+}
+
+export function savePlusPlans(plans: PlusPlan[]) {
+  return adminFetch<{ ok: boolean; changed?: boolean; plans: PlusPlan[] }>(
+    "/api/admin/plus/plans",
+    { method: "PUT", body: JSON.stringify({ plans }) },
+  );
+}
+
+export function fetchPlusDrops() {
+  return adminFetch<{
+    items: AdminDropRow[];
+    claims: DropClaim[];
+    options: { obras: QrCatalogOption[]; produtos: QrCatalogOption[] };
+  }>("/api/admin/plus/drops");
+}
+
+export function saveDrop(drop: PlusDrop, isNew: boolean) {
+  return adminFetch<{ ok: boolean; item: PlusDrop }>(
+    isNew ? "/api/admin/plus/drops" : `/api/admin/plus/drops/${encodeURIComponent(drop.id)}`,
+    { method: isNew ? "POST" : "PUT", body: JSON.stringify({ item: drop }) },
+  );
+}
+
+export function deleteDrop(id: string) {
+  return adminFetch<{ ok: boolean; claimsRemoved?: number }>(
+    `/api/admin/plus/drops/${encodeURIComponent(id)}`,
+    { method: "DELETE" },
+  );
+}
+
+export function fetchPlusClub() {
+  return adminFetch<{
+    items: ClubBox[];
+    options: { obras: QrCatalogOption[]; produtos: QrCatalogOption[] };
+  }>("/api/admin/plus/club");
+}
+
+export function saveClubBox(box: ClubBox, isNew: boolean) {
+  return adminFetch<{ ok: boolean; item: ClubBox }>(
+    isNew ? "/api/admin/plus/club" : `/api/admin/plus/club/${encodeURIComponent(box.id)}`,
+    { method: isNew ? "POST" : "PUT", body: JSON.stringify({ item: box }) },
+  );
+}
+
+export function deleteClubBox(id: string) {
+  return adminFetch<{ ok: boolean }>(
+    `/api/admin/plus/club/${encodeURIComponent(id)}`,
+    { method: "DELETE" },
+  );
+}
+
+/** §16/§33 — Aplicativo (conteúdos específicos do app). */
+export function fetchAppContent() {
+  return adminFetch<{ content: AppContent }>("/api/admin/app");
+}
+
+export function saveAppContent(content: AppContent) {
+  return adminFetch<{ ok: boolean; content: AppContent }>(
+    "/api/admin/app",
+    { method: "PUT", body: JSON.stringify({ content }) },
+  );
+}
+
+/** §16/§34 — QR Codes (catálogo para alvo + códigos gerados). */
+export interface QrListResponse {
+  items: QrCodeEntry[];
+  options: { obras: QrCatalogOption[]; produtos: QrCatalogOption[] };
+}
+
+export function fetchQrCodes() {
+  return adminFetch<QrListResponse>("/api/admin/qrcodes");
+}
+
+export function saveQrCode(item: QrCodeEntry, isNew: boolean) {
+  return adminFetch<{ ok: boolean; item: QrCodeEntry }>(
+    isNew ? "/api/admin/qrcodes" : `/api/admin/qrcodes/${encodeURIComponent(item.id)}`,
+    { method: isNew ? "POST" : "PUT", body: JSON.stringify({ item }) },
+  );
+}
+
+export function deleteQrCode(id: string) {
+  return adminFetch<{ ok: boolean }>(
+    `/api/admin/qrcodes/${encodeURIComponent(id)}`,
+    { method: "DELETE" },
   );
 }

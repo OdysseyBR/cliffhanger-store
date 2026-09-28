@@ -350,3 +350,304 @@ export function currentWeek(now: Date = new Date()): number {
   }
   return Math.min(4, Math.max(1, Math.ceil(day / 7)));
 }
+
+// ---------------------------------------------------------------------------
+// Painel (§24–§26) — estatísticas, formulários e sanitização
+// ---------------------------------------------------------------------------
+
+export type PlusFieldParse<T> = { ok: true; item: T } | { ok: false; error: string };
+
+/** Indicadores do programa para o painel (§17/§24). */
+export interface PlusStats {
+  /** assinaturas já criadas (ativas + canceladas) */
+  total: number;
+  ativos: number;
+  cancelados: number;
+  /** assinaturas ativas por plano */
+  porPlano: Record<PlusPlanId, number>;
+  /** receita mensal simulada dos ativos */
+  mrr: number;
+}
+
+export const EMPTY_PLUS_STATS: PlusStats = {
+  total: 0,
+  ativos: 0,
+  cancelados: 0,
+  porPlano: { essential: 0, gold: 0, premium: 0 },
+  mrr: 0,
+};
+
+/** Linha do painel: Drop + contagem de resgates (§25). */
+export type AdminDropRow = PlusDrop & { claimCount: number };
+
+function slugify(text: string): string {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
+}
+
+function isHttpUrl(url: string): boolean {
+  return /^https?:\/\//i.test(url);
+}
+
+/** ISO → valor de `input[type="datetime-local"]` (fuso local). */
+export function toLocalInput(value: string): string {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+/** `input[type="datetime-local"]` → ISO (vazio mantém vazio). */
+function fromLocalInput(value: string): string {
+  if (!value) return "";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : date.toISOString();
+}
+
+// -- Drops (§25) ------------------------------------------------------------
+
+export interface DropForm {
+  title: string;
+  description: string;
+  image: string;
+  kind: PlusDropKind;
+  productId: string;
+  workId: string;
+  minPlan: PlusPlanId;
+  period: string;
+  week: number;
+  permanence: PlusDropPermanence;
+  startsAt: string;
+  endsAt: string;
+  active: boolean;
+}
+
+export function blankDropForm(): DropForm {
+  return {
+    title: "",
+    description: "",
+    image: "",
+    kind: "ebook",
+    productId: "",
+    workId: "",
+    minPlan: "essential",
+    period: currentPeriod(),
+    week: currentWeek(),
+    permanence: "temporario",
+    startsAt: "",
+    endsAt: "",
+    active: true,
+  };
+}
+
+export function toDropForm(drop: PlusDrop): DropForm {
+  return {
+    title: drop.title,
+    description: drop.description,
+    image: drop.image ?? "",
+    kind: drop.kind,
+    productId: drop.productId ?? "",
+    workId: drop.workId ?? "",
+    minPlan: drop.minPlan,
+    period: drop.period,
+    week: drop.week,
+    permanence: drop.permanence,
+    startsAt: toLocalInput(drop.startsAt),
+    endsAt: toLocalInput(drop.endsAt),
+    active: drop.active,
+  };
+}
+
+export function sanitizeDropInput(
+  raw: unknown,
+  existing?: { id: string; createdAt?: string } | null,
+): PlusFieldParse<PlusDrop> {
+  if (!raw || typeof raw !== "object") {
+    return { ok: false, error: "Dados do Drop inválidos." };
+  }
+  const incomingId = typeof (raw as { id?: unknown }).id === "string"
+    ? (raw as { id: string }).id.trim()
+    : "";
+  if (incomingId && existing?.id && incomingId !== existing.id) {
+    return { ok: false, error: "O id do Drop não pode ser alterado." };
+  }
+  const form = raw as Partial<DropForm>;
+  const title = String(form.title ?? "").trim().slice(0, 140);
+  if (!title) return { ok: false, error: "Informe o título do Drop." };
+
+  const kind: PlusDropKind =
+    form.kind === "audiobook" || form.kind === "obra" ? form.kind : "ebook";
+  const productId = String(form.productId ?? "").trim().slice(0, 120);
+  const workId = String(form.workId ?? "").trim().slice(0, 120);
+  if (kind === "obra" && !workId) {
+    return { ok: false, error: "Selecione a obra associada ao Drop." };
+  }
+  if (kind !== "obra" && !productId) {
+    return { ok: false, error: "Selecione o conteúdo digital liberado no Drop." };
+  }
+
+  const period = String(form.period ?? "");
+  if (!/^\d{4}-\d{2}$/.test(period)) {
+    return { ok: false, error: "Período inválido — use AAAA-MM." };
+  }
+  const week = Math.min(4, Math.max(1, Math.round(Number(form.week)) || 1));
+  const image = String(form.image ?? "").trim().slice(0, 400);
+  if (image && !isHttpUrl(image)) {
+    return { ok: false, error: "A imagem precisa ser uma URL http(s)." };
+  }
+
+  const startsAt = fromLocalInput(String(form.startsAt ?? ""));
+  const endsAt = fromLocalInput(String(form.endsAt ?? ""));
+  if (startsAt && endsAt && new Date(endsAt).getTime() <= new Date(startsAt).getTime()) {
+    return { ok: false, error: "O fim da disponibilidade precisa ser depois do início." };
+  }
+
+  const now = new Date().toISOString();
+  const id = existing?.id ?? `drop-${slugify(title) || "conteudo"}-${Date.now().toString(36)}`;
+  return {
+    ok: true,
+    item: {
+      id,
+      title,
+      description: String(form.description ?? "").trim().slice(0, 400),
+      image: image || undefined,
+      kind,
+      productId: kind !== "obra" ? productId : undefined,
+      workId: kind === "obra" ? workId : undefined,
+      minPlan: isPlusPlanId(form.minPlan) ? form.minPlan : "essential",
+      period,
+      week,
+      permanence: form.permanence === "permanente" ? "permanente" : "temporario",
+      startsAt,
+      endsAt,
+      active: form.active !== false,
+      createdAt: existing?.createdAt || now,
+      updatedAt: now,
+    },
+  };
+}
+
+// -- Clube do Leitor (§26) --------------------------------------------------
+
+export interface ClubBoxForm {
+  month: string;
+  title: string;
+  description: string;
+  image: string;
+  productIds: string[];
+  eligibility: PlusPlanId[];
+  status: "planejada" | "em_preparo" | "enviada";
+}
+
+export function blankClubBoxForm(): ClubBoxForm {
+  return {
+    month: currentPeriod(),
+    title: "",
+    description: "",
+    image: "",
+    productIds: [],
+    eligibility: ["gold", "premium"],
+    status: "planejada",
+  };
+}
+
+export function toClubBoxForm(box: ClubBox): ClubBoxForm {
+  return {
+    month: box.month,
+    title: box.title,
+    description: box.description,
+    image: box.image ?? "",
+    productIds: [...box.productIds],
+    eligibility: [...box.eligibility],
+    status: box.status,
+  };
+}
+
+export function sanitizeClubBoxInput(
+  raw: unknown,
+  existing?: { id: string; createdAt?: string } | null,
+): PlusFieldParse<ClubBox> {
+  if (!raw || typeof raw !== "object") {
+    return { ok: false, error: "Dados da caixa inválidos." };
+  }
+  const incomingId = typeof (raw as { id?: unknown }).id === "string"
+    ? (raw as { id: string }).id.trim()
+    : "";
+  if (incomingId && existing?.id && incomingId !== existing.id) {
+    return { ok: false, error: "O id da caixa não pode ser alterado." };
+  }
+  const form = raw as Partial<ClubBoxForm>;
+  const month = String(form.month ?? "");
+  if (!/^\d{4}-\d{2}$/.test(month)) {
+    return { ok: false, error: "Mês de referência inválido — use AAAA-MM." };
+  }
+  const title = String(form.title ?? "").trim().slice(0, 140);
+  if (!title) return { ok: false, error: "Informe o título da caixa." };
+
+  const image = String(form.image ?? "").trim().slice(0, 400);
+  if (image && !isHttpUrl(image)) {
+    return { ok: false, error: "A imagem precisa ser uma URL http(s)." };
+  }
+  const eligibility = (Array.isArray(form.eligibility) ? form.eligibility : []).filter(
+    isPlusPlanId,
+  );
+  if (eligibility.length === 0) {
+    return { ok: false, error: "Marque ao menos um plano elegível." };
+  }
+  const productIds = (Array.isArray(form.productIds) ? form.productIds : [])
+    .filter((id): id is string => typeof id === "string" && id.trim().length > 0)
+    .map((id) => id.trim())
+    .slice(0, 30);
+
+  const now = new Date().toISOString();
+  const id = existing?.id ?? `box-${month}-${Date.now().toString(36)}`;
+  return {
+    ok: true,
+    item: {
+      id,
+      month,
+      title,
+      description: String(form.description ?? "").trim().slice(0, 400),
+      image: image || undefined,
+      productIds,
+      eligibility,
+      status:
+        form.status === "em_preparo" || form.status === "enviada" ? form.status : "planejada",
+      createdAt: existing?.createdAt || now,
+      updatedAt: now,
+    },
+  };
+}
+
+// -- Planos (§24) -----------------------------------------------------------
+
+/** Aceita o objeto `{ plans }` gravado em `site/plus` e normaliza com fallback nos padrões. */
+export function sanitizePlusPlansInput(raw: unknown): PlusFieldParse<PlusPlan[]> {
+  const source =
+    raw && typeof raw === "object" && "plans" in (raw as Record<string, unknown>)
+      ? (raw as { plans?: unknown }).plans
+      : raw;
+  if (!Array.isArray(source) || source.length !== DEFAULT_PLUS_PLANS.length) {
+    return { ok: false, error: "Os três planos do Cliffhanger+ são obrigatórios." };
+  }
+  const ids = new Set<string>();
+  for (const row of source) {
+    if (!row || typeof row !== "object" || !isPlusPlanId((row as Partial<PlusPlan>).id)) {
+      return { ok: false, error: "Plano inválido — use Essential, Gold e Premium." };
+    }
+    const id = (row as PlusPlan).id;
+    if (ids.has(id)) return { ok: false, error: "Plano duplicado na lista." };
+    ids.add(id);
+  }
+  const plans = normalizePlusPlans(source);
+  if (plans.length !== DEFAULT_PLUS_PLANS.length) {
+    return { ok: false, error: "Os três planos do Cliffhanger+ são obrigatórios." };
+  }
+  return { ok: true, item: plans };
+}

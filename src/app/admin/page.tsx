@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { useStore } from "@/components/Providers";
 import { AdminLogin } from "@/components/admin/AdminLogin";
+import { useAdminPermissions } from "@/components/admin/AdminRoleProvider";
 import { useAdminOrders } from "@/components/admin/useAdminOrders";
 import { useAdminProducts } from "@/components/admin/useAdminProducts";
+import { useAdminPlusBoard } from "@/components/admin/useAdminPlus";
 import { formatPrice } from "@/lib/format";
 import { ORDER_STATUS_LABEL, orderStatusClass } from "@/lib/order-status";
 import { PRODUCT_CATEGORY_OPTIONS } from "@/lib/product-fields";
@@ -14,7 +16,7 @@ import type { Order } from "@/lib/types";
 /**
  * Dashboard do painel (Documento de Correção §12 — módulo 1).
  * Visão geral: KPIs do catálogo, alertas de estoque, distribuição por
- * categoria e pedidos recentes.
+ * categoria, pedidos recentes e assinantes Cliffhanger+ (§17).
  */
 
 function KpiCard({
@@ -37,8 +39,26 @@ function KpiCard({
   );
 }
 
+/** §17 — assinantes Cliffhanger+ (montado só para papéis com plus.view). */
+function PlusKpi() {
+  const { board } = useAdminPlusBoard();
+  const stats = board?.stats;
+  return (
+    <KpiCard
+      label="Assinantes Cliffhanger+"
+      value={stats ? stats.ativos : "—"}
+      sub={
+        stats
+          ? `${stats.porPlano.essential}/${stats.porPlano.gold}/${stats.porPlano.premium} E/G/P · ${formatPrice(stats.mrr)}/mês`
+          : "carregando…"
+      }
+    />
+  );
+}
+
 export default function AdminDashboardPage() {
   const { user, logout } = useStore();
+  const { can } = useAdminPermissions();
   const { products, works, universes, authors, error, loading, reload } =
     useAdminProducts();
   const { orders, error: ordersError } = useAdminOrders();
@@ -122,7 +142,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* KPIs */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <KpiCard
           label="Itens no catálogo"
           value={stats.items.length}
@@ -153,6 +173,7 @@ export default function AdminDashboardPage() {
           value={works.length}
           sub={`${universes.length} universos · ${authors.length} autores`}
         />
+        {can("plus.view") && <PlusKpi />}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">

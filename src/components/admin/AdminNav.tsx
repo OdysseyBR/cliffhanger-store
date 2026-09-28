@@ -6,8 +6,10 @@ import { useAdminPermissions } from "@/components/admin/AdminRoleProvider";
 import type { AdminPermission } from "@/lib/roles";
 
 /**
- * Menu de módulos do painel — Documento de Correção §12 (26 módulos
- * oficiais; §2: sem módulo de Theme Engine/Modelos) + §13 (segurança).
+ * Menu de módulos do painel — Documento de Correção §16 (estrutura de
+ * grupos do painel) sobre os 26 módulos do §12 (§2: sem módulo de Theme
+ * Engine/Modelos) + §13 (segurança) + §24–§26/§33/§34 (Cliffhanger+,
+ * Aplicativo e QR Codes).
  *
  * Os módulos ainda não implementados ficam visíveis porém indisponíveis,
  * para o painel já mostrar a estrutura completa. Módulos implementados
@@ -20,6 +22,8 @@ interface NavItem {
   href?: string;
   /** permissão de leitura exigida (§13) — só faz sentido com href */
   perm?: AdminPermission;
+  /** comparação exata (evita 3 itens do Cliffhanger+ marcados juntos) */
+  exact?: boolean;
 }
 
 interface NavGroup {
@@ -28,7 +32,10 @@ interface NavGroup {
 }
 
 const ADMIN_NAV: NavGroup[] = [
-  { title: "Geral", items: [{ label: "Dashboard", href: "/admin", perm: "dashboard.view" }] },
+  {
+    title: "Dashboard",
+    items: [{ label: "Dashboard", href: "/admin", perm: "dashboard.view", exact: true }],
+  },
   {
     title: "Catálogo",
     items: [
@@ -41,12 +48,15 @@ const ADMIN_NAV: NavGroup[] = [
     ],
   },
   {
-    title: "Operação",
+    title: "Loja",
     items: [
       { label: "Estoque", href: "/admin/estoque", perm: "stock.view" },
       { label: "Pedidos", href: "/admin/pedidos", perm: "orders.view" },
-      { label: "Clientes", href: "/admin/clientes", perm: "customers.view" },
       { label: "Pré-vendas", href: "/admin/pre-vendas", perm: "preorders.view" },
+      { label: "Cupons", href: "/admin/cupons", perm: "coupons.view" },
+      { label: "Promoções", href: "/admin/promocoes", perm: "promotions.view" },
+      { label: "Cliffhanger Club", href: "/admin/clube", perm: "club.view" },
+      { label: "Avaliações", href: "/admin/avaliacoes", perm: "reviews.view" },
     ],
   },
   {
@@ -55,16 +65,15 @@ const ADMIN_NAV: NavGroup[] = [
       { label: "E-books", href: "/admin/e-books", perm: "digital.view" },
       { label: "Audiobooks", href: "/admin/audiobooks", perm: "digital.view" },
       { label: "Biblioteca Digital", href: "/admin/biblioteca-digital", perm: "digital.view" },
+      { label: "QR Codes", href: "/admin/qrcodes", perm: "digital.view" },
     ],
   },
   {
-    title: "Marketing",
+    title: "Cliffhanger+",
     items: [
-      { label: "Cupons", href: "/admin/cupons", perm: "coupons.view" },
-      { label: "Promoções", href: "/admin/promocoes", perm: "promotions.view" },
-      { label: "Cliffhanger Club", href: "/admin/clube", perm: "club.view" },
-      { label: "Avaliações", href: "/admin/avaliacoes", perm: "reviews.view" },
-      { label: "Notificações", href: "/admin/notificacoes", perm: "notifications.view" },
+      { label: "Planos", href: "/admin/cliffhanger-plus", perm: "plus.view", exact: true },
+      { label: "Drops", href: "/admin/cliffhanger-plus/drops", perm: "plus.view" },
+      { label: "Clube do Leitor", href: "/admin/cliffhanger-plus/clube", perm: "plus.view" },
     ],
   },
   {
@@ -74,22 +83,34 @@ const ADMIN_NAV: NavGroup[] = [
       { label: "Home", href: "/admin/home", perm: "home.view" },
       { label: "Notícias", href: "/admin/noticias", perm: "news.view" },
       { label: "Lançamentos", href: "/admin/lancamentos", perm: "launches.view" },
+      { label: "Notificações", href: "/admin/notificacoes", perm: "notifications.view" },
     ],
   },
   {
-    title: "Dados",
+    title: "Clientes",
+    items: [{ label: "Clientes", href: "/admin/clientes", perm: "customers.view" }],
+  },
+  {
+    title: "Aplicativo",
+    items: [{ label: "Aplicativo", href: "/admin/aplicativo", perm: "notifications.view" }],
+  },
+  {
+    title: "Relatórios",
     items: [
       { label: "Relatórios", href: "/admin/relatorios", perm: "reports.view" },
       { label: "Financeiro", href: "/admin/financeiro", perm: "finance.view" },
-      { label: "Configurações", href: "/admin/configuracoes", perm: "settings.view" },
     ],
   },
   {
-    title: "Segurança",
+    title: "Usuários e Permissões",
     items: [
       { label: "Equipe", href: "/admin/equipe", perm: "admins.view" },
       { label: "Auditoria", href: "/admin/auditoria", perm: "audit.view" },
     ],
+  },
+  {
+    title: "Configurações",
+    items: [{ label: "Configurações", href: "/admin/configuracoes", perm: "settings.view" }],
   },
 ];
 
@@ -101,7 +122,7 @@ export function AdminNav() {
     <nav aria-label="Módulos do painel" className="mb-6 space-y-3 border-b border-[var(--border)] pb-5">
       {ADMIN_NAV.map((group) => (
         <div key={group.title} className="flex flex-wrap items-center gap-2">
-          <span className="w-24 shrink-0 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+          <span className="w-40 shrink-0 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
             {group.title}
           </span>
           <div className="flex flex-wrap gap-1.5">
@@ -123,8 +144,11 @@ export function AdminNav() {
                   </span>
                 );
               }
-              const active =
-                item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
+              const active = item.exact
+                ? pathname === item.href
+                : item.href === "/admin"
+                  ? pathname === "/admin"
+                  : pathname.startsWith(item.href ?? "");
               return (
                 <Link
                   key={item.label}

@@ -76,13 +76,20 @@ export function SelectInput({
   value,
   options,
   onChange,
+  disabled,
 }: {
   value: string;
   options: { value: string; label: string }[];
   onChange: (v: string) => void;
+  disabled?: boolean;
 }) {
   return (
-    <select value={value} onChange={(event) => onChange(event.target.value)} className="field w-full">
+    <select
+      value={value}
+      disabled={disabled}
+      onChange={(event) => onChange(event.target.value)}
+      className="field w-full"
+    >
       {options.map((option) => (
         <option key={option.value} value={option.value}>
           {option.label}
@@ -99,6 +106,7 @@ export function NumberInput({
   max,
   step,
   placeholder,
+  disabled,
 }: {
   value: number;
   onChange: (v: number) => void;
@@ -106,6 +114,7 @@ export function NumberInput({
   max?: number;
   step?: number;
   placeholder?: string;
+  disabled?: boolean;
 }) {
   return (
     <input
@@ -115,6 +124,7 @@ export function NumberInput({
       max={max}
       step={step}
       placeholder={placeholder}
+      disabled={disabled}
       onChange={(event) => onChange(event.target.value === "" ? 0 : Number(event.target.value))}
       className="field w-full"
     />
@@ -134,6 +144,27 @@ export function DateInput({
   return (
     <input
       type="date"
+      value={value}
+      disabled={disabled}
+      onChange={(event) => onChange(event.target.value)}
+      className="field w-full"
+    />
+  );
+}
+
+/** Mês (`type="month"`) — período do Drop e mês da caixa (§25/§26). */
+export function MonthInput({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <input
+      type="month"
       value={value}
       disabled={disabled}
       onChange={(event) => onChange(event.target.value)}
