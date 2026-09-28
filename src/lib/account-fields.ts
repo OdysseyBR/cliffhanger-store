@@ -75,6 +75,19 @@ export function defaultAccountPrefs(): AccountPrefs {
   return { appearance: "", readerFont: "padrao", audioSpeed: 1 };
 }
 
+/** §14 — item da Minha Coleção (derivado de biblioteca + pedidos). */
+export interface CollectionEntry {
+  productId: string;
+  title: string;
+  digital: boolean;
+  kind: string;
+  universeId?: string;
+  universeName?: string;
+  workId?: string;
+  acquiredAt: string;
+  orderId?: string;
+}
+
 function str(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -207,8 +220,7 @@ export function sanitizeNotifyPrefs(raw: unknown): FieldParse<NotifyPrefs> {
   return { ok: true, item: prefs };
 }
 
-export function sanitizeAccountPrefs(raw: unknown): FieldParse<AccountPrefs> {
-  const input = (raw ?? null) as Partial<AccountPrefs> | null;
+export function sanitizeAccountPrefs(raw: unknown): FieldParse<AccountPrefs> {  const input = (raw ?? null) as Partial<AccountPrefs> | null;
   if (!input || typeof input !== "object") {
     return { ok: false, error: "Preferências inválidas." };
   }

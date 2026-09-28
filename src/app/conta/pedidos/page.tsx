@@ -91,7 +91,7 @@ export default function ContaPedidosPage() {
         {list.map((order) => (
           <Link
             key={order.id}
-            href="/pedidos"
+            href={`/conta/pedidos/${order.id}`}
             className="card flex flex-wrap items-center gap-3 p-4 transition hover:border-gold/50"
           >
             <div className="min-w-0 flex-1">

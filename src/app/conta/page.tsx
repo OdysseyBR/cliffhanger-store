@@ -36,6 +36,7 @@ export default function ContaDashboardPage() {
   const [items, setItems] = useState<LibraryItem[]>([]);
   const [progress, setProgress] = useState<Record<string, ReadingProgress>>({});
   const [orders, setOrders] = useState<Order[]>([]);
+  const [collectionCount, setCollectionCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -44,9 +45,10 @@ export default function ContaDashboardPage() {
       try {
         const token = await getClientAuth()?.currentUser?.getIdToken();
         const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
-        const [libraryRes, ordersRes] = await Promise.all([
+        const [libraryRes, ordersRes, collectionRes] = await Promise.all([
           fetch("/api/library", { headers }),
           fetch("/api/orders/mine", { headers }),
+          fetch("/api/account/collection", { headers }),
         ]);
         if (libraryRes.ok) {
           const data = (await libraryRes.json()) as LibraryPayload;
@@ -56,6 +58,10 @@ export default function ContaDashboardPage() {
         if (ordersRes.ok) {
           const data = (await ordersRes.json()) as { orders?: Order[] };
           setOrders(data.orders ?? []);
+        }
+        if (collectionRes.ok) {
+          const data = (await collectionRes.json()) as { items?: unknown[] };
+          setCollectionCount(Array.isArray(data.items) ? data.items.length : 0);
         }
       } catch {
         /* offline — resumos ficam zerados */
@@ -108,9 +114,14 @@ export default function ContaDashboardPage() {
         <p className="text-sm text-[var(--text-muted)]">Carregando seus resumos…</p>
       ) : (
         <>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             <Stat label="E-books" value={String(ebooks)} href="/conta/biblioteca" />
             <Stat label="Audiobooks" value={String(audiobooks)} href="/conta/biblioteca" />
+            <Stat
+              label="Coleção"
+              value={collectionCount === null ? "…" : String(collectionCount)}
+              href="/conta/colecao"
+            />
             <Stat label="Pedidos" value={String(orders.length)} href="/conta/pedidos" />
             <Stat label="Wishlist" value={String(wishlist.length)} href="/conta/wishlist" />
           </div>
