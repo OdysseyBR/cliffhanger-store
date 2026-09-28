@@ -92,6 +92,8 @@ export default function CheckoutPage() {
   // frete — cotação por CEP (§17)
   const [quote, setQuote] = useState<ShippingQuote | null>(null);
   const [quoteError, setQuoteError] = useState<string | null>(null);
+  // §24 — frete grátis do Cliffhanger+ (vem do servidor com a sessão)
+  const [plusFree, setPlusFree] = useState(false);
   // pagamento
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "credito" | "debito">("pix");
   // cupom (§17)
@@ -144,45 +146,62 @@ export default function CheckoutPage() {
   useEffect(() => {
     const controller = new AbortController();
     const timer = window.setTimeout(() => {
-      if (!hasPhysical) {
-        setQuote(null);
-        setQuoteError(null);
-        return;
-      }
-      const digits = cep.replace(/\D/g, "");
-      if (digits.length !== 8) {
-        setQuote(null);
-        setQuoteError(null);
-        return;
-      }
-      fetch("/api/shipping", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cep: digits, itemCount, subtotal }),
-        signal: controller.signal,
-      })
-        .then(async (res) => {
+      void (async () => {
+        if (!hasPhysical) {
+          setQuote(null);
+          setQuoteError(null);
+          setPlusFree(false);
+          return;
+        }
+        const digits = cep.replace(/\D/g, "");
+        if (digits.length !== 8) {
+          setQuote(null);
+          setQuoteError(null);
+          setPlusFree(false);
+          return;
+        }
+        // §24 — envia a sessão para o servidor aplicar o frete grátis do +
+        let token: string | null = null;
+        try {
+          token = (await getClientAuth()?.currentUser?.getIdToken()) ?? null;
+        } catch {
+          token = null;
+        }
+        if (controller.signal.aborted) return;
+        try {
+          const res = await fetch("/api/shipping", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            body: JSON.stringify({ cep: digits, itemCount, subtotal }),
+            signal: controller.signal,
+          });
           const data = (await res.json()) as ShippingQuote & {
             ok?: boolean;
             error?: string;
+            plusFree?: boolean;
           };
           if (!res.ok || !data.ok) throw new Error(data.error ?? "Falha na cotação.");
           setQuote(data);
+          setPlusFree(data.plusFree === true);
           setQuoteError(null);
-        })
-        .catch((err: unknown) => {
+        } catch (err: unknown) {
           if (controller.signal.aborted) return;
           setQuote(null);
+          setPlusFree(false);
           setQuoteError(
             err instanceof Error ? err.message : "Não foi possível calcular o frete.",
           );
-        });
+        }
+      })();
     }, 450);
     return () => {
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [cep, hasPhysical, itemCount, subtotal]);
+  }, [cep, hasPhysical, itemCount, subtotal, user]);
 
   const goNext = (event: FormEvent) => {
     event.preventDefault();
@@ -452,14 +471,16 @@ export default function CheckoutPage() {
 
                     <p
                       className={`rounded-lg border px-3 py-2 text-xs ${
-                        freeShipping
+                        freeShipping || plusFree
                           ? "border-gold/40 bg-gold/10 text-gold"
                           : "border-[var(--border)] text-[var(--text-muted)]"
                       }`}
                     >
-                      {freeShipping
-                        ? "Você ganhou frete grátis neste pedido."
-                        : `Faltam ${formatPrice(freeFrom - subtotal)} para o frete grátis.`}
+                      {plusFree
+                        ? "Frete grátis do Cliffhanger+ neste pedido."
+                        : freeShipping
+                          ? "Você ganhou frete grátis neste pedido."
+                          : `Faltam ${formatPrice(freeFrom - subtotal)} para o frete grátis.`}
                     </p>
 
                     <fieldset className="space-y-2">

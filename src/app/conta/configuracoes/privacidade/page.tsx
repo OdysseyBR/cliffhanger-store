@@ -92,7 +92,7 @@ export default function ContaPrivacidadePage() {
   const confirmDelete = async () => {
     if (
       window.confirm(
-        "Excluir sua conta Cliffhanger? Isso remove perfil, endereços, métodos, biblioteca vinculada e wishlist. Os pedidos já feitos são mantidos sem dono para fins fiscais e de histórico. Esta ação não pode ser desfeita.",
+        "Excluir sua conta Cliffhanger? Isso remove perfil, endereços, métodos, biblioteca vinculada, wishlist e a assinatura Cliffhanger+. Os pedidos já feitos são mantidos sem dono para fins fiscais e de histórico. Esta ação não pode ser desfeita.",
       )
     ) {
       setBusy(true);
@@ -123,8 +123,9 @@ export default function ContaPrivacidadePage() {
             <p className="text-sm font-bold">O que a conta usa</p>
             <p className="text-xs text-[var(--text-muted)]">
               Perfil (nome, avatar, telefone), endereços, métodos de pagamento (só
-              referências), biblioteca digital, wishlist, pedidos, avaliações e pontos
-              do clube — tudo visível nas seções desta conta.
+              referências), biblioteca digital, assinatura Cliffhanger+, wishlist,
+              pedidos, avaliações e pontos do clube — tudo visível nas seções desta
+              conta.
             </p>
           </div>
 
@@ -165,7 +166,9 @@ export default function ContaPrivacidadePage() {
           <div className="rounded-xl border border-[#e5484d]/40 p-5">
             <p className="text-sm font-bold text-[#e5484d]">Excluir conta</p>
             <p className="mt-1 text-xs text-[var(--text-muted)]">
-              Remove perfil, endereços, métodos, biblioteca vinculada e wishlist. Os
+              Remove perfil, endereços, métodos, biblioteca vinculada, wishlist e a
+              assinatura Cliffhanger+ (benefícios temporários e Drops encerram junto
+              com a conta; itens permanentes já resgatados saem da biblioteca). Os
               pedidos já feitos são mantidos sem dono para fins fiscais e de histórico.
             </p>
             <button

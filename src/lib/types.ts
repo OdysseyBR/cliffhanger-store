@@ -159,6 +159,12 @@ export interface LibraryItem {
   files: DigitalFile[];
   /** ISO */
   purchasedAt: string;
+  /**
+   * Origem do acesso (§23). `plus` = liberado pela assinatura Cliffhanger+
+   * (Drop temporário ou biblioteca Premium) — não é posse do usuário e some
+   * quando a assinatura termina; itens sem `source` são compras/permanentes.
+   */
+  source?: "plus";
 }
 
 /** Marcador de leitura/escuta (página ou segundo). */

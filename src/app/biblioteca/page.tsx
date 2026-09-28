@@ -32,6 +32,8 @@ interface ViewItem {
   image?: string;
   /** primeiro arquivo com download permitido (`null` = licença sem download) */
   downloadKind: "pdf" | "audio" | null;
+  /** acesso via assinatura Cliffhanger+ (§23) — some quando assinar termina */
+  source?: "plus";
   progress?: ReadingProgress;
 }
 
@@ -104,6 +106,7 @@ export default function BibliotecaPage() {
           type?: string;
           image?: string;
           files?: DigitalFile[];
+          source?: string;
         }[],
         progressOf: (productId: string) => ReadingProgress | undefined,
       ): ViewItem[] =>
@@ -123,6 +126,7 @@ export default function BibliotecaPage() {
             type,
             product,
             image: raw.image,
+            source: raw.source === "plus" ? "plus" : undefined,
             downloadKind: allowed ? allowed.kind : null,
             progress: progressOf(raw.productId),
           };
@@ -138,6 +142,7 @@ export default function BibliotecaPage() {
             type: i.type,
             image: i.image,
             files: i.files,
+            source: i.source,
           })),
           (id) => cloudProgress[id],
         );
@@ -246,8 +251,15 @@ export default function BibliotecaPage() {
                     )}
                   </span>
                   <div className="flex min-w-0 flex-1 flex-col">
-                    <span className="text-xs font-bold uppercase tracking-wider text-gold">
-                      {item.type === "audiobook" ? "Audiobook" : "E-book"}
+                    <span className="flex items-center gap-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-gold">
+                        {item.type === "audiobook" ? "Audiobook" : "E-book"}
+                      </span>
+                      {item.source === "plus" && (
+                        <span className="rounded border border-gold/40 bg-gold/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-gold">
+                          Cliffhanger+
+                        </span>
+                      )}
                     </span>
                     <p className="mt-1 line-clamp-2 text-sm font-bold">{item.title}</p>
 

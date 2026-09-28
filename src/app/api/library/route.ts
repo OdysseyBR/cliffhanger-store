@@ -1,12 +1,16 @@
 import { getAuth } from "firebase-admin/auth";
 import { getAdminApp, getAdminDb } from "@/lib/firebase-admin";
 import { claimLibraryItems, getLibrary } from "@/lib/library";
+import { withPlusAccess } from "@/lib/plus";
 import { getProducts } from "@/lib/data";
 
 /**
  * Biblioteca digital (Doc Mestre §8).
  *
- * GET  → itens + progresso da conta (Bearer do usuário).
+ * GET  → itens + progresso da conta (Bearer do usuário). Além das compras,
+ *        inclui o acesso concedido pela assinatura Cliffhanger+ (§23):
+ *        Drops temporários resgatados e, no Premium, o catálogo completo
+ *        enquanto a assinatura estiver ativa.
  * POST → sincroniza compras de visitante para a conta ({ productIds }).
  *
  * Sem token válido responde 401; sem Firestore responde 503 — o client
@@ -38,7 +42,9 @@ export async function GET(request: Request) {
   }
   try {
     const library = await getLibrary(uid);
-    return Response.json(library ?? { items: [], progress: {} });
+    const base = library ?? { items: [], progress: {} };
+    const items = await withPlusAccess(uid, base.items);
+    return Response.json({ items, progress: base.progress });
   } catch {
     return Response.json(
       { error: "Falha ao ler a biblioteca." },

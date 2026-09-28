@@ -4,6 +4,9 @@ import {
   quoteShipping,
 } from "@/lib/shipping";
 import { getShopSettings } from "@/lib/shop-settings";
+import { getAuth } from "firebase-admin/auth";
+import { getAdminApp } from "@/lib/firebase-admin";
+import { hasFreeShipping } from "@/lib/plus";
 
 /**
  * Cálculo de frete por CEP (Documento de Correção §17).
@@ -12,9 +15,24 @@ import { getShopSettings } from "@/lib/shop-settings";
  * o UF é complementado via ViaCEP quando acessível — falha de rede não
  * derruba a cotação. Sem token de transportadora: sem dependência externa
  * obrigatória.
+ *
+ * §24 — assinantes Cliffhanger+ (Essential+) têm frete grátis: quando o
+ * Bearer é de uma conta com assinatura ativa, as opções voltam zeradas.
  */
 
 const ViaCEP_TIMEOUT_MS = 3000;
+
+async function verifyUid(request: Request): Promise<string | null> {
+  const bearer = /^Bearer (.+)$/.exec(request.headers.get("authorization") ?? "")?.[1];
+  if (!bearer) return null;
+  const app = getAdminApp();
+  if (!app) return null;
+  try {
+    return (await getAuth(app).verifyIdToken(bearer)).uid;
+  } catch {
+    return null;
+  }
+}
 
 async function resolveState(digits: string): Promise<string | null> {
   try {
@@ -62,6 +80,12 @@ export async function POST(request: Request) {
 
   const state = await resolveState(digits);
 
+  // §24 — frete grátis para assinantes Cliffhanger+ ativos.
+  const plusFree = await hasFreeShipping(await verifyUid(request));
+  const options = plusFree
+    ? quote.options.map((option) => ({ ...option, price: 0, free: true }))
+    : quote.options;
+
   return Response.json({
     ok: true,
     cep: formatCep(digits),
@@ -69,6 +93,7 @@ export async function POST(request: Request) {
     region: quote.region,
     regionLabel: quote.regionLabel,
     freeShippingFrom: settings.freeShippingFrom,
-    options: quote.options,
+    options,
+    plusFree,
   });
 }

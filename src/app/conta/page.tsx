@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useStore } from "@/components/Providers";
 import { getClientAuth } from "@/lib/firebase";
+import type { PlusSubscription } from "@/lib/plus-fields";
 import type { LibraryItem, Order, ReadingProgress } from "@/lib/types";
 
 /**
@@ -37,6 +38,8 @@ export default function ContaDashboardPage() {
   const [progress, setProgress] = useState<Record<string, ReadingProgress>>({});
   const [orders, setOrders] = useState<Order[]>([]);
   const [collectionCount, setCollectionCount] = useState<number | null>(null);
+  const [plus, setPlus] = useState<PlusSubscription | null>(null);
+  const [plusPlanName, setPlusPlanName] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,10 +48,11 @@ export default function ContaDashboardPage() {
       try {
         const token = await getClientAuth()?.currentUser?.getIdToken();
         const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
-        const [libraryRes, ordersRes, collectionRes] = await Promise.all([
+        const [libraryRes, ordersRes, collectionRes, plusRes] = await Promise.all([
           fetch("/api/library", { headers }),
           fetch("/api/orders/mine", { headers }),
           fetch("/api/account/collection", { headers }),
+          fetch("/api/account/plus", { headers }),
         ]);
         if (libraryRes.ok) {
           const data = (await libraryRes.json()) as LibraryPayload;
@@ -62,6 +66,17 @@ export default function ContaDashboardPage() {
         if (collectionRes.ok) {
           const data = (await collectionRes.json()) as { items?: unknown[] };
           setCollectionCount(Array.isArray(data.items) ? data.items.length : 0);
+        }
+        if (plusRes.ok) {
+          const data = (await plusRes.json()) as {
+            subscription?: PlusSubscription | null;
+            plans?: { id: string; name: string }[];
+          };
+          const sub = data.subscription ?? null;
+          setPlus(sub);
+          setPlusPlanName(
+            sub ? data.plans?.find((p) => p.id === sub.plan)?.name ?? sub.plan : "",
+          );
         }
       } catch {
         /* offline — resumos ficam zerados */
@@ -99,10 +114,22 @@ export default function ContaDashboardPage() {
           <p className="truncate text-xl font-bold">{user.displayName ?? "Leitor(a)"}</p>
           <p className="truncate text-sm text-[var(--text-muted)]">{user.email}</p>
           <p className="mt-1 text-xs text-[var(--text-muted)]">
-            Cliffhanger+ não assinado —{" "}
-            <Link href="/conta/cliffhanger-plus" className="text-gold underline">
-              conhecer planos
-            </Link>
+            {plus && plus.status === "ativo" ? (
+              <>
+                Cliffhanger+ {plusPlanName}{" "}
+                <strong className="text-gold">ativo</strong> —{" "}
+                <Link href="/conta/cliffhanger-plus" className="text-gold underline">
+                  gerenciar assinatura
+                </Link>
+              </>
+            ) : (
+              <>
+                Cliffhanger+ {plus ? "cancelado" : "não assinado"} —{" "}
+                <Link href="/conta/cliffhanger-plus" className="text-gold underline">
+                  conhecer planos
+                </Link>
+              </>
+            )}
           </p>
         </div>
         <Link href="/conta/perfil" className="btn btn-ghost px-4 py-2 text-xs">

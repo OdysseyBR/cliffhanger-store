@@ -8,6 +8,7 @@ import { normalizeOrder } from "@/lib/order-fields";
 import { evaluateCoupon, normalizeCouponCode } from "@/lib/coupons";
 import { fallbackShippingPrice, quoteShipping } from "@/lib/shipping";
 import { getShopSettings } from "@/lib/shop-settings";
+import { hasFreeShipping } from "@/lib/plus";
 import type { Coupon, Order, OrderGift, OrderItem, OrderStatus } from "@/lib/types";
 
 interface CheckoutPayload {
@@ -77,6 +78,21 @@ export async function POST(request: Request) {
     subtotal += product.price * qty;
   }
 
+  // Sessão opcional: quando o cliente está logado, anexa o dono ao pedido
+  // para o histórico de `/pedidos`. Token inválido segue como visitante.
+  // (resolvido antes do frete porque §24 dá frete grátis a assinantes)
+  let userId: string | null = null;
+  const authHeader = request.headers.get("authorization") ?? "";
+  const bearer = /^Bearer (.+)$/.exec(authHeader)?.[1];
+  if (bearer) {
+    try {
+      const app = getAdminApp();
+      if (app) userId = (await getAuth(app).verifyIdToken(bearer)).uid;
+    } catch {
+      /* sem sessão válida → compra de visitante */
+    }
+  }
+
   // §17 — frete recalculado no servidor pelo CEP + modalidade escolhida;
   // o valor enviado pelo cliente nunca é confiado. Só itens FÍSICOS pesam.
   const hasPhysical = orderItems.some((item) => !item.digital);
@@ -91,10 +107,13 @@ export async function POST(request: Request) {
     subtotal,
     freeShippingFrom: settings.freeShippingFrom,
   });
-  const shipping = hasPhysical
-    ? (quote?.options.find((o) => o.id === option)?.price ??
-      fallbackShippingPrice(subtotal, option, settings.freeShippingFrom))
-    : 0;
+  // §24 — assinantes Cliffhanger+ (Essential+) têm frete grátis.
+  const plusFree = await hasFreeShipping(userId);
+  const shipping =
+    hasPhysical && !plusFree
+      ? (quote?.options.find((o) => o.id === option)?.price ??
+        fallbackShippingPrice(subtotal, option, settings.freeShippingFrom))
+      : 0;
 
   // §17 — cupom: revalidado no servidor; desconto aplicado ao total.
   const db = getAdminDb();
@@ -138,20 +157,6 @@ export async function POST(request: Request) {
 
   const status: OrderStatus = "aguardando_pagamento";
   const now = new Date().toISOString();
-
-  // Sessão opcional: quando o cliente está logado, anexa o dono ao pedido
-  // para o histórico de `/pedidos`. Token inválido segue como visitante.
-  let userId: string | null = null;
-  const authHeader = request.headers.get("authorization") ?? "";
-  const bearer = /^Bearer (.+)$/.exec(authHeader)?.[1];
-  if (bearer) {
-    try {
-      const app = getAdminApp();
-      if (app) userId = (await getAuth(app).verifyIdToken(bearer)).uid;
-    } catch {
-      /* sem sessão válida → compra de visitante */
-    }
-  }
 
   const order: Omit<Order, "id"> = {
     code: `CH-${randomUUID().slice(0, 8).toUpperCase()}`,
@@ -217,6 +222,7 @@ export async function POST(request: Request) {
     code: order.code,
     total: order.total,
     shipping: order.shipping,
+    plusFree,
     discount: order.discount,
     gift: Boolean(gift),
     digitalItems: orderItems.filter((i) => i.digital).map((i) => i.productId),
