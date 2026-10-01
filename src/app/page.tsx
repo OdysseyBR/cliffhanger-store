@@ -132,15 +132,16 @@ export default async function HomePage() {
           {grid4(edicoesEspeciais)}
         </Section>
       ) : null,
-    universos: (
-      <Section title="Explore os universos" subtitle="Cada universo, uma porta de entrada." href="/universos">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {universes.map((universe) => (
-            <UniverseCard key={universe.id} universe={universe} />
-          ))}
-        </div>
-      </Section>
-    ),
+    universos:
+      universes.length > 0 ? (
+        <Section title="Explore os universos" subtitle="Cada universo, uma porta de entrada." href="/universos">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {universes.map((universe) => (
+              <UniverseCard key={universe.id} universe={universe} />
+            ))}
+          </div>
+        </Section>
+      ) : null,
     derivados:
       derivados.length > 0 ? (
         <Section
@@ -183,20 +184,22 @@ export default async function HomePage() {
       ) : null,
     club: <ClubBanner />,
     newsletter: <Newsletter />,
-    recomendacoes: (
-      <Section title="Recomendações" subtitle="Com base nas avaliações da comunidade." href="/loja">
-        {grid4(recomendacoes)}
-      </Section>
-    ),
-    colecoes: (
-      <Section title="Coleções" subtitle="Conjuntos montados para você." id="colecoes">
-        <div className="grid gap-4 lg:grid-cols-2">
-          {collections.map((collection) => (
-            <CollectionCard key={collection.id} collection={collection} products={products} />
-          ))}
-        </div>
-      </Section>
-    ),
+    recomendacoes:
+      recomendacoes.length > 0 ? (
+        <Section title="Recomendações" subtitle="Com base nas avaliações da comunidade." href="/loja">
+          {grid4(recomendacoes)}
+        </Section>
+      ) : null,
+    colecoes:
+      collections.length > 0 ? (
+        <Section title="Coleções" subtitle="Conjuntos montados para você." id="colecoes">
+          <div className="grid gap-4 lg:grid-cols-2">
+            {collections.map((collection) => (
+              <CollectionCard key={collection.id} collection={collection} products={products} />
+            ))}
+          </div>
+        </Section>
+      ) : null,
     ofertas:
       ofertas.length > 0 ? (
         <Section title="Ofertas da semana" subtitle="Descontos por tempo limitado." href="/ofertas">
@@ -225,8 +228,8 @@ export default async function HomePage() {
 
   return (
     <Page
-      beforeHeader={<HomeBanner banner={banner} />}
-      hideHeader={!banner.showHeader}
+      beforeHeader={banner ? <HomeBanner banner={banner} /> : <BrandHero />}
+      hideHeader={banner ? !banner.showHeader : false}
     >
       {announcement && (
         <p className="mb-4 rounded-full border border-gold/40 bg-gold/10 px-5 py-2 text-center text-xs font-bold uppercase tracking-wider text-gold">
@@ -255,5 +258,30 @@ export default async function HomePage() {
       {/* zonas de festival — fim da Home */}
       <ThemeZones zones={zones} placement="end" />
     </Page>
+  );
+}
+
+/**
+ * Hero da marca — exibido quando o painel não tem nenhum banner ativo.
+ * A Home continua começando por um bloco de identidade (§3), sem promover
+ * conteúdo que não existe no catálogo.
+ */
+function BrandHero() {
+  return (
+    <section
+      className="mb-6 overflow-hidden rounded-2xl border border-[var(--border)] px-6 py-14 text-center"
+      style={{ background: "linear-gradient(180deg, #5603AD4D 0%, #5603AD00 100%)" }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element -- wordmark estático da identidade */}
+      <img
+        src="/logo-cliffhanger-branco.svg"
+        alt="Cliffhanger Store"
+        className="mx-auto h-12 w-auto"
+      />
+      <p className="text-display mt-4 text-3xl text-gold">Novos títulos em breve</p>
+      <p className="mx-auto mt-2 max-w-md text-sm text-[var(--text-muted)]">
+        A loja está se preparando para o próximo lote. Volte em breve.
+      </p>
+    </section>
   );
 }

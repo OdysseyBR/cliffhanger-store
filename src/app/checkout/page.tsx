@@ -582,7 +582,7 @@ export default function CheckoutPage() {
                   ))}
                 </div>
                 <p className="text-xs text-[var(--text-muted)]">
-                  Ambiente de demonstração (PagBank sandbox) — nenhum pagamento real é processado.
+                  Ambiente de teste (PagBank sandbox) — nenhum pagamento real é processado.
                 </p>
 
                 <div className="rounded-xl border border-[var(--border)] p-4 text-sm">

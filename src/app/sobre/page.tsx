@@ -79,10 +79,6 @@ export default function SobrePage() {
                 </p>
               </div>
             </div>
-            <p className="pt-2 text-xs text-[var(--text-muted)]">
-              Site de demonstração — conteúdo e operação fictícios para o projeto
-              Cliffhanger Store.
-            </p>
           </div>
         </div>
       </Section>

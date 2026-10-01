@@ -91,7 +91,7 @@ export default async function ContatoPage() {
               para informar o número do pedido ou o e-mail da compra.
             </p>
             <p className="mt-3 text-xs">
-              Site de demonstração — endereços de e-mail fictícios.
+              Fale com a gente pelo canal que preferir — resposta rápida em dias úteis.
             </p>
           </div>
         </div>

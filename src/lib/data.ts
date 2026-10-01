@@ -1,5 +1,4 @@
 import { catalog as localCatalog } from "@/data/catalog";
-import { launches as localLaunches } from "@/data/launches";
 import { getAdminDb, revive } from "@/lib/firebase-admin";
 import type {
   Author,
@@ -15,12 +14,10 @@ import type {
 /**
  * Camada de dados do catálogo.
  *
- * Prioridade:
- *   1. Cloud Firestore (collections: universes, authors, works, products, collections)
- *   2. Catálogo local de demonstração (src/data/catalog.ts)
- *
- * Qualquer falha de rede/credencial cai silenciosamente no catálogo local,
- * garantindo que a loja funcione mesmo sem Firestore configurado.
+ * Fonte única: Cloud Firestore (collections: universes, authors, works,
+ * products, collections, launches). Sem Firestore — ou em falha de
+ * rede/credencial — a loja renderiza vazio; o catálogo de demonstração
+ * só é usado com o flag explícito CATALOG_SOURCE=local (desenvolvimento).
  */
 
 const CACHE_KEY = "__cliffhanger_catalog__";
@@ -38,14 +35,23 @@ async function readCollection<T>(db: FirebaseFirestore.Firestore, name: string):
   return snap.docs.map((doc) => revive({ id: doc.id, ...doc.data() }) as T);
 }
 
+const EMPTY_CATALOG: Catalog = {
+  universes: [],
+  authors: [],
+  works: [],
+  products: [],
+  collections: [],
+  launches: [],
+};
+
 async function loadCatalog(): Promise<Catalog> {
   if (process.env.CATALOG_SOURCE === "local") return localCatalog;
 
   const db = getAdminDb();
-  if (!db) return localCatalog;
+  if (!db) return EMPTY_CATALOG;
 
   try {
-    const [universes, authors, works, products, collections, launchDocs] = await Promise.all([
+    const [universes, authors, works, products, collections, launches] = await Promise.all([
       readCollection<Universe>(db, "universes"),
       readCollection<Author>(db, "authors"),
       readCollection<Work>(db, "works"),
@@ -54,19 +60,10 @@ async function loadCatalog(): Promise<Catalog> {
       readCollection<Launch>(db, "launches"),
     ]);
 
-    if (products.length === 0) return localCatalog;
-
-    return {
-      universes,
-      authors,
-      works,
-      products,
-      collections,
-      launches: launchDocs.length > 0 ? launchDocs : localLaunches,
-    };
+    return { universes, authors, works, products, collections, launches };
   } catch (error) {
-    console.warn("[catalog] Firestore indisponível, usando catálogo local:", error);
-    return localCatalog;
+    console.warn("[catalog] Firestore indisponível — catálogo vazio:", error);
+    return EMPTY_CATALOG;
   }
 }
 
@@ -155,7 +152,8 @@ export async function getLaunches(): Promise<Launch[]> {
  * Pré-venda por slug com leitura ao vivo (§15). A página pública é dinâmica e
  * precisa refletir criação, edição e exclusão na hora: o cache do catálogo é
  * por processo e o `invalidateCatalog()` das APIs não alcança o processo que
- * renderiza a página. Sem Firestore (ou coleção vazia) cai no catálogo local.
+ * renderiza a página. Sem Firestore (ou com a coleção vazia) o slug não é
+ * encontrado e a página trata o estado vazio.
  */
 export async function getLaunchBySlug(slug: string): Promise<Launch | undefined> {
   if (process.env.CATALOG_SOURCE !== "local") {

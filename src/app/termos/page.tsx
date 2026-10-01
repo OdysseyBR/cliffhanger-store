@@ -74,7 +74,7 @@ export default function TermosPage() {
           ))}
           <div className="card flex flex-wrap items-center justify-between gap-3 p-6">
             <p className="text-xs text-[var(--text-muted)]">
-              Última atualização: setembro de 2026 · Site de demonstração.
+              Última atualização: setembro de 2026.
             </p>
             <Link href="/sobre" className="btn btn-ghost px-5">
               Conhecer a loja

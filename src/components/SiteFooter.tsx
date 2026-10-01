@@ -58,7 +58,7 @@ export function SiteFooter() {
 
       <div className="border-t border-paper/10">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-5 text-xs text-paper/60 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-          <p>© {new Date().getFullYear()} Cliffhanger Store — projeto de demonstração.</p>
+          <p>© {new Date().getFullYear()} Cliffhanger Store. Todos os direitos reservados.</p>
           <ul className="flex flex-wrap gap-4">
             {mainNav.slice(-6).map((item) => (
               <li key={item.href}>

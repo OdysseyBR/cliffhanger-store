@@ -6,8 +6,8 @@ import { getFirestore, type Firestore } from "firebase-admin/firestore";
 /**
  * Firebase Admin (server) — leitura/escrita no Firestore com a
  * service account (variável FIREBASE_SERVICE_ACCOUNT, JSON em linha única).
- * Retorna `null` quando as credenciais não existem, permitindo que a
- * aplicação caia no catálogo local de demonstração.
+ * Retorna `null` quando as credenciais não existem — nesse caso as
+ * camadas de dados renderizam vazio (fora do flag CATALOG_SOURCE=local).
  */
 
 function parseServiceAccount(): Record<string, string> | null {

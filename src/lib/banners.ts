@@ -1,13 +1,13 @@
-import { DEFAULT_BANNER, localBanners } from "@/data/banners";
+import { localBanners } from "@/data/banners";
 import { getAdminDb, revive } from "@/lib/firebase-admin";
 import type { Banner } from "@/lib/types";
 
 /**
  * Camada de dados dos banners (Documento de Correção §5).
  *
- * Prioridade: Cloud Firestore (coleção `banners`) → catálogo local.
- * Falha de rede/credencial cai silenciosamente no fallback local, como no
- * catálogo (lib/data.ts).
+ * Fonte única: Cloud Firestore (coleção `banners`). Sem Firestore ou em
+ * falha, a lista fica vazia e a Home exibe o hero da marca — o catálogo
+ * local de banners só é usado com CATALOG_SOURCE=local (desenvolvimento).
  */
 
 const CACHE_KEY = "__cliffhanger_banners__";
@@ -17,7 +17,7 @@ async function loadBanners(): Promise<Banner[]> {
   if (process.env.CATALOG_SOURCE === "local") return localBanners;
 
   const db = getAdminDb();
-  if (!db) return localBanners;
+  if (!db) return [];
 
   try {
     const snap = await db.collection("banners").limit(50).get();
@@ -25,7 +25,7 @@ async function loadBanners(): Promise<Banner[]> {
       normalizeBanner(revive({ ...doc.data(), id: doc.id }) as Banner),
     );
   } catch {
-    return localBanners;
+    return [];
   }
 }
 
@@ -86,11 +86,11 @@ function inWindow(banner: Banner, now: Date): boolean {
 
 /**
  * Banner exibido na Home: ativo, com arte e dentro da janela de agendamento,
- * ordenado por `order`. Sem nenhum elegível, cai no banner padrão da loja —
- * a Home sempre começa com o Banner (§3). A Home usa ISR de 5 min, então a
- * precisão do agendamento é de até esse intervalo.
+ * ordenado por `order`. Sem nenhum elegível retorna `null` e a Home exibe o
+ * hero da marca. A Home usa ISR de 5 min, então a precisão do agendamento é
+ * de até esse intervalo.
  */
-export async function getActiveBanner(now = new Date()): Promise<Banner> {
+export async function getActiveBanner(now = new Date()): Promise<Banner | null> {
   const banners = await getBanners();
   const eligible = banners
     .filter(
@@ -98,5 +98,5 @@ export async function getActiveBanner(now = new Date()): Promise<Banner> {
         banner.active && banner.image && Boolean(banner.destinationType) && inWindow(banner, now),
     )
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-  return eligible[0] ?? DEFAULT_BANNER;
+  return eligible[0] ?? null;
 }
