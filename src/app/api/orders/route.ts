@@ -26,6 +26,12 @@ interface CheckoutPayload {
     state: string;
   };
   paymentMethod: Order["paymentMethod"];
+  /**
+   * Etapa B — presente sinaliza o fluxo com cobrança PagBank (§7.4): o CPF
+   * vai para o gateway e a liberação digital acontece na confirmação do
+   * pagamento. Ausente (app/fluxo legado), o comportamento é o antigo.
+   */
+  payment?: { taxId?: string };
   /** modalidade escolhida no checkout — o preço é recalculado no servidor */
   shippingOption?: "standard" | "express";
   shipping?: number;
@@ -50,6 +56,17 @@ export async function POST(request: Request) {
   if (!payload?.items?.length || !payload.email?.includes("@")) {
     return Response.json(
       { error: "Informe itens válidos e um e-mail." },
+      { status: 400 },
+    );
+  }
+
+  // Etapa B — fluxo com cobrança: o PagBank exige CPF/CNPJ do comprador.
+  const withPayment = Boolean(payload.payment);
+  const taxId =
+    typeof payload.payment?.taxId === "string" ? payload.payment.taxId.replace(/\D/g, "") : "";
+  if (withPayment && taxId.length !== 11 && taxId.length !== 14) {
+    return Response.json(
+      { error: "Informe o CPF no passo Dados para continuar com o pagamento." },
       { status: 400 },
     );
   }
@@ -179,6 +196,7 @@ export async function POST(request: Request) {
     try {
       const ref = await db.collection("orders").add({
         ...order,
+        ...(taxId ? { taxId } : {}),
         userId,
         customer: {
           name: payload.name ?? "",
@@ -206,9 +224,10 @@ export async function POST(request: Request) {
     }
   }
 
-  // §8 — compra logada: libera os itens digitais na biblioteca da conta
-  // (controle de acesso/licença). Visitante segue com o espelho local.
-  if (userId) {
+  // §8 — compra logada SEM fluxo de cobrança (app/fluxo legado): libera os
+  // itens digitais já na criação. No fluxo Etapa B (site + PagBank) a
+  // liberação acontece na confirmação do pagamento (§7.4, `confirmPayment`).
+  if (userId && !withPayment) {
     try {
       await grantLibraryItems(userId, orderItems, products, id);
     } catch (error) {

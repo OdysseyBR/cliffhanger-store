@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useStore } from "@/components/Providers";
 import { Page } from "@/components/Page";
 import { Section } from "@/components/Section";
 import { ProductArt } from "@/components/ProductArt";
-import { formatPrice } from "@/lib/format";
+import { formatPrice, isValidTaxId, maskTaxId } from "@/lib/format";
 import { getClientAuth } from "@/lib/firebase";
 import {
   FREE_SHIPPING_FROM,
@@ -27,11 +27,117 @@ const steps: { key: Step; label: string }[] = [
 ];
 
 interface OrderResult {
+  orderId: string;
+  method: "pix" | "credito" | "debito";
   code: string;
   total: number;
   discount?: number;
   gift?: boolean;
   digitalItems: string[];
+  status: "aguardando_pagamento" | "pagamento_aprovado";
+  pix?: { image: string; text: string; expiresAt: string };
+}
+
+/* — SDK do PagBank: criptografia do cartão no navegador (Etapa B) — */
+
+const PAGSEGURO_SDK_URL =
+  "https://assets.pagseguro.com.br/checkout-sdk-js/rc/dist/browser/pagseguro.min.js";
+
+declare global {
+  interface Window {
+    PagSeguro?: {
+      encryptCard: (data: {
+        publicKey: string;
+        holder: string;
+        number: string;
+        expMonth: string;
+        expYear: string;
+        securityCode: string;
+      }) => {
+        encryptedCard?: string;
+        hasErrors?: boolean;
+        errors?: { code: string; message: string }[];
+      };
+    };
+  }
+}
+
+function loadPagSeguroSdk(): Promise<void> {
+  if (window.PagSeguro) return Promise.resolve();
+  const existing = document.querySelector<HTMLScriptElement>("script[data-pagseguro]");
+  if (existing) {
+    return new Promise((resolve, reject) => {
+      existing.addEventListener("load", () => resolve());
+      existing.addEventListener("error", () =>
+        reject(new Error("Falha ao carregar o SDK do PagBank.")),
+      );
+    });
+  }
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = PAGSEGURO_SDK_URL;
+    script.dataset.pagseguro = "true";
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Falha ao carregar o SDK do PagBank."));
+    document.body.appendChild(script);
+    window.setTimeout(
+      () => reject(new Error("Tempo esgotado ao carregar o SDK do PagBank.")),
+      15000,
+    );
+  });
+}
+
+function encryptErrorLabel(code: string): string {
+  switch (code) {
+    case "INVALID_NUMBER":
+      return "Número de cartão inválido.";
+    case "INVALID_SECURITY_CODE":
+      return "Código de segurança inválido.";
+    case "INVALID_EXPIRATION_MONTH":
+      return "Mês de validade inválido.";
+    case "INVALID_EXPIRATION_YEAR":
+      return "Ano de validade inválido.";
+    default:
+      return "Dados do cartão inválidos.";
+  }
+}
+
+async function encryptCardData(input: {
+  holder: string;
+  number: string;
+  expMonth: string;
+  expYear: string;
+  securityCode: string;
+}): Promise<string> {
+  await loadPagSeguroSdk();
+  const publicKey = process.env.NEXT_PUBLIC_PAGBANK_PUBLIC_KEY ?? "";
+  if (!publicKey) {
+    throw new Error("Pagamento por cartão indisponível neste ambiente.");
+  }
+  const result = window.PagSeguro?.encryptCard({
+    publicKey,
+    ...input,
+    // o campo exibido tem máscara (4x4) — o SDK exige apenas dígitos
+    number: input.number.replace(/\D/g, ""),
+    securityCode: input.securityCode.replace(/\D/g, ""),
+  });
+  if (!result || result.hasErrors || !result.encryptedCard) {
+    const first = result?.errors?.[0];
+    throw new Error(first ? encryptErrorLabel(first.code) : "Não foi possível criptografar o cartão.");
+  }
+  return result.encryptedCard;
+}
+
+function formatCardNumber(raw: string): string {
+  const digits = raw.replace(/\D/g, "").slice(0, 16);
+  return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+}
+
+function formatExpiry(raw: string): string {
+  const digits = raw.replace(/\D/g, "").slice(0, 4);
+  if (digits.length <= 2) return digits;
+  return `${digits.slice(0, 2)}/${digits.slice(2)}`;
 }
 
 export default function CheckoutPage() {
@@ -96,6 +202,18 @@ export default function CheckoutPage() {
   const [plusFree, setPlusFree] = useState(false);
   // pagamento
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "credito" | "debito">("pix");
+  // §7.3 — documento do comprador (exigido pela API do PagBank)
+  const [taxId, setTaxId] = useState("");
+  // cartão — criptografado no navegador pelo SDK do PagBank (nunca cru aqui)
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardHolder, setCardHolder] = useState("");
+  const [cardExp, setCardExp] = useState("");
+  const [cardCvv, setCardCvv] = useState("");
+  const [installments, setInstallments] = useState(1);
+  // pedido já criado cuja cobrança foi recusada (nova tentativa sem duplicar)
+  const [createdOrder, setCreatedOrder] = useState<OrderResult | null>(null);
+  // mensagem do polling (ex.: recusa durante a espera)
+  const [pendingMessage, setPendingMessage] = useState<string | null>(null);
   // cupom (§17)
   const [couponInput, setCouponInput] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
@@ -205,14 +323,108 @@ export default function CheckoutPage() {
 
   const goNext = (event: FormEvent) => {
     event.preventDefault();
+    if (step === "dados" && !isValidTaxId(taxId)) {
+      const message = "CPF/CNPJ inválido — confira os números digitados.";
+      setError(message);
+      notify(message, "error");
+      return;
+    }
+    setError(null);
     const order = steps.findIndex((s) => s.key === step);
     setStep(steps[Math.min(order + 1, steps.length - 1)].key);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const goBack = () => {
+    // voltar da revisão para o pagamento preserva o pedido criado (permite
+    // editar o cartão e tentar de novo sem duplicar o pedido); voltar além
+    // disso (dados/entrega) pode mudar o conteúdo do pedido → descarta.
     const order = steps.findIndex((s) => s.key === step);
-    if (order > 0) setStep(steps[order - 1].key);
+    const target = order > 0 ? steps[order - 1] : null;
+    if (!target || target.key !== "pagamento") {
+      setCreatedOrder(null);
+      setPendingMessage(null);
+    }
+    if (target) setStep(target.key);
+  };
+
+  const chargeRequest = async (
+    orderId: string,
+    method: "pix" | "credito" | "debito",
+    card?: {
+      encrypted: string;
+      expMonth: string;
+      expYear: string;
+      installments: number;
+      holder: string;
+    },
+  ): Promise<
+    | { ok: true; status: string; message?: string; pix?: OrderResult["pix"] }
+    | { ok: false; error: string }
+  > => {
+    try {
+      const res = await fetch("/api/payment/charge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, method, ...(card ? { card } : {}) }),
+      });
+      const data = (await res.json()) as {
+        ok?: boolean;
+        error?: string;
+        status?: string;
+        message?: string;
+        pix?: OrderResult["pix"];
+      };
+      if (!res.ok || !data.ok) {
+        return { ok: false, error: data.error ?? "Não foi possível processar o pagamento." };
+      }
+      return {
+        ok: true,
+        status: data.status ?? "aguardando_pagamento",
+        message: data.message,
+        pix: data.pix,
+      };
+    } catch {
+      return { ok: false, error: "Falha de rede ao processar o pagamento. Tente novamente." };
+    }
+  };
+
+  /** §7.4 — confirmação: espelho local do visitante, carrinho limpo, tela final. */
+  const approvedRef = useRef(false);
+  const finishApproved = (order: OrderResult) => {
+    try {
+      const raw = window.localStorage.getItem("ch:library");
+      const library: string[] = raw ? (JSON.parse(raw) as string[]) : [];
+      const merged = Array.from(new Set([...library, ...order.digitalItems]));
+      window.localStorage.setItem("ch:library", JSON.stringify(merged));
+    } catch {
+      /* storage indisponível */
+    }
+    setCreatedOrder(null);
+    setPendingMessage(null);
+    clearCart();
+    setResult({ ...order, status: "pagamento_aprovado", pix: undefined });
+    setStep("pedido");
+    if (!approvedRef.current) {
+      approvedRef.current = true;
+      notify("Pagamento aprovado!", "success");
+    }
+  };
+
+  const validateCardFields = (): string | null => {
+    const number = cardNumber.replace(/\D/g, "");
+    if (number.length < 13 || number.length > 16) return "Número do cartão inválido.";
+    const expiry = /^(\d{2})\/(\d{2})$/.exec(cardExp.trim());
+    if (!expiry) return "Validade do cartão no formato MM/AA.";
+    const month = Number(expiry[1]);
+    if (month < 1 || month > 12) return "Mês de validade inválido.";
+    const year = 2000 + Number(expiry[2]);
+    const now = new Date();
+    if (year < now.getFullYear() || (year === now.getFullYear() && month < now.getMonth() + 1)) {
+      return "Cartão vencido — confira a validade.";
+    }
+    if (cardCvv.replace(/\D/g, "").length < 3) return "Código de segurança inválido.";
+    return null;
   };
 
   const submitOrder = async () => {
@@ -222,74 +434,171 @@ export default function CheckoutPage() {
       notify(message, "error");
       return;
     }
+    if (!isValidTaxId(taxId)) {
+      const message = "CPF/CNPJ inválido — volte ao passo Dados e confira.";
+      setError(message);
+      notify(message, "error");
+      return;
+    }
+    if (paymentMethod !== "pix") {
+      const cardError = validateCardFields();
+      if (cardError) {
+        setError(cardError);
+        notify(cardError, "error");
+        return;
+      }
+    }
     setSubmitting(true);
     setError(null);
     try {
-      // token (quando logado) → o servidor grava a licença na biblioteca §8
-      const token = await getClientAuth()?.currentUser?.getIdToken();
-      const res = await fetch("/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          items: cart,
-          email,
-          name,
-          phone,
-          paymentMethod,
-          shippingOption,
-          coupon: appliedCoupon?.code,
-          ...(giftOn && giftTo.trim()
-            ? { gift: { to: giftTo.trim(), message: giftMessage, wrap: giftWrap } }
-            : {}),
-          address: hasPhysical
-            ? { cep, street, number, complement, neighborhood, city, state }
-            : undefined,
-        }),
-      });
+      // 1) pedido — reaproveitado quando a cobrança anterior foi recusada
+      // e o método de pagamento não mudou (senão, um novo pedido é criado)
+      let base = createdOrder?.method === paymentMethod ? createdOrder : null;
+      if (createdOrder && !base) setCreatedOrder(null);
+      if (!base) {
+        const token = await getClientAuth()?.currentUser?.getIdToken();
+        const res = await fetch("/api/orders", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({
+            items: cart,
+            email,
+            name,
+            phone,
+            paymentMethod,
+            payment: { taxId },
+            shippingOption,
+            coupon: appliedCoupon?.code,
+            ...(giftOn && giftTo.trim()
+              ? { gift: { to: giftTo.trim(), message: giftMessage, wrap: giftWrap } }
+              : {}),
+            address: hasPhysical
+              ? { cep, street, number, complement, neighborhood, city, state }
+              : undefined,
+          }),
+        });
 
-      const data = (await res.json()) as {
-        ok?: boolean;
-        error?: string;
-        code: string;
-        total: number;
-        discount?: number;
-        gift?: boolean;
-        digitalItems: string[];
-      };
+        const data = (await res.json()) as {
+          ok?: boolean;
+          error?: string;
+          orderId: string;
+          code: string;
+          total: number;
+          discount?: number;
+          gift?: boolean;
+          digitalItems: string[];
+        };
 
-      if (!res.ok || !data.ok) {
-        throw new Error(data.error ?? "Não foi possível concluir o pedido.");
+        if (!res.ok || !data.ok) {
+          throw new Error(data.error ?? "Não foi possível concluir o pedido.");
+        }
+
+        base = {
+          orderId: data.orderId,
+          method: paymentMethod,
+          code: data.code,
+          total: data.total,
+          discount: data.discount ?? 0,
+          gift: Boolean(data.gift),
+          digitalItems: data.digitalItems,
+          status: "aguardando_pagamento",
+        };
+        setCreatedOrder(base);
       }
 
-      // itens digitais vão para a Biblioteca
-      try {
-        const raw = window.localStorage.getItem("ch:library");
-        const library: string[] = raw ? (JSON.parse(raw) as string[]) : [];
-        const merged = Array.from(new Set([...library, ...data.digitalItems]));
-        window.localStorage.setItem("ch:library", JSON.stringify(merged));
-      } catch {
-        /* storage indisponível */
+      // 2) cobrança — PIX gera QR Code; cartão cobra em um passo (§7.4)
+      if (paymentMethod === "pix") {
+        const charge = await chargeRequest(base.orderId, "pix");
+        if (!charge.ok) throw new Error(charge.error);
+        setResult({ ...base, pix: charge.pix });
+        setPendingMessage(null);
+        setStep("pedido");
+        notify("Pedido criado — pague o PIX para confirmar.", "success");
+        return;
       }
 
-      setResult({
-        code: data.code,
-        total: data.total,
-        discount: data.discount ?? 0,
-        gift: Boolean(data.gift),
-        digitalItems: data.digitalItems,
+      const expiry = /^(\d{2})\/(\d{2})$/.exec(cardExp.trim());
+      const expMonth = expiry?.[1] ?? "";
+      const expYear = `20${expiry?.[2] ?? ""}`;
+      const holder = (cardHolder.trim() || name).trim();
+      const encrypted = await encryptCardData({
+        holder,
+        number: cardNumber,
+        expMonth,
+        expYear,
+        securityCode: cardCvv,
       });
-      setStep("pedido");
-      clearCart();
-      notify("Pedido realizado com sucesso!", "success");
+      const charge = await chargeRequest(base.orderId, paymentMethod, {
+        encrypted,
+        expMonth,
+        expYear,
+        installments,
+        holder,
+      });
+      if (!charge.ok) {
+        // pedido permanece criado — a revisão permite tentar de novo
+        throw new Error(charge.error);
+      }
+      if (charge.status === "pagamento_aprovado") {
+        finishApproved({ ...base, status: "pagamento_aprovado" });
+      } else {
+        setResult({ ...base });
+        setPendingMessage(charge.message ?? null);
+        setStep("pedido");
+        notify("Pagamento recebido — aguardando confirmação.", "success");
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erro ao finalizar pedido";
       setError(message);
       notify(message, "error");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  // §7.4 — polling de confirmação (fallback do webhook em ambiente local;
+  // no ar o webhook confirma sem o comprador na página).
+  useEffect(() => {
+    if (step !== "pedido" || !result || result.status !== "aguardando_pagamento") return;
+    let active = true;
+    const check = async () => {
+      try {
+        const res = await fetch(`/api/payment/status?orderId=${result.orderId}`);
+        const data = (await res.json()) as { ok?: boolean; status?: string; message?: string };
+        if (!active || !res.ok || !data.ok) return;
+        if (data.status === "pagamento_aprovado") {
+          finishApproved({ ...result, status: "pagamento_aprovado" });
+        } else {
+          setPendingMessage(data.message ?? null);
+        }
+      } catch {
+        /* tenta de novo no próximo ciclo */
+      }
+    };
+    void check();
+    const timer = window.setInterval(() => void check(), 4000);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, result?.orderId, result?.status]);
+
+  /** Novo QR Code quando o anterior expirou (30 min). */
+  const regeneratePix = async () => {
+    if (!result) return;
+    try {
+      const charge = await chargeRequest(result.orderId, "pix");
+      if (!charge.ok) throw new Error(charge.error);
+      setResult({ ...result, pix: charge.pix });
+      setPendingMessage(null);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Não foi possível gerar um novo código.";
+      notify(message, "error");
     }
   };
 
@@ -319,16 +628,37 @@ export default function CheckoutPage() {
   };
 
   if (step === "pedido" && result) {
+    const approved = result.status === "pagamento_aprovado";
+    const pixExpires = result.pix
+      ? new Date(result.pix.expiresAt).toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : "";
     return (
       <Page>
-        <Section title="Pedido concluído">
+        <Section title={approved ? "Pedido concluído" : "Aguardando pagamento"}>
           <div className="card mx-auto max-w-2xl gap-4 p-10 text-center">
-            <p className="text-display text-5xl text-gold">Obrigado!</p>
-            <p className="text-sm text-[var(--text-muted)]">
-              Seu pedido <strong className="text-gold">{result.code}</strong> foi registrado.
-              {paymentMethod === "pix" &&
-                " O QR Code PIX seria exibido aqui — após a confirmação, os itens digitais liberam na Biblioteca."}
-            </p>
+            {approved ? (
+              <>
+                <p className="text-display text-5xl text-gold">Obrigado!</p>
+                <p className="text-sm text-[var(--text-muted)]">
+                  Seu pedido <strong className="text-gold">{result.code}</strong> foi registrado
+                  e o pagamento aprovado.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-display text-4xl">Pedido {result.code} criado</p>
+                <p className="text-sm text-[var(--text-muted)]">
+                  {result.pix
+                    ? "Pague com PIX para confirmar — a confirmação é automática."
+                    : "Aguardando a confirmação do pagamento."}
+                </p>
+              </>
+            )}
             {(result.discount ?? 0) > 0 && (
               <p className="text-sm text-gold">
                 Cupom aplicado — desconto de {formatPrice(result.discount ?? 0)} já contabilizado.
@@ -346,10 +676,68 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between">
                 <dt className="text-[var(--text-muted)]">Status</dt>
-                <dd className="font-bold">Aguardando pagamento</dd>
+                <dd className={`font-bold ${approved ? "text-emerald-300" : "text-orange-300"}`}>
+                  {approved ? "Pagamento aprovado" : "Aguardando pagamento"}
+                </dd>
               </div>
             </dl>
-            {result.digitalItems.length > 0 && (
+
+            {!approved && result.pix && (
+              <div className="mx-auto w-full max-w-md space-y-3 rounded-xl border border-[var(--border)] p-4">
+                {/* data URI do gateway — next/image não otimiza imagens inline */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={result.pix.image}
+                  alt="QR Code PIX"
+                  className="mx-auto h-56 w-56 rounded-lg bg-white p-2"
+                />
+                <div className="flex gap-2">
+                  <input
+                    readOnly
+                    value={result.pix.text}
+                    className="field min-w-0 flex-1 text-xs"
+                    onFocus={(event) => event.currentTarget.select()}
+                    aria-label="Código PIX copia e cola"
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-ghost"
+                    onClick={() => {
+                      void navigator.clipboard.writeText(result.pix?.text ?? "");
+                      notify("Código PIX copiado!", "success");
+                    }}
+                  >
+                    Copiar
+                  </button>
+                </div>
+                <p className="text-xs text-[var(--text-muted)]">
+                  Abra o app do seu banco e pague por PIX · válido até {pixExpires}
+                </p>
+                <p className="flex items-center justify-center gap-2 text-xs text-gold">
+                  <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-gold" />
+                  Atualizando o status automaticamente…
+                </p>
+                {pendingMessage && (
+                  <p className="text-xs text-orange-300">{pendingMessage}</p>
+                )}
+                <button type="button" className="btn btn-ghost" onClick={() => void regeneratePix()}>
+                  Gerar novo código
+                </button>
+              </div>
+            )}
+            {!approved && !result.pix && (
+              <div className="rounded-xl border border-[var(--border)] p-4">
+                <p className="text-sm text-[var(--text-muted)]">
+                  Assim que o pagamento for confirmado, os itens digitais liberam na Biblioteca e
+                  o pedido segue para separação.
+                </p>
+                {pendingMessage && (
+                  <p className="mt-2 text-xs text-orange-300">{pendingMessage}</p>
+                )}
+              </div>
+            )}
+
+            {approved && result.digitalItems.length > 0 && (
               <Link href="/biblioteca" className="btn btn-accent mx-auto">
                 Ir para a Biblioteca
               </Link>
@@ -446,7 +834,19 @@ export default function CheckoutPage() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                   />
+                  <input
+                    className="field"
+                    placeholder="CPF ou CNPJ"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    value={taxId}
+                    onChange={(e) => setTaxId(maskTaxId(e.target.value))}
+                    required
+                  />
                 </div>
+                <p className="text-xs text-[var(--text-muted)]">
+                  O documento é exigido pelo PagBank para processar o pagamento com segurança.
+                </p>
                 <button type="submit" className="btn btn-primary">
                   Continuar para entrega
                 </button>
@@ -584,6 +984,69 @@ export default function CheckoutPage() {
                 <p className="text-xs text-[var(--text-muted)]">
                   Ambiente de teste (PagBank sandbox) — nenhum pagamento real é processado.
                 </p>
+
+                {paymentMethod !== "pix" && (
+                  <div className="space-y-3 rounded-xl border border-[var(--border)] p-4">
+                    <p className="text-sm font-bold">Dados do cartão</p>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <input
+                        className="field sm:col-span-2"
+                        placeholder="Número do cartão"
+                        inputMode="numeric"
+                        autoComplete="cc-number"
+                        value={cardNumber}
+                        onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
+                        required
+                      />
+                      <input
+                        className="field"
+                        placeholder="Nome impresso no cartão"
+                        autoComplete="cc-name"
+                        value={cardHolder}
+                        onChange={(e) => setCardHolder(e.target.value.toUpperCase())}
+                        required
+                      />
+                      <input
+                        className="field"
+                        placeholder="Validade (MM/AA)"
+                        inputMode="numeric"
+                        autoComplete="cc-exp"
+                        value={cardExp}
+                        onChange={(e) => setCardExp(formatExpiry(e.target.value))}
+                        required
+                      />
+                      <input
+                        className="field"
+                        placeholder="Código de segurança"
+                        inputMode="numeric"
+                        autoComplete="cc-csc"
+                        value={cardCvv}
+                        onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                        required
+                      />
+                      {paymentMethod === "credito" && (
+                        <label className="flex items-center gap-2">
+                          <span className="text-xs text-[var(--text-muted)]">Parcelas</span>
+                          <select
+                            className="field flex-1"
+                            value={installments}
+                            onChange={(e) => setInstallments(Number(e.target.value))}
+                          >
+                            {Array.from({ length: 6 }, (_, i) => i + 1).map((n) => (
+                              <option key={n} value={n}>
+                                {n}x{n > 1 ? ` de ${formatPrice(total / n)}` : ""} sem juros
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      )}
+                    </div>
+                    <p className="text-xs text-[var(--text-muted)]">
+                      Os dados do cartão são criptografados no seu navegador pelo SDK do PagBank —
+                      nenhum número de cartão passa pelos servidores da loja.
+                    </p>
+                  </div>
+                )}
 
                 <div className="rounded-xl border border-[var(--border)] p-4 text-sm">
                   <p className="font-bold">Cupom de desconto</p>
@@ -731,7 +1194,12 @@ export default function CheckoutPage() {
 
                 <div className="rounded-xl border border-[var(--border)] p-4 text-sm">
                   <p className="font-bold">
-                    Pagamento: {paymentMethod === "pix" ? "PIX" : paymentMethod === "credito" ? "Cartão de crédito" : "Cartão de débito"}
+                    Pagamento:{" "}
+                    {paymentMethod === "pix"
+                      ? "PIX"
+                      : paymentMethod === "credito"
+                        ? `Cartão de crédito — ${installments}x de ${formatPrice(total / installments)} sem juros`
+                        : "Cartão de débito"}
                   </p>
                 </div>
 
@@ -745,7 +1213,11 @@ export default function CheckoutPage() {
                     disabled={submitting}
                     className="btn btn-accent"
                   >
-                    {submitting ? "Processando…" : `Confirmar · ${formatPrice(total)}`}
+                    {submitting
+                      ? "Processando…"
+                      : createdOrder
+                        ? `Tentar pagar · ${formatPrice(total)}`
+                        : `Confirmar · ${formatPrice(total)}`}
                   </button>
                 </div>
               </div>

@@ -1,6 +1,8 @@
 import { writeAudit } from "@/lib/audit";
 import { isGateResponse, requireAdmin } from "@/lib/admin-guard";
+import { getProducts } from "@/lib/data";
 import { getAdminDb, plainDoc, revive } from "@/lib/firebase-admin";
+import { grantLibraryItems } from "@/lib/library";
 import { normalizeOrder } from "@/lib/order-fields";
 import { ORDER_STATUS_LABEL, ORDER_STATUS_LIST, normalizeStatus } from "@/lib/order-status";
 
@@ -58,6 +60,17 @@ export async function PUT(request: Request, { params }: RouteCtx) {
     await ref.set(plainDoc({ status, updatedAt }), { merge: true });
   } catch {
     return Response.json({ error: "Falha ao atualizar o pedido." }, { status: 500 });
+  }
+
+  // §7.4/§8 — aprovação manual libera os itens digitais (mesma regra da
+  // confirmação automática de pagamento).
+  if (status === "pagamento_aprovado" && order.userId) {
+    try {
+      const products = await getProducts();
+      await grantLibraryItems(order.userId, order.items, products, id);
+    } catch (error) {
+      console.warn("[admin/orders] falha ao liberar itens digitais:", error);
+    }
   }
 
   await writeAudit({
