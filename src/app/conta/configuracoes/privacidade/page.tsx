@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useStore } from "@/components/Providers";
 import { getClientAuth } from "@/lib/firebase";
 
@@ -25,11 +26,14 @@ async function authed(path: string, init?: RequestInit) {
 }
 
 export default function ContaPrivacidadePage() {
-  const { user, notify, deleteAccount } = useStore();
+  const router = useRouter();
+  const { user, notify, authError, deleteAccount } = useStore();
   const [consent, setConsent] = useState(true);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
 
   useEffect(() => {
     if (!user) return;
@@ -90,19 +94,22 @@ export default function ContaPrivacidadePage() {
   };
 
   const confirmDelete = async () => {
-    if (
-      window.confirm(
-        "Excluir sua conta Cliffhanger? Isso remove perfil, endereços, métodos, biblioteca vinculada, wishlist e a assinatura Cliffhanger+. Os pedidos já feitos são mantidos sem dono para fins fiscais e de histórico. Esta ação não pode ser desfeita.",
-      )
-    ) {
-      setBusy(true);
-      try {
-        await deleteAccount();
-      } catch {
-        /* erro já exibido pelo provider */
-      } finally {
-        setBusy(false);
-      }
+    setBusy(true);
+    let success = false;
+    try {
+      // reautenticação obrigatória: senha atual (contas com senha) ou
+      // popup do Google/Facebook — feita dentro de deleteAccount (Etapa C)
+      await deleteAccount(user.providers.includes("password") ? deletePassword : undefined);
+      success = true;
+    } catch {
+      /* erro já exibido pelo provider (toast + authError no painel) */
+    } finally {
+      setBusy(false);
+    }
+    if (success) {
+      setConfirming(false);
+      setDeletePassword("");
+      router.replace("/");
     }
   };
 
@@ -171,14 +178,65 @@ export default function ContaPrivacidadePage() {
               com a conta; itens permanentes já resgatados saem da biblioteca). Os
               pedidos já feitos são mantidos sem dono para fins fiscais e de histórico.
             </p>
-            <button
-              type="button"
-              onClick={() => void confirmDelete()}
-              disabled={busy}
-              className="mt-3 btn btn-ghost border-[#e5484d]/40 px-4 py-2 text-xs text-[#e5484d]"
-            >
-              Excluir conta
-            </button>
+            {!confirming ? (
+              <button
+                type="button"
+                onClick={() => setConfirming(true)}
+                disabled={busy}
+                className="mt-3 btn btn-ghost border-[#e5484d]/40 px-4 py-2 text-xs text-[#e5484d]"
+              >
+                Excluir conta
+              </button>
+            ) : (
+              <div className="mt-3 space-y-2 rounded-xl border border-[#e5484d]/50 bg-[#e5484d]/10 p-4">
+                <p className="text-xs font-bold uppercase tracking-wider text-[#e5484d]">
+                  Confirmar exclusão permanente
+                </p>
+                <p className="text-xs text-[var(--text-muted)]">
+                  Esta ação não pode ser desfeita.{" "}
+                  {user.providers.includes("password")
+                    ? "Digite sua senha atual para confirmar sua identidade."
+                    : "Você será solicitado a confirmar sua identidade pelo Google/Facebook."}
+                </p>
+                {user.providers.includes("password") && (
+                  <input
+                    type="password"
+                    className="field"
+                    placeholder="Senha atual"
+                    value={deletePassword}
+                    onChange={(event) => setDeletePassword(event.target.value)}
+                    autoComplete="current-password"
+                  />
+                )}
+                {authError && (
+                  <p className="text-xs font-semibold text-[#e5484d]">{authError}</p>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => void confirmDelete()}
+                    disabled={
+                      busy ||
+                      (user.providers.includes("password") && deletePassword.length === 0)
+                    }
+                    className="btn btn-ghost border-[#e5484d] bg-[#e5484d] px-4 py-2 text-xs text-[#F8FEFF]"
+                  >
+                    {busy ? "Excluindo…" : "Sim, excluir minha conta"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setConfirming(false);
+                      setDeletePassword("");
+                    }}
+                    disabled={busy}
+                    className="btn btn-ghost px-4 py-2 text-xs"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </>
       )}

@@ -12,9 +12,12 @@ import {
 } from "react";
 import {
   createUserWithEmailAndPassword,
+  EmailAuthProvider,
   FacebookAuthProvider,
   GoogleAuthProvider,
   onAuthStateChanged,
+  reauthenticateWithCredential,
+  reauthenticateWithPopup,
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
@@ -25,6 +28,11 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { getClientAuth, getClientDb, firebaseEnabled } from "@/lib/firebase";
+import {
+  leaveSession,
+  registerSession,
+  resetSessionClock,
+} from "@/lib/device";
 import {
   getStoreSnapshot,
   subscribeStore,
@@ -85,10 +93,10 @@ interface StoreValue {
   registerEmail: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   // segurança da conta (Doc Mestre 9.5)
-  changePassword: (newPassword: string) => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   sendReset: (email: string) => Promise<void>;
   verifyEmail: () => Promise<void>;
-  deleteAccount: () => Promise<void>;
+  deleteAccount: (currentPassword?: string) => Promise<void>;
   revokeSessions: () => Promise<void>;
 }
 
@@ -98,6 +106,27 @@ export function useStore(): StoreValue {
   const ctx = useContext(StoreContext);
   if (!ctx) throw new Error("useStore deve ser usado dentro de <Providers>");
   return ctx;
+}
+
+/**
+ * Reautentica com senha (Etapa C). A SDK unifica senha errada como
+ * `auth/invalid-credential`; nos formulários que pedem a senha ATUAL
+ * (troca e exclusão) traduzimos para `auth/wrong-password` para o mapa
+ * amigável exibir "Senha incorreta." — no login, `invalid-credential`
+ * segue como "E-mail ou senha incorretos.", que ali está correto.
+ */
+async function reauthPassword(user: User, email: string, password: string): Promise<void> {
+  try {
+    await reauthenticateWithCredential(user, EmailAuthProvider.credential(email, password));
+  } catch (error) {
+    const code = (error as { code?: string }).code;
+    if (code === "auth/invalid-credential" || code === "auth/wrong-password") {
+      const mapped = new Error("Senha incorreta. (auth/wrong-password)");
+      (mapped as Error & { code?: string }).code = "auth/wrong-password";
+      throw mapped;
+    }
+    throw error;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -135,6 +164,8 @@ export function Providers({ children }: { children: ReactNode }) {
           : null,
       );
       setAuthLoading(false);
+      // registra este dispositivo no registry de sessões (throttle 5 min)
+      if (u) void registerSession();
     });
   }, []);
 
@@ -244,6 +275,11 @@ export function Providers({ children }: { children: ReactNode }) {
             "Confirme sua identidade: faça login novamente para esta ação.",
           "no-password-provider":
             "Sua conta não usa senha (entrou por Google/Facebook).",
+          "missing-password": "Informe sua senha atual para confirmar.",
+          "wrong-password": "Senha incorreta.",
+          "invalid-credential": "E-mail ou senha incorretos.",
+          "popup-closed-by-user": "Reautenticação cancelada.",
+          "cancelled-popup-request": "Reautenticação cancelada.",
           "weak-password": "Senha muito fraca — use pelo menos 6 caracteres.",
           "invalid-password": "Senha inválida.",
           "too-many-requests": "Muitas tentativas — tente novamente em instantes.",
@@ -285,10 +321,16 @@ export function Providers({ children }: { children: ReactNode }) {
     async (email: string, password: string) => {
       const auth = getClientAuth();
       if (!auth) throw new Error("Firebase não configurado");
-      await runAuth(
-        () => createUserWithEmailAndPassword(auth, email, password),
-        "Conta Cliffhanger criada",
-      );
+      await runAuth(async () => {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        // verificação automática no cadastro (Etapa C) — melhor esforço: se
+        // o envio falhar, o botão "Verificar e-mail agora" cobre o caso
+        try {
+          await sendEmailVerification(cred.user);
+        } catch {
+          /* sem e-mail agora — usuário pode reenviar depois */
+        }
+      }, "Conta Cliffhanger criada — confira seu e-mail de verificação");
     },
     [runAuth],
   );
@@ -296,16 +338,35 @@ export function Providers({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     const auth = getClientAuth();
     if (!auth) return;
-    await runAuth(() => signOut(auth), "Sessão encerrada");
+    await runAuth(async () => {
+      // apaga este sid do registry antes de sair (best-effort)
+      await leaveSession();
+      await signOut(auth);
+    }, "Sessão encerrada");
   }, [runAuth]);
 
   // ---- segurança da conta (Doc Mestre 9.5) ----
   const changePassword = useCallback(
-    async (newPassword: string) => {
+    async (currentPassword: string, newPassword: string) => {
       const auth = getClientAuth();
       const current = auth?.currentUser;
       if (!current) throw new Error("Nenhuma sessão ativa");
-      await runAuth(() => updatePassword(current, newPassword), "Senha alterada");
+      const email = current.email;
+      await runAuth(async () => {
+        if (!email) {
+          const error = new Error("Sua conta não usa senha (entrou por Google/Facebook).");
+          (error as Error & { code?: string }).code = "auth/no-password-provider";
+          throw error;
+        }
+        if (!currentPassword) {
+          const error = new Error("Informe sua senha atual para confirmar.");
+          (error as Error & { code?: string }).code = "auth/missing-password";
+          throw error;
+        }
+        // reautenticação inline exigida pelo Firebase para ações críticas
+        await reauthPassword(current, email, currentPassword);
+        await updatePassword(current, newPassword);
+      }, "Senha alterada");
     },
     [runAuth],
   );
@@ -326,28 +387,92 @@ export function Providers({ children }: { children: ReactNode }) {
     await runAuth(() => sendEmailVerification(current), "Verificação enviada para seu e-mail");
   }, [runAuth]);
 
-  const deleteAccount = useCallback(async () => {
-    const auth = getClientAuth();
-    const current = auth?.currentUser;
-    if (!current) throw new Error("Nenhuma sessão ativa");
-    await runAuth(() => current.delete(), "Conta excluída");
-  }, [runAuth]);
+  const deleteAccount = useCallback(
+    async (currentPassword?: string) => {
+      const auth = getClientAuth();
+      const current = auth?.currentUser;
+      if (!current) throw new Error("Nenhuma sessão ativa");
+      await runAuth(async () => {
+        const hasPassword = current.providerData.some(
+          (provider) => provider.providerId === "password",
+        );
+        if (hasPassword) {
+          // reautenticação sempre exigida antes de excluir (Etapa C)
+          if (!currentPassword) {
+            const error = new Error("Informe sua senha atual para confirmar.");
+            (error as Error & { code?: string }).code = "auth/missing-password";
+            throw error;
+          }
+          if (!current.email) {
+            const error = new Error("E-mail da conta ausente.");
+            (error as Error & { code?: string }).code = "auth/no-password-provider";
+            throw error;
+          }
+          await reauthPassword(current, current.email, currentPassword);
+        } else {
+          // contas só de Google/Facebook confirmam via popup
+          const social = current.providerData.find(
+            (provider) =>
+              provider.providerId === "google.com" ||
+              provider.providerId === "facebook.com",
+          );
+          if (!social) {
+            const error = new Error("Sua conta não usa senha (entrou por Google/Facebook).");
+            (error as Error & { code?: string }).code = "auth/no-password-provider";
+            throw error;
+          }
+          const provider =
+            social.providerId === "google.com"
+              ? new GoogleAuthProvider()
+              : new FacebookAuthProvider();
+          await reauthenticateWithPopup(current, provider);
+        }
+
+        // exclusão completa server-side (Firestore + Auth + adminUsers)
+        const idToken = await current.getIdToken();
+        const res = await fetch("/api/account", {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${idToken}` },
+        });
+        const body = (await res.json().catch(() => ({}))) as { error?: string };
+        if (!res.ok) {
+          throw new Error(body.error ?? "Não foi possível excluir a conta.");
+        }
+
+        // limpa os espelhos locais e encerra a sessão — updateStore primeiro
+        // (ele persiste "[]" em ch:cart/ch:wishlist) e o removeItem por último,
+        // para os espelhos realmente sumirem do storage
+        updateStore({ cart: [], wishlist: [] });
+        try {
+          for (const key of ["ch:cart", "ch:library", "ch:progress", "ch:wishlist"]) {
+            window.localStorage.removeItem(key);
+          }
+        } catch {
+          /* storage indisponível */
+        }
+        resetSessionClock();
+        await signOut(auth);
+      }, "Conta excluída — seus dados foram removidos");
+    },
+    [runAuth],
+  );
 
   const revokeSessions = useCallback(async () => {
     const auth = getClientAuth();
     const current = auth?.currentUser;
     if (!auth || !current) throw new Error("Nenhuma sessão ativa");
     await runAuth(async () => {
-      // revogação de refresh tokens é recurso do Admin SDK (9.5) — via API
+      // revoga refresh tokens + limpa o registry (9.5) — via API
       const idToken = await current.getIdToken();
-      const res = await fetch("/api/account/revoke", {
-        method: "POST",
+      const res = await fetch("/api/account/sessions", {
+        method: "DELETE",
         headers: { Authorization: `Bearer ${idToken}` },
       });
       const body = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) {
         throw new Error(body.error ?? "Não foi possível encerrar as sessões.");
       }
+      resetSessionClock();
       await signOut(auth);
     }, "Sessões encerradas em todos os dispositivos");
   }, [runAuth]);
