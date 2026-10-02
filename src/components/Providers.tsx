@@ -283,6 +283,8 @@ export function Providers({ children }: { children: ReactNode }) {
           "weak-password": "Senha muito fraca — use pelo menos 6 caracteres.",
           "invalid-password": "Senha inválida.",
           "too-many-requests": "Muitas tentativas — tente novamente em instantes.",
+          "operation-not-allowed":
+            "Este login está indisponível no momento — tente com e-mail e senha.",
         };
         const message = friendly[code] ?? (code || "Falha na autenticação");
         setAuthError(message);
