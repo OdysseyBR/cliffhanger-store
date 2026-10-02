@@ -285,6 +285,8 @@ export function Providers({ children }: { children: ReactNode }) {
           "too-many-requests": "Muitas tentativas — tente novamente em instantes.",
           "operation-not-allowed":
             "Este login está indisponível no momento — tente com e-mail e senha.",
+          "account-exists-with-different-credential":
+            "Já existe uma conta com este e-mail — entre com e-mail e senha.",
         };
         const message = friendly[code] ?? (code || "Falha na autenticação");
         setAuthError(message);
