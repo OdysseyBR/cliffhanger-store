@@ -112,6 +112,9 @@ export interface Product {
   authorId?: string;
   description: string;
   specs: Spec[];
+  /** §23/§7 — imagem de capa enviada por upload (Cloudinary); tem prioridade
+   *  sobre a capa ilustrada/arte procedural quando presente. */
+  image?: string;
   cover?: Cover;
   /** ISO — usado em pré-vendas e lançamentos */
   releaseDate?: string;
@@ -518,6 +521,20 @@ export interface Review {
   status: "pendente" | "aprovada" | "rejeitada";
   createdAt: string;
   updatedAt: string;
+}
+
+/**
+ * §19 — versão pública de uma avaliação aprovada (o que o GET
+ * `/api/reviews` expõe sem sessão). Nunca inclui `email` do autor.
+ */
+export interface PublicReview {
+  id: string;
+  authorName: string;
+  rating: number;
+  comment: string;
+  photos: string[];
+  verified: boolean;
+  createdAt: string;
 }
 
 /** §16 — comunicado do painel (coleção `notifications`). */

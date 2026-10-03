@@ -98,11 +98,20 @@ export default function AdminProdutosPage() {
 
       {filtered.map((product) => (
         <div key={product.id} className="card flex flex-wrap items-center gap-4 p-4">
-          <span
-            aria-hidden
-            className="h-14 w-10 shrink-0 rounded border border-[var(--border)]"
-            style={{ background: product.cover?.bg ?? "#0C0014" }}
-          />
+          {product.image ? (
+            /* eslint-disable-next-line @next/next/no-img-element -- miniatura de URL livre do CMS */
+            <img
+              src={product.image}
+              alt=""
+              className="h-14 w-10 shrink-0 rounded border border-[var(--border)] object-cover"
+            />
+          ) : (
+            <span
+              aria-hidden
+              className="h-14 w-10 shrink-0 rounded border border-[var(--border)]"
+              style={{ background: product.cover?.bg ?? "#0C0014" }}
+            />
+          )}
           <div className="min-w-0 flex-1">
             <p className="truncate font-bold">{product.title}</p>
             <p className="text-xs text-[var(--text-muted)]">

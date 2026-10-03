@@ -32,6 +32,9 @@ function summarizeChanges(before: Partial<Product>, after: Product): string {
   if (before.badge !== after.badge) bits.push(`selo ${after.badge ?? "removido"}`);
   if (before.releaseDate !== after.releaseDate) bits.push("data de lançamento alterada");
   if (before.digital !== after.digital) bits.push(after.digital ? "virou digital" : "virou físico");
+  if ((before.image ?? "") !== (after.image ?? "")) {
+    bits.push(after.image ? "imagem de capa alterada" : "imagem de capa removida");
+  }
   return bits.length ? bits.join(", ") : "dados do item revisados";
 }
 

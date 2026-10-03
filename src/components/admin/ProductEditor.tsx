@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ImageField } from "@/components/admin/ImageField";
 import { useStore } from "@/components/Providers";
 import { saveProduct } from "@/components/admin/admin-api";
 import {
@@ -287,9 +288,23 @@ export function ProductEditor({
         </button>
       </Card>
 
+      <Card title="Capa do produto (upload)">
+        <p className="text-sm text-[var(--text-muted)]">
+          Imagem real do item enviada ao Cloudinary (até 8 MB). Tem prioridade sobre a
+          capa ilustrada; sem imagem, a loja usa a capa ilustrada ou o arte procedural padrão.
+        </p>
+        <ImageField
+          label="Imagem da capa"
+          value={draft.image ?? ""}
+          onChange={(url) => patch({ image: url || undefined })}
+          hint="PNG ou JPG na proporção 2:3 (ex.: 600×900) para preencher os cards."
+        />
+      </Card>
+
       <Card title="Capa ilustrada">
         <p className="text-sm text-[var(--text-muted)]">
-          Sem capa, a loja usa o arte procedural padrão gerado do id do item.
+          Usada quando não há imagem de capa enviada. Sem nenhuma das duas, a loja aplica
+          o arte procedural padrão gerado do id do item.
         </p>
         {draft.cover ? (
           <div className="grid gap-4 sm:grid-cols-4">

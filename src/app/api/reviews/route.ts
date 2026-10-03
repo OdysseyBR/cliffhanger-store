@@ -44,6 +44,54 @@ async function isVerifiedPurchase(
   }
 }
 
+/**
+ * §19/§7 — lista pública de avaliações aprovadas de um produto. Só
+ * `status === "aprovada"` e sem e-mail do autor; usada pela página de
+ * produto (dados frescos mesmo com a rota ser estática no build).
+ */
+export async function GET(request: Request) {
+  const productId = new URL(request.url).searchParams.get("productId")?.trim();
+  if (!productId) {
+    return Response.json({ error: "Informe o produto." }, { status: 400 });
+  }
+
+  const db = getAdminDb();
+  if (!db) {
+    return Response.json(
+      { error: "Firestore não configurado neste ambiente." },
+      { status: 503 },
+    );
+  }
+
+  try {
+    const snap = await db
+      .collection("reviews")
+      .where("productId", "==", productId)
+      .limit(200)
+      .get();
+    const items = snap.docs
+      .map((doc) => ({ id: doc.id, ...(doc.data() as Partial<Review>) }))
+      .filter((review) => review.status === "aprovada")
+      .sort((a, b) => ((a.createdAt ?? "") < (b.createdAt ?? "") ? 1 : -1))
+      .slice(0, 60)
+      .map(({ id, authorName, rating, comment, photos, verified, createdAt }) => ({
+        id,
+        authorName: authorName ?? "",
+        rating: rating ?? 0,
+        comment: comment ?? "",
+        photos: photos ?? [],
+        verified: verified === true,
+        createdAt: createdAt ?? "",
+      }));
+    return Response.json({ items });
+  } catch {
+    return Response.json(
+      { error: "Falha ao carregar as avaliações." },
+      { status: 500 },
+    );
+  }
+}
+
 export async function POST(request: Request) {
   const user = await requireUser(request);
   if (isUserGateResponse(user)) return user;

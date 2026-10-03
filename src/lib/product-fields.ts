@@ -192,6 +192,14 @@ export function sanitizeProduct(input: unknown): Product | null {
     }
   }
 
+  // §23 — imagem de capa por upload: aceita caminho interno (/…) ou
+  // http(s)://… (Cloudinary); vazio/inválido cai para arte procedural.
+  const imageRaw = str(p.image);
+  const image =
+    imageRaw && (imageRaw.startsWith("/") || /^https?:\/\/\S+$/i.test(imageRaw))
+      ? imageRaw
+      : undefined;
+
   const releaseStr = str(p.releaseDate);
   let releaseDate: string | undefined;
   if (releaseStr) {
@@ -261,6 +269,7 @@ export function sanitizeProduct(input: unknown): Product | null {
     description: typeof p.description === "string" ? p.description.trim() : "",
     specs,
     cover,
+    ...(image ? { image } : {}),
     releaseDate,
     salesRank,
     createdAt: str(p.createdAt) || new Date().toISOString(),
