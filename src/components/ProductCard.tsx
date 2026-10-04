@@ -25,7 +25,7 @@ export function ProductCard({ product, widthClass = "" }: { product: Product; wi
 
   return (
     <article
-      className={`group card relative flex h-full w-full flex-col overflow-hidden transition hover:-translate-y-1.5 hover:border-violet-soft hover:shadow-[0_18px_44px_-24px_rgba(86,3,173,0.9)] ${widthClass}`}
+      className={`group card relative flex h-full w-full flex-col overflow-hidden transition hover:-translate-y-1.5 hover:border-violet-soft ${widthClass}`}
     >
       <div className="relative aspect-[2/3] overflow-hidden bg-ink/40">
         <Link
@@ -33,7 +33,7 @@ export function ProductCard({ product, widthClass = "" }: { product: Product; wi
           className="block h-full w-full"
           aria-label={product.title}
         >
-          <div className="cover-shine h-full w-full overflow-hidden transition-transform duration-500 ease-out group-hover:scale-[1.045]">
+          <div className="h-full w-full overflow-hidden transition-transform duration-500 ease-out group-hover:scale-[1.045]">
             <ProductArt product={product} />
           </div>
         </Link>

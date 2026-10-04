@@ -396,7 +396,7 @@ export function EbookReader({
         <div
           ref={wrapRef}
           className="flex min-w-0 flex-1 justify-center overflow-auto p-4"
-          style={{ background: "#0C0014" }}
+          style={{ background: "var(--surface)" }}
         >
           <canvas ref={canvasRef} className="rounded shadow-2xl" aria-label={`Página ${page}`} />
         </div>
@@ -421,7 +421,7 @@ export function EbookReader({
                     <button
                       type="button"
                       onClick={() => goTo(c.start)}
-                      className={`flex w-full items-center justify-between gap-2 rounded px-2 py-1.5 text-left text-xs transition hover:bg-[var(--surface-raised,rgba(86,3,173,.18))] ${
+                      className={`flex w-full items-center justify-between gap-2 rounded px-2 py-1.5 text-left text-xs transition hover:bg-[var(--surface-raised,rgba(163,7,7,.15))] ${
                         currentChapter?.start === c.start ? "text-gold" : ""
                       }`}
                     >
@@ -451,7 +451,7 @@ export function EbookReader({
                   .map((b) => (
                     <li
                       key={b.id}
-                      className="flex items-center gap-1 rounded px-2 py-1.5 text-xs hover:bg-[var(--surface-raised,rgba(86,3,173,.18))]"
+                      className="flex items-center gap-1 rounded px-2 py-1.5 text-xs hover:bg-[var(--surface-raised,rgba(163,7,7,.15))]"
                     >
                       <button
                         type="button"

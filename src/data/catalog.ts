@@ -20,7 +20,8 @@ import type {
 const now = "2026-09-01T12:00:00.000Z";
 
 // ---------------------------------------------------------------------------
-// Capas (geométricas, geradas em SVG pelo componente <BookCover />)
+// Capas (Etapa K: sem motivos — upload de imagem ou capa CH gerada em SVG
+// pelo componente <ChCover />)
 // ---------------------------------------------------------------------------
 const farol: Cover = { bg: "#5603AD", fg: "#F8FEFF", accent: "#FDC500", motif: "farol" };
 const circuito: Cover = { bg: "#0C0014", fg: "#F8FEFF", accent: "#FDC500", motif: "circuito" };

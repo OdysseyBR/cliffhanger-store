@@ -8,13 +8,11 @@ import { useAdminCatalog } from "@/components/admin/useAdminCatalog";
 import {
   Card,
   Field,
-  SelectInput,
   TextArea,
   TextInput,
 } from "@/components/admin/form-fields";
-import { readText, sanitizeUniverse, slugify } from "@/lib/catalog-fields";
-import { COVER_MOTIF_OPTIONS } from "@/lib/product-fields";
-import type { CoverMotif, Universe } from "@/lib/types";
+import { DEFAULT_COVER, readText, sanitizeUniverse, slugify } from "@/lib/catalog-fields";
+import type { Universe } from "@/lib/types";
 
 /**
  * Módulo Universos do painel (Documento de Correção §12 — grupo Catálogo).
@@ -27,10 +25,6 @@ interface FormState {
   slug: string;
   tagline: string;
   description: string;
-  coverBg: string;
-  coverFg: string;
-  coverAccent: string;
-  coverMotif: CoverMotif;
 }
 
 const BLANK: FormState = {
@@ -39,10 +33,6 @@ const BLANK: FormState = {
   slug: "",
   tagline: "",
   description: "",
-  coverBg: "#0C0014",
-  coverFg: "#F8FEFF",
-  coverAccent: "#FDC500",
-  coverMotif: "farol",
 };
 
 function toForm(universe: Universe): FormState {
@@ -52,10 +42,6 @@ function toForm(universe: Universe): FormState {
     slug: universe.slug,
     tagline: readText(universe.tagline),
     description: readText(universe.description),
-    coverBg: universe.cover?.bg ?? "#0C0014",
-    coverFg: universe.cover?.fg ?? "#F8FEFF",
-    coverAccent: universe.cover?.accent ?? "#FDC500",
-    coverMotif: universe.cover?.motif ?? "farol",
   };
 }
 
@@ -78,12 +64,9 @@ export default function AdminUniversesPage() {
       slug: slugify(form.slug || form.name),
       tagline: form.tagline.trim(),
       description: form.description.trim(),
-      cover: {
-        bg: form.coverBg,
-        fg: form.coverFg,
-        accent: form.coverAccent,
-        motif: form.coverMotif,
-      },
+      // Etapa K: capas motivos não são mais editáveis — a loja renderiza a
+      // capa CH. Preserva a arte existente do documento.
+      cover: existing?.cover ?? DEFAULT_COVER,
       createdAt: existing?.createdAt ?? new Date().toISOString(),
     };
 
@@ -189,45 +172,6 @@ export default function AdminUniversesPage() {
                 onChange={(value) => set("description", value)}
               />
             </Field>
-          </div>
-
-          <div>
-            <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              Capa (arte)
-            </p>
-            <div className="grid gap-4 sm:grid-cols-4">
-              <Field label="Fundo">
-                <input
-                  type="color"
-                  className="field h-10 w-full"
-                  value={form.coverBg}
-                  onChange={(event) => set("coverBg", event.target.value)}
-                />
-              </Field>
-              <Field label="Texto">
-                <input
-                  type="color"
-                  className="field h-10 w-full"
-                  value={form.coverFg}
-                  onChange={(event) => set("coverFg", event.target.value)}
-                />
-              </Field>
-              <Field label="Destaque">
-                <input
-                  type="color"
-                  className="field h-10 w-full"
-                  value={form.coverAccent}
-                  onChange={(event) => set("coverAccent", event.target.value)}
-                />
-              </Field>
-              <Field label="Motivo">
-                <SelectInput
-                  value={form.coverMotif}
-                  options={COVER_MOTIF_OPTIONS}
-                  onChange={(value) => set("coverMotif", value as CoverMotif)}
-                />
-              </Field>
-            </div>
           </div>
 
           <div className="flex gap-3">

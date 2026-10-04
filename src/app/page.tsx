@@ -270,13 +270,19 @@ function BrandHero() {
   return (
     <section
       className="mb-6 overflow-hidden rounded-2xl border border-[var(--border)] px-6 py-14 text-center"
-      style={{ background: "linear-gradient(180deg, #5603AD4D 0%, #5603AD00 100%)" }}
+      style={{ background: "color-mix(in srgb, var(--brand) 30%, transparent)" }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element -- wordmark estático da identidade */}
       <img
         src="/logo-cliffhanger-branco.svg"
         alt="Cliffhanger Store"
-        className="mx-auto h-12 w-auto"
+        className="logo-white mx-auto h-12 w-auto"
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element -- wordmark estático (modo claro) */}
+      <img
+        src="/logo-cliffhanger-escuro.svg"
+        alt="Cliffhanger Store"
+        className="logo-dark mx-auto hidden h-12 w-auto"
       />
       <p className="text-display mt-4 text-3xl text-gold">Novos títulos em breve</p>
       <p className="mx-auto mt-2 max-w-md text-sm text-[var(--text-muted)]">

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BookCover } from "@/components/BookCover";
+import { ChCover } from "@/components/ChCover";
 import { FormatBuyBox } from "@/components/FormatBuyBox";
 import { IconGlobe, IconPen } from "@/components/Icons";
 import { Page } from "@/components/Page";
@@ -66,13 +66,13 @@ export default async function ObraPage({ params }: Props) {
       {/* Banner da obra */}
       <section className="relative isolate overflow-hidden border-b border-[var(--border)]">
         <div className="absolute inset-0 -z-10 opacity-25">
-          <BookCover cover={work.cover} />
+          <ChCover kind="Obra" subtitle={work.title} variant="backdrop" />
         </div>
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/70 via-ink/85 to-[var(--surface)]" />
 
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[280px_1fr] lg:px-8 lg:py-16">
           <div className="mx-auto aspect-[2/3] w-full max-w-[280px] overflow-hidden rounded-xl border border-[var(--border)] shadow-2xl">
-            <BookCover cover={work.cover} title={work.title} label={work.subtitle ?? undefined} />
+            <ChCover kind="Obra" subtitle={work.title} />
           </div>
 
           <div>
@@ -147,7 +147,7 @@ export default async function ObraPage({ params }: Props) {
                 className="card group overflow-hidden transition hover:-translate-y-1"
               >
                 <div className="aspect-[2/3]">
-                  <BookCover cover={item.cover} title={item.title} />
+                  <ChCover kind="Obra" subtitle={item.title} />
                 </div>
                 <div className="p-4">
                   <p className="text-sm font-bold group-hover:text-gold">{item.title}</p>

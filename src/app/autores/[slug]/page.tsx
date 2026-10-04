@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BookCover } from "@/components/BookCover";
+import { ChCover } from "@/components/ChCover";
 import { IconGlobe } from "@/components/Icons";
 import { Page } from "@/components/Page";
 import { ProductCard } from "@/components/ProductCard";
@@ -41,7 +41,7 @@ export default async function AutorPage({ params }: Props) {
 
   return (
     <Page>
-      <section className="border-b border-[var(--border)] bg-glow/50">
+      <section className="border-b border-[var(--border)] bg-glow">
         <div className="mx-auto grid max-w-6xl gap-6 px-4 py-12 sm:px-6 lg:grid-cols-[160px_1fr] lg:px-8">
           <div className="grid h-32 w-32 place-items-center rounded-full bg-violet text-4xl font-extrabold text-white lg:h-40 lg:w-40">
             {author.name
@@ -84,7 +84,7 @@ export default async function AutorPage({ params }: Props) {
                 className="card group overflow-hidden transition hover:-translate-y-1"
               >
                 <div className="aspect-[2/3]">
-                  <BookCover cover={work.cover} title={work.title} label={work.subtitle ?? undefined} />
+                  <ChCover kind="Obra" subtitle={work.title} />
                 </div>
                 <div className="p-4">
                   <p className="text-sm font-bold group-hover:text-gold">{work.title}</p>

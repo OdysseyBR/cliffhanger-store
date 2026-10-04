@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookCover } from "@/components/BookCover";
+import { ChCover } from "@/components/ChCover";
 import { IconArrowRight } from "@/components/Icons";
 import { ProductArt } from "@/components/ProductArt";
 import { Stars } from "@/components/Stars";
@@ -13,7 +13,12 @@ export function UniverseCard({ universe }: { universe: Universe }) {
       className="group card relative isolate flex h-56 flex-col justify-end overflow-hidden p-5 transition hover:-translate-y-1"
     >
       <div className="absolute inset-0 -z-10">
-        <BookCover cover={universe.cover} className="opacity-70 transition group-hover:opacity-90" />
+        <ChCover
+          kind="Universo"
+          subtitle={universe.name}
+          variant="backdrop"
+          className="opacity-70 transition group-hover:opacity-90"
+        />
       </div>
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/60 to-transparent" />
       <span className="text-display text-3xl text-paper">{universe.name}</span>
@@ -41,8 +46,8 @@ export function WorkCard({
       className="group card flex h-full w-full flex-col overflow-hidden transition hover:-translate-y-1 hover:border-violet-soft"
     >
       <div className="aspect-[2/3] overflow-hidden bg-ink/40">
-        <div className="cover-shine h-full w-full">
-          <BookCover cover={work.cover} title={work.title} label={work.subtitle ?? undefined} />
+        <div className="h-full w-full">
+          <ChCover kind="Obra" subtitle={work.title} />
         </div>
       </div>
       <div className="flex flex-1 flex-col gap-1 p-4">

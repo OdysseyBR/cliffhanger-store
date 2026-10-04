@@ -316,7 +316,7 @@ export function ProductReviews({ productId }: { productId: string }) {
                     type="button"
                     aria-label="Remover foto"
                     onClick={() => setPhotos((prev) => prev.filter((p) => p !== photo))}
-                    className="absolute right-0.5 top-0.5 grid h-5 w-5 place-items-center rounded-full bg-ink/85 text-white"
+                    className="absolute right-0.5 top-0.5 grid h-5 w-5 place-items-center rounded-full bg-ink/85 text-paper"
                   >
                     <IconX className="h-3 w-3" />
                   </button>

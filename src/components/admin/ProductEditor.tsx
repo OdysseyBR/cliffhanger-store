@@ -15,7 +15,6 @@ import {
 } from "@/components/admin/form-fields";
 import {
   BADGE_OPTIONS,
-  COVER_MOTIF_OPTIONS,
   PRODUCT_CATEGORY_OPTIONS,
   PRODUCT_TYPE_OPTIONS,
   TYPE_CATEGORY,
@@ -79,10 +78,6 @@ export function ProductEditor({
 
   function removeSpec(index: number) {
     patch({ specs: draft.specs.filter((_, i) => i !== index) });
-  }
-
-  function patchCover(changes: Partial<NonNullable<Product["cover"]>>) {
-    patch({ cover: { bg: "#0C0014", fg: "#F8FEFF", accent: "#FDC500", motif: "farol", ...draft.cover, ...changes } });
   }
 
   async function handleSave() {
@@ -290,8 +285,8 @@ export function ProductEditor({
 
       <Card title="Capa do produto (upload)">
         <p className="text-sm text-[var(--text-muted)]">
-          Imagem real do item enviada ao Cloudinary (até 8 MB). Tem prioridade sobre a
-          capa ilustrada; sem imagem, a loja usa a capa ilustrada ou o arte procedural padrão.
+          Imagem real do item enviada ao Cloudinary (até 8 MB). Sem imagem, a loja usa a
+          capa ilustrada CH (monograma + tipo + categoria) nas cores do tema ativo.
         </p>
         <ImageField
           label="Imagem da capa"
@@ -299,48 +294,6 @@ export function ProductEditor({
           onChange={(url) => patch({ image: url || undefined })}
           hint="PNG ou JPG na proporção 2:3 (ex.: 600×900) para preencher os cards."
         />
-      </Card>
-
-      <Card title="Capa ilustrada">
-        <p className="text-sm text-[var(--text-muted)]">
-          Usada quando não há imagem de capa enviada. Sem nenhuma das duas, a loja aplica
-          o arte procedural padrão gerado do id do item.
-        </p>
-        {draft.cover ? (
-          <div className="grid gap-4 sm:grid-cols-4">
-            <Field label="Fundo">
-              <input type="color" className="field h-10 w-full" value={draft.cover.bg} onChange={(event) => patchCover({ bg: event.target.value })} />
-            </Field>
-            <Field label="Texto">
-              <input type="color" className="field h-10 w-full" value={draft.cover.fg} onChange={(event) => patchCover({ fg: event.target.value })} />
-            </Field>
-            <Field label="Destaque">
-              <input type="color" className="field h-10 w-full" value={draft.cover.accent} onChange={(event) => patchCover({ accent: event.target.value })} />
-            </Field>
-            <Field label="Motivo">
-              <SelectInput
-                value={draft.cover.motif}
-                options={COVER_MOTIF_OPTIONS}
-                onChange={(value) => patchCover({ motif: value as NonNullable<Product["cover"]>["motif"] })}
-              />
-            </Field>
-            <div className="sm:col-span-4">
-              <button type="button" className="btn btn-ghost px-4 py-2 text-[11px]" onClick={() => patch({ cover: undefined })}>
-                Remover capa ilustrada
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div>
-            <button
-              type="button"
-              className="btn btn-ghost px-4 py-2 text-[11px]"
-              onClick={() => patch({ cover: { bg: "#0C0014", fg: "#F8FEFF", accent: "#FDC500", motif: "farol" } })}
-            >
-              Usar capa ilustrada
-            </button>
-          </div>
-        )}
       </Card>
 
       <Card title="Campos específicos por tipo (11.2)">

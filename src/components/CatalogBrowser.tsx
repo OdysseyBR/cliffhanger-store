@@ -456,7 +456,7 @@ export function CatalogBrowser({
               type="checkbox"
               checked={onlyOffers}
               onChange={(e) => setOnlyOffers(e.target.checked)}
-              className="h-4 w-4 accent-[#5603AD]"
+              className="h-4 w-4 accent-violet"
             />
             Somente ofertas
           </label>
@@ -465,7 +465,7 @@ export function CatalogBrowser({
               type="checkbox"
               checked={inStock}
               onChange={(e) => setInStock(e.target.checked)}
-              className="h-4 w-4 accent-[#5603AD]"
+              className="h-4 w-4 accent-violet"
             />
             Pronta entrega
           </label>

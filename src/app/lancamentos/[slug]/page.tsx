@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BookCover } from "@/components/BookCover";
+import { ChCover } from "@/components/ChCover";
 import { Countdown } from "@/components/Countdown";
 import { IconArrowLeft, IconClock, IconGlobe, IconPen } from "@/components/Icons";
 import { Page } from "@/components/Page";
@@ -89,7 +89,7 @@ export default async function LancamentoPage({ params }: Props) {
       {/* Destaque do lançamento */}
       <section className="relative isolate overflow-hidden border-b border-[var(--border)]">
         <div className="absolute inset-0 -z-10 opacity-25">
-          <BookCover cover={launch.cover} />
+          <ChCover kind="Lançamento" subtitle={launch.title} variant="backdrop" />
         </div>
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/70 via-ink/85 to-[var(--surface)]" />
 
@@ -104,11 +104,7 @@ export default async function LancamentoPage({ params }: Props) {
 
           <div className="mt-6 grid gap-8 lg:grid-cols-[280px_1fr]">
             <div className="mx-auto aspect-[2/3] w-full max-w-[280px] overflow-hidden rounded-xl border border-[var(--border)] shadow-2xl">
-              <BookCover
-                cover={launch.cover}
-                title={launch.title}
-                label={launch.highlight ?? undefined}
-              />
+              <ChCover kind="Lançamento" subtitle={launch.title} />
             </div>
 
             <div>

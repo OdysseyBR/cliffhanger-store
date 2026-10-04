@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #0c0014;
-  --color-ink-soft: #1a0a2e;
-  --color-violet: #5603ad;
-  --color-violet-soft: #7a2fd0;
-  --color-violet-deep: #3a0077;
+  --color-ink: #0e0000;
+  --color-ink-soft: #210303;
+  --color-violet: #a30707;
+  --color-violet-soft: #d13a3a;
+  --color-violet-deep: #7e0404;
   --color-paper: #f8feff;
-  --color-gold: #fdc500;
-  --color-gold-soft: #ffe066;
+  --color-gold: #e7cb9b;
+  --color-gold-soft: #f1dcc0;
   --color-danger: #e5484d;
   --color-success: #30a46c;
 
@@ -20,27 +20,24 @@
   /* Padrão Cliffhanger (fundo escuro, texto claro). O bloco do padrão
      escolhido sobrepõe estas variáveis em `html[data-theme="…"]` —
      ver src/lib/theme-css.ts. */
-  --surface: #0c0014;
-  --surface-raised: #180a28;
-  --surface-raised-2: #241038;
-  --body-bg: #0c0014;
+  --surface: #0e0000;
+  --surface-raised: #210303;
+  --surface-raised-2: #300707;
+  --body-bg: #0e0000;
   --text: #f8feff;
-  --text-muted: #b9a9d0;
-  --brand: #5603ad;
-  --brand-strong: #7a2fd0;
-  --accent: #fdc500;
+  --text-muted: #d3b7a4;
+  --brand: #a30707;
+  --brand-strong: #d13a3a;
+  --accent: #e7cb9b;
   --border: rgba(248, 254, 255, 0.14);
-  --header-bg: rgba(12, 0, 20, 0.86);
+  --header-bg: rgba(14, 0, 0, 0.86);
 
   /* forma (2.3) — controlada por modelo */
   --card-radius: 1.25rem;
   --btn-radius: 0.75rem;
   --field-radius: 0.75rem;
 
-  /* atmosfera — derivada das cores do modelo */
-  --glow-brand: rgba(86, 3, 173, 0.55);
-  --glow-accent: rgba(253, 197, 0, 0.18);
-  --title-gradient: linear-gradient(100deg, #fdc500, #ffffff 45%, #b98cff);
+  /* atmosfera: sem glows/gradientes (Etapa K — estilo chapado) */
 }
 
 * {
@@ -61,7 +58,7 @@ body {
 
 ::selection {
   background: var(--accent);
-  color: #0c0014;
+  color: var(--surface);
 }
 
 /* ---- utilitários da marca ---- */
@@ -104,7 +101,6 @@ body {
 .btn-primary {
   background: var(--brand);
   color: #f8feff;
-  box-shadow: 0 8px 24px -8px rgba(86, 3, 173, 0.8);
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -115,7 +111,6 @@ body {
 .btn-accent {
   background: var(--accent);
   color: var(--color-ink);
-  box-shadow: 0 8px 24px -8px rgba(253, 197, 0, 0.7);
 }
 
 .btn-accent:hover:not(:disabled) {
@@ -159,7 +154,7 @@ body {
 
 .field:focus {
   border-color: var(--brand-strong);
-  box-shadow: 0 0 0 3px rgba(86, 3, 173, 0.25);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 45%, transparent);
 }
 
 /* ---- zonas de festival (temas de evento em código) ---- */
@@ -239,37 +234,10 @@ body {
   background: transparent;
 }
 
-/* ---- gradientes e brilhos da identidade ---- */
+/* ---- tons chapados da identidade (Etapa K: sem gradientes/brilhos) ---- */
 
 .bg-glow {
-  background: radial-gradient(60rem 30rem at 80% -10%, var(--glow-brand), transparent 60%),
-    radial-gradient(40rem 20rem at 0% 110%, var(--glow-accent), transparent 60%);
-}
-
-.text-gradient {
-  background: var(--title-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.cover-shine::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    115deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.35) 45%,
-    transparent 60%
-  );
-  transform: translateX(-120%);
-  transition: transform 0.7s ease;
-  pointer-events: none;
-}
-
-.group:hover .cover-shine::after {
-  transform: translateX(120%);
+  background: color-mix(in srgb, var(--brand) 8%, transparent);
 }
 
 /* ---- logo por tema (padrão claro = logo escura) ---- */

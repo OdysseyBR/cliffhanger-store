@@ -56,7 +56,7 @@ export async function CategoryPageView({
     <Page>
       <div className="mx-auto w-full max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
         {/* hero da categoria */}
-        <header className="relative isolate overflow-hidden rounded-3xl border border-[var(--border)] bg-gradient-to-br from-violet/25 via-[var(--surface-raised)] to-[var(--surface)] p-6 sm:p-10">
+        <header className="relative isolate overflow-hidden rounded-3xl border border-[var(--border)] bg-violet/20 p-6 sm:p-10">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-8 -top-8 h-44 w-44 text-violet/15 sm:h-56 sm:w-56"

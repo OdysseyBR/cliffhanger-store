@@ -36,7 +36,7 @@ export function MenuButtons() {
           <li key={item.href}>
             <Link
               href={item.href}
-              className="card group flex items-center gap-3 px-4 py-4 transition hover:-translate-y-1 hover:border-violet-soft hover:shadow-[0_16px_40px_-24px_rgba(86,3,173,1)]"
+              className="card group flex items-center gap-3 px-4 py-4 transition hover:-translate-y-1 hover:border-violet-soft"
             >
               <span
                 className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-violet/15 text-xl transition group-hover:bg-violet"

@@ -100,7 +100,7 @@ export default async function ProdutoPage({ params }: Props) {
         <div className="grid gap-8 lg:grid-cols-[minmax(0,440px)_1fr]">
           <div className="lg:sticky lg:top-32 lg:self-start">
             <div className="card group relative overflow-hidden">
-              <div className="cover-shine aspect-[2/3] overflow-hidden bg-ink/40">
+              <div className="aspect-[2/3] overflow-hidden bg-ink/40">
                 <ProductArt product={product} />
               </div>
 

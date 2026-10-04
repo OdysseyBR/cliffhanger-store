@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BookCover } from "@/components/BookCover";
+import { ChCover } from "@/components/ChCover";
 import { Page } from "@/components/Page";
 import { ProductCard } from "@/components/ProductCard";
 import { Section } from "@/components/Section";
@@ -43,7 +43,7 @@ export default async function UniversoPage({ params }: Props) {
     <Page>
       <section className="relative isolate overflow-hidden border-b border-[var(--border)]">
         <div className="absolute inset-0 -z-10 opacity-30">
-          <BookCover cover={universe.cover} />
+          <ChCover kind="Universo" subtitle={universe.name} variant="backdrop" />
         </div>
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/60 via-ink/85 to-[var(--surface)]" />
 
@@ -69,7 +69,7 @@ export default async function UniversoPage({ params }: Props) {
                 className="card group overflow-hidden transition hover:-translate-y-1"
               >
                 <div className="aspect-[2/3]">
-                  <BookCover cover={work.cover} title={work.title} label={work.subtitle ?? undefined} />
+                  <ChCover kind="Obra" subtitle={work.title} />
                 </div>
                 <div className="p-4">
                   <p className="text-sm font-bold group-hover:text-gold">{work.title}</p>

@@ -263,7 +263,7 @@ export function AudioPlayer({
           value={position}
           onChange={(e) => seekTo(Number(e.target.value))}
           aria-label="Posição da faixa"
-          className="w-full accent-[#FDC500]"
+          className="w-full accent-gold"
           disabled={!ready}
         />
         <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
@@ -350,7 +350,7 @@ export function AudioPlayer({
                   <button
                     type="button"
                     onClick={() => seekTo(c.start)}
-                    className={`flex w-full items-center justify-between gap-2 rounded px-2 py-1.5 text-left text-xs transition hover:bg-[var(--surface-raised,rgba(86,3,173,.18))] ${
+                    className={`flex w-full items-center justify-between gap-2 rounded px-2 py-1.5 text-left text-xs transition hover:bg-[var(--surface-raised,rgba(163,7,7,.15))] ${
                       currentChapter?.title === c.title ? "text-gold" : ""
                     }`}
                   >
@@ -383,7 +383,7 @@ export function AudioPlayer({
                 .map((b) => (
                   <li
                     key={b.id}
-                    className="flex items-center gap-1 rounded px-2 py-1.5 text-xs hover:bg-[var(--surface-raised,rgba(86,3,173,.18))]"
+                    className="flex items-center gap-1 rounded px-2 py-1.5 text-xs hover:bg-[var(--surface-raised,rgba(163,7,7,.15))]"
                   >
                     <button
                       type="button"

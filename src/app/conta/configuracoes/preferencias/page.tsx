@@ -90,8 +90,8 @@ export default function ContaPreferenciasPage() {
                 <SelectInput
                   value={prefs.appearance}
                   options={[
-                    { value: "", label: "Padrão Cliffhanger" },
-                    { value: "claro", label: "Padrão Cliffhanger Claro" },
+                    { value: "", label: "Modo escuro (padrão)" },
+                    { value: "claro", label: "Modo claro" },
                   ]}
                   onChange={(v) => set("appearance", v as AccountPrefs["appearance"])}
                 />

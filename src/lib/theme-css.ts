@@ -84,9 +84,6 @@ export function themeCssVars(theme: ThemeModel): Record<string, string> {
     "--card-radius": style === "editorial" ? "0rem" : theme.identity.cardRadius,
     "--btn-radius": style === "editorial" ? "0rem" : style === "framed" ? "0.375rem" : "0.75rem",
     "--field-radius": style === "editorial" ? "0rem" : style === "framed" ? "0.375rem" : "0.75rem",
-    "--glow-brand": withAlpha(c.brand, 0.55),
-    "--glow-accent": withAlpha(c.accent, 0.18),
-    "--title-gradient": `linear-gradient(100deg, ${c.accent}, ${c.text} 45%, ${c.brandStrong})`,
     "--font-display": FONT_STACKS[theme.identity.displayFont] ?? FONT_STACKS.bebas,
     // fundo livre do body (festivais fora da paleta); vazio = --surface
     "--body-bg": theme.identity.bodyBackground?.trim() || c.surface,

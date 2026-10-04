@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useStore } from "@/components/Providers";
-import { IconCart, IconHeart, IconMenu, IconSearch } from "@/components/Icons";
+import { IconCart, IconHeart, IconMenu, IconMoon, IconSearch, IconSun } from "@/components/Icons";
 import { ProfileMenu } from "@/components/ProfileMenu";
 import { menuButtons, megaMenu } from "@/lib/nav";
 
@@ -16,10 +16,11 @@ import { menuButtons, megaMenu } from "@/lib/nav";
  * seção 6.1 e não configuram um menu.
  */
 export function SiteHeader() {
-  const { cartCount, wishlist } = useStore();
+  const { cartCount, wishlist, theme, setTheme } = useStore();
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const isLight = theme === "claro";
 
   return (
     <>
@@ -46,6 +47,15 @@ export function SiteHeader() {
             >
               <IconSearch />
             </Link>
+            <button
+              type="button"
+              onClick={() => setTheme(isLight ? "" : "claro")}
+              className="grid h-10 w-10 place-items-center rounded-full transition hover:bg-[var(--surface-raised)]"
+              aria-label={isLight ? "Ativar modo escuro" : "Ativar modo claro"}
+              title={isLight ? "Modo escuro" : "Modo claro"}
+            >
+              {isLight ? <IconMoon /> : <IconSun />}
+            </button>
           </div>
 
           {/* logo centralizada */}

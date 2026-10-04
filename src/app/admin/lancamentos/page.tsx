@@ -6,7 +6,6 @@ import { AdminLogin } from "@/components/admin/AdminLogin";
 import { useAdminPermissions } from "@/components/admin/AdminRoleProvider";
 import { useAdminLaunchContent } from "@/components/admin/useAdminContent";
 import { fetchCatalogItems } from "@/components/admin/admin-api";
-import { COVER_MOTIF_OPTIONS } from "@/lib/product-fields";
 import {
   Card,
   Field,
@@ -20,7 +19,7 @@ import {
   toLaunchContentForm,
   type LaunchContentForm,
 } from "@/lib/content-fields";
-import type { CoverMotif, Launch, LaunchSocial, Universe, Work } from "@/lib/types";
+import type { Launch, LaunchSocial, Universe, Work } from "@/lib/types";
 
 /**
  * §12/§20 — Lançamentos: conteúdo editorial da página pública (destaque,
@@ -231,36 +230,6 @@ export default function AdminLaunchesPage() {
                   onChange={(v) => set("universeId", v)}
                 />
               </Field>
-            </div>
-          </div>
-
-          <div className="mt-4 space-y-3 border-t border-[var(--border)] pt-4">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              Arte da página (mesmo padrão das capas)
-            </p>
-            <div className="grid gap-4 sm:grid-cols-4">
-              <Field label="Fundo">
-                <TextInput value={form.coverBg} onChange={(v) => set("coverBg", v)} />
-              </Field>
-              <Field label="Traço">
-                <TextInput value={form.coverFg} onChange={(v) => set("coverFg", v)} />
-              </Field>
-              <Field label="Destaque">
-                <TextInput value={form.coverAccent} onChange={(v) => set("coverAccent", v)} />
-              </Field>
-              <Field label="Motivo">
-                <SelectInput
-                  value={form.coverMotif}
-                  options={COVER_MOTIF_OPTIONS.map((option) => ({ value: option.value, label: option.label }))}
-                  onChange={(v) => set("coverMotif", v as CoverMotif)}
-                />
-              </Field>
-            </div>
-            <div
-              className="flex h-16 items-center justify-center rounded-lg border border-[var(--border)] text-xs font-bold"
-              style={{ background: form.coverBg, color: form.coverFg }}
-            >
-              <span style={{ color: form.coverAccent }}>●</span>&nbsp;pré-visualização da arte
             </div>
           </div>
 

@@ -13,9 +13,8 @@ import {
   TextArea,
   TextInput,
 } from "@/components/admin/form-fields";
-import { readText, sanitizeWork, slugify } from "@/lib/catalog-fields";
-import { COVER_MOTIF_OPTIONS } from "@/lib/product-fields";
-import type { Author, CoverMotif, Universe, Work } from "@/lib/types";
+import { DEFAULT_COVER, readText, sanitizeWork, slugify } from "@/lib/catalog-fields";
+import type { Author, Universe, Work } from "@/lib/types";
 
 /**
  * Módulo Obras do painel (Documento de Correção §12 — grupo Catálogo).
@@ -34,10 +33,6 @@ interface FormState {
   seriesName: string;
   seriesIndex: string;
   synopsis: string;
-  coverBg: string;
-  coverFg: string;
-  coverAccent: string;
-  coverMotif: CoverMotif;
 }
 
 const BLANK: FormState = {
@@ -51,10 +46,6 @@ const BLANK: FormState = {
   seriesName: "",
   seriesIndex: "",
   synopsis: "",
-  coverBg: "#0C0014",
-  coverFg: "#F8FEFF",
-  coverAccent: "#FDC500",
-  coverMotif: "farol",
 };
 
 function toForm(work: Work): FormState {
@@ -69,10 +60,6 @@ function toForm(work: Work): FormState {
     seriesName: readText(work.seriesName),
     seriesIndex: work.seriesIndex != null ? String(work.seriesIndex) : "",
     synopsis: readText(work.synopsis),
-    coverBg: work.cover?.bg ?? "#0C0014",
-    coverFg: work.cover?.fg ?? "#F8FEFF",
-    coverAccent: work.cover?.accent ?? "#FDC500",
-    coverMotif: work.cover?.motif ?? "farol",
   };
 }
 
@@ -113,12 +100,9 @@ export default function AdminWorksPage() {
       year: Number(form.year),
       seriesName: form.seriesName.trim() || undefined,
       seriesIndex: form.seriesIndex ? Number(form.seriesIndex) : undefined,
-      cover: {
-        bg: form.coverBg,
-        fg: form.coverFg,
-        accent: form.coverAccent,
-        motif: form.coverMotif,
-      },
+      // Etapa K: capas motivos não são mais editáveis — a loja renderiza a
+      // capa CH. Preserva a arte existente do documento.
+      cover: existing?.cover ?? DEFAULT_COVER,
       createdAt: existing?.createdAt ?? new Date().toISOString(),
     };
 
@@ -280,45 +264,6 @@ export default function AdminWorksPage() {
                 onChange={(value) => set("synopsis", value)}
               />
             </Field>
-          </div>
-
-          <div>
-            <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              Capa (arte)
-            </p>
-            <div className="grid gap-4 sm:grid-cols-4">
-              <Field label="Fundo">
-                <input
-                  type="color"
-                  className="field h-10 w-full"
-                  value={form.coverBg}
-                  onChange={(event) => set("coverBg", event.target.value)}
-                />
-              </Field>
-              <Field label="Texto">
-                <input
-                  type="color"
-                  className="field h-10 w-full"
-                  value={form.coverFg}
-                  onChange={(event) => set("coverFg", event.target.value)}
-                />
-              </Field>
-              <Field label="Destaque">
-                <input
-                  type="color"
-                  className="field h-10 w-full"
-                  value={form.coverAccent}
-                  onChange={(event) => set("coverAccent", event.target.value)}
-                />
-              </Field>
-              <Field label="Motivo">
-                <SelectInput
-                  value={form.coverMotif}
-                  options={COVER_MOTIF_OPTIONS}
-                  onChange={(value) => set("coverMotif", value as CoverMotif)}
-                />
-              </Field>
-            </div>
           </div>
 
           <div className="flex gap-3">

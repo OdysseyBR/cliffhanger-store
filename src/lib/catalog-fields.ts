@@ -158,7 +158,11 @@ export function isCatalogEntity(value: string): value is CatalogEntity {
   return (CATALOG_ENTITIES as readonly string[]).includes(value);
 }
 
-const DEFAULT_COVER: Cover = {
+/**
+ * Capa padrão de fallback nos sanitizadores — mantém o campo `cover` válido
+ * nos documentos já salvos (Etapa K: a loja renderiza a capa CH, não o motivo).
+ */
+export const DEFAULT_COVER: Cover = {
   bg: "#0C0014",
   fg: "#F8FEFF",
   accent: "#FDC500",

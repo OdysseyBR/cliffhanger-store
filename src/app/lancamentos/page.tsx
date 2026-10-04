@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BookCover } from "@/components/BookCover";
+import { ChCover } from "@/components/ChCover";
 import { IconArrowRight, IconClock } from "@/components/Icons";
 import { Page } from "@/components/Page";
 import { ProductCard } from "@/components/ProductCard";
@@ -31,7 +31,7 @@ export default async function LancamentosPage() {
                 className="card group flex gap-4 p-4 transition hover:-translate-y-1"
               >
                 <div className="h-36 w-24 shrink-0 overflow-hidden rounded-lg border border-[var(--border)]">
-                  <BookCover cover={launch.cover} title={launch.title} />
+                  <ChCover kind="Lançamento" subtitle={launch.title} />
                 </div>
                 <div className="flex flex-1 flex-col gap-1.5">
                   <div className="flex flex-wrap gap-2 text-[10px] font-bold uppercase tracking-wider">

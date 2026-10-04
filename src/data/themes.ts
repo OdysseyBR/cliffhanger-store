@@ -1,8 +1,9 @@
 // Cliffhanger — padrões visuais permanentes da loja (Documento de Correção,
 // Finalização e Ajustes — §2/§4/§12/§28). Sem Theme Engine no painel:
-// dois padrões oficiais mantidos em código — Padrão Cliffhanger (identidade
-// escura) e Padrão Cliffhanger Claro (áreas escuras invertidas para claras,
-// sem perder roxo/branco/preto + dourado). Temas especiais de evento são
+// dois modos oficiais mantidos em código — Padrão Cliffhanger (modo escuro)
+// e Padrão Cliffhanger Claro (modo claro), os dois na paleta aprovada na
+// Etapa K: vermelho #A30707 + areia #E7CB9B sobre #0E0000. O header alterna
+// entre os dois (ThemeSync + setTheme); temas especiais de evento são
 // desenvolvidos especificamente no projeto, quando houver.
 
 import type {
@@ -27,7 +28,8 @@ const now = "2026-09-23T00:00:00.000Z";
 
 export const themes: ThemeModel[] = [
   // -------------------------------------------------------------------------
-  // 1. Padrão Cliffhanger — identidade oficial atual (paleta Paleta.png)
+  // 1. Padrão Cliffhanger — modo escuro oficial (paleta vencedora da
+  //    Etapa K, "Paleta 4": 0E0000 / A30707 / E7CB9B / F8FEFF).
   // -------------------------------------------------------------------------
   {
     id: "theme-default",
@@ -45,16 +47,16 @@ export const themes: ThemeModel[] = [
     identity: {
       mode: "dark",
       colors: {
-        surface: "#0c0014",
-        surfaceRaised: "#180a28",
-        surfaceRaised2: "#241038",
+        surface: "#0e0000",
+        surfaceRaised: "#210303",
+        surfaceRaised2: "#300707",
         text: "#f8feff",
-        textMuted: "#b9a9d0",
-        brand: "#5603ad",
-        brandStrong: "#7a2fd0",
-        accent: "#fdc500",
+        textMuted: "#d3b7a4",
+        brand: "#a30707",
+        brandStrong: "#d13a3a",
+        accent: "#e7cb9b",
         border: "rgba(248, 254, 255, 0.14)",
-        headerBg: "rgba(12, 0, 20, 0.86)",
+        headerBg: "rgba(14, 0, 0, 0.86)",
       },
       displayFont: "bebas",
       cardRadius: "1.25rem",
@@ -68,10 +70,11 @@ export const themes: ThemeModel[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 2. Padrão Cliffhanger Claro — variação clara da identidade (§4):
-  //    inverte áreas escuras → claras mantendo roxo/branco/preto + dourado.
-  //    O dourado escurece (#8a6b00) para manter contraste legível em fundo
-  //    claro; roxo e branco permanecem os oficiais.
+  // 2. Padrão Cliffhanger Claro — modo claro da mesma identidade (§4):
+  //    inverte áreas escuras → claras mantendo vermelho + areia. A areia
+  //    escurece (#96743b) para manter contraste legível em fundo claro;
+  //    o hover/foco do vermelho também escurece (#7e0404). A logo escura
+  //    é ligada automaticamente pelo motor (identity.mode === "light").
   // -------------------------------------------------------------------------
   {
     id: "theme-claro",
@@ -89,16 +92,16 @@ export const themes: ThemeModel[] = [
     identity: {
       mode: "light",
       colors: {
-        surface: "#f8feff",
+        surface: "#fbf7f1",
         surfaceRaised: "#ffffff",
-        surfaceRaised2: "#f1ebfa",
-        text: "#0c0014",
-        textMuted: "#4f4468",
-        brand: "#5603ad",
-        brandStrong: "#7a2fd0",
-        accent: "#8a6b00",
-        border: "rgba(12, 0, 20, 0.16)",
-        headerBg: "rgba(248, 254, 255, 0.9)",
+        surfaceRaised2: "#f3e9dc",
+        text: "#170303",
+        textMuted: "#6e5a51",
+        brand: "#a30707",
+        brandStrong: "#7e0404",
+        accent: "#96743b",
+        border: "rgba(23, 3, 3, 0.16)",
+        headerBg: "rgba(251, 247, 241, 0.9)",
       },
       displayFont: "bebas",
       cardRadius: "1.25rem",
