@@ -15,6 +15,7 @@ export const menuButtons: NavItem[] = [
   { label: "Autores", href: "/autores" },
   { label: "Lançamentos", href: "/lancamentos" },
   { label: "Ofertas", href: "/ofertas" },
+  { label: "Download do App", href: "/download" },
 ];
 
 /** Navegação principal (Documento Mestre, seção 6.1). */
@@ -67,6 +68,7 @@ export const megaMenu: { title: string; items: NavItem[] }[] = [
       { label: "Autores", href: "/autores" },
       { label: "Coleções", href: "/#colecoes" },
       { label: "Lançamentos", href: "/lancamentos" },
+      { label: "Download do App", href: "/download" },
     ],
   },
 ];
@@ -90,6 +92,7 @@ export const footerLinks: { title: string; items: NavItem[] }[] = [
       { label: "Autores", href: "/autores" },
       { label: "Lançamentos", href: "/lancamentos" },
       { label: "Buscar", href: "/buscar" },
+      { label: "Download do App", href: "/download" },
     ],
   },
   {

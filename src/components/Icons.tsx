@@ -133,6 +133,17 @@ export function IconTablet(props: IconProps) {
   );
 }
 
+/** App mobile — celular (Etapa M: download do app). */
+export function IconPhone(props: IconProps) {
+  return (
+    <Stroke {...props}>
+      <rect x="6.5" y="2" width="11" height="20" rx="2.5" />
+      <path d="M10.5 5.2h3" />
+      <path d="M11 18.6h2" />
+    </Stroke>
+  );
+}
+
 /** Audiobooks — fone de ouvido. */
 export function IconHeadphones(props: IconProps) {
   return (

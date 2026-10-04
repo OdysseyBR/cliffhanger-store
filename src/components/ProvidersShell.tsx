@@ -1,4 +1,5 @@
 import { AppProviders } from "@/components/AppProviders";
+import { MobileAppBanner } from "@/components/MobileAppBanner";
 import { ScrollToTop } from "@/components/ScrollToTop";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -6,6 +7,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <AppProviders>
       <ScrollToTop />
       {children}
+      <MobileAppBanner />
     </AppProviders>
   );
 }

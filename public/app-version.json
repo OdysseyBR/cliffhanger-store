@@ -1,0 +1,9 @@
+{
+  "version": "1.0.0",
+  "versionCode": 1,
+  "platform": "android",
+  "apkUrl": "https://github.com/OdysseyBR/cliffhanger-app/releases/latest/download/cliffhanger-app.apk",
+  "sizeBytes": 123277728,
+  "releasedAt": "2026-10-04",
+  "notes": "Primeira versão pública do app Cliffhanger Store para Android."
+}
