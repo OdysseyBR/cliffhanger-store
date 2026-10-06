@@ -91,7 +91,7 @@ export default async function LancamentoPage({ params }: Props) {
         <div className="absolute inset-0 -z-10 opacity-25">
           <ChCover kind="Lançamento" subtitle={launch.title} variant="backdrop" />
         </div>
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/70 via-ink/85 to-[var(--surface)]" />
+        <div className="absolute inset-0 -z-10 bg-ink/70" />
 
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
           <Link

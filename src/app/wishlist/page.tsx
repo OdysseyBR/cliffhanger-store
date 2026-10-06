@@ -12,6 +12,7 @@ export default function WishlistPage() {
     <Page>
       <Section
         title="Wishlist"
+        titleAs="h1"
         subtitle={
           user
             ? "Salva na sua conta Cliffhanger — sincronizada em qualquer dispositivo."

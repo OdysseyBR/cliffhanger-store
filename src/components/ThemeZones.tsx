@@ -61,7 +61,7 @@ function PromoGrid({ zone }: { zone: ThemeZone }) {
               ) : (
                 <div className="absolute inset-0 bg-glow" aria-hidden />
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/50 to-transparent" />
+              <div className="absolute inset-0 bg-ink/70" />
               <div className="relative mt-auto p-5">
                 <p className="text-display text-2xl text-paper">{item.title}</p>
                 {item.subtitle && <p className="mt-1 text-xs text-paper/80">{item.subtitle}</p>}

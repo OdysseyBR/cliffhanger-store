@@ -74,7 +74,7 @@ export default function ContaEnderecosPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  if (!user) return null;
+  if (!user) return <h1 className="sr-only">Endereços</h1>;
 
   const startEdit = (address: CustomerAddress | "novo") => {
     setEditing(address);
@@ -144,7 +144,7 @@ export default function ContaEnderecosPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-display text-2xl text-gold">Endereços</p>
+          <h1 className="text-display text-2xl text-gold">Endereços</h1>
           <p className="text-xs text-[var(--text-muted)]">
             O principal entra sozinho no checkout (§6)
           </p>

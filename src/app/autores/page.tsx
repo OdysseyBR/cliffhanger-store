@@ -14,7 +14,7 @@ export default async function AutoresPage() {
 
   return (
     <Page>
-      <Section title="Autores" subtitle="Quem escreve, desenha e cria os universos da casa.">
+      <Section title="Autores" titleAs="h1" subtitle="Quem escreve, desenha e cria os universos da casa.">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {authors.map((author) => (
             <Link

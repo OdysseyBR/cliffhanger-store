@@ -59,6 +59,7 @@ export default function TermosPage() {
     <Page>
       <Section
         title="Termos de uso"
+        titleAs="h1"
         subtitle="Regras da loja, da conta e das compras — claras e sem letra miúda."
       >
         <div className="mx-auto max-w-3xl space-y-6">

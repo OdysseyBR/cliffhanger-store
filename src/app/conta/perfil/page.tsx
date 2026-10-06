@@ -43,7 +43,7 @@ export default function ContaPerfilPage() {
     return () => window.clearTimeout(timer);
   }, [user, initialized]);
 
-  if (!user) return null;
+  if (!user) return <h1 className="sr-only">Perfil</h1>;
 
   const handleSave = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -74,7 +74,7 @@ export default function ContaPerfilPage() {
   return (
     <div className="card space-y-4 p-5">
       <div>
-        <p className="text-display text-2xl text-gold">Perfil</p>
+        <h1 className="text-display text-2xl text-gold">Perfil</h1>
         <p className="text-xs text-[var(--text-muted)]">
           Nome, avatar e telefone — sem configurações complexas (§5)
         </p>

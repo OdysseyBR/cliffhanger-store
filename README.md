@@ -6,7 +6,7 @@ colecionáveis. Projeto desenvolvido conforme o Documento Mestre (`Projeto/` na 
 ## Stack
 
 - **Next.js 16** (App Router, Turbopack) + **TypeScript**
-- **Tailwind CSS v4** (temas sazonal: `default` / `summer` via `data-theme`)
+- **Tailwind CSS v4** (temas: `default` (escuro) / `claro` via `data-theme`)
 - **Firebase** — Auth (Google, Facebook, e-mail) + Firestore (catálogo, usuários, pedidos)
 - **Vercel** — deploy de produção automático a cada push em `main`
 
@@ -41,14 +41,16 @@ painel da Vercel (ambiente *Production*).
 | `FIREBASE_SERVICE_ACCOUNT` | Service account JSON em **linha única** (seed e API no servidor) |
 | `NEXT_PUBLIC_SITE_URL` | URL canônica (metadataBase / back_urls) |
 | `NEXT_PUBLIC_FACEBOOK_APP_ID` | *Opcional* — sem o valor, o botão Facebook exibe um aviso |
-| `CATALOG_SOURCE` | *Opcional* — `local` força o catálogo embarcado em vez do Firestore |
+| `CATALOG_SOURCE` | `local` força o catálogo de demonstração embarcado (desenvolvimento) |
 
 ## Fonte de dados do catálogo
 
 `src/lib/data.ts` é **Firestore-first**: lê as coleções `products`, `works`, `universes`,
-`authors` e `collections` no servidor e, se o Firebase não estiver configurado (ou falhar),
-usa fallback silencioso para `src/data/catalog.ts` (catálogo de demonstração, mesma fonte do
-`npm run seed`). Isso mantém o build funcionando em qualquer ambiente.
+`authors` e `collections` no servidor. Sem credenciais — ou se o Firestore falhar — o load
+**propaga a falha** (`console.error` + `throw`, sem fallback silencioso): a rota cai no
+`error.tsx` correspondente e o `getCatalog()` tenta de novo na próxima navegação (a promessa
+rejeitada sai do cache). O catálogo de demonstração (`src/data/catalog.ts`, mesma fonte do
+`npm run seed`) só é usado com o flag explícito `CATALOG_SOURCE=local`.
 
 ## Rotas principais
 
@@ -77,4 +79,6 @@ Produção: <https://www.cliffhangerstore.xyz>
 
 ## Paleta
 
-`#0C0014` (fundo) · `#5603AD` (violeta) · `#F8FEFF` (papel) · `#FDC500` (ouro) — de `Paleta.png`.
+P4 — `#0E0000` (`--color-ink`) · `#A30707` (`--color-violet`) · `#E7CB9B` (`--color-gold`) ·
+`#F8FEFF` (`--color-paper`), chapada (sem gradientes). Tokens em `src/app/globals.css`; os
+valores por tema (incl. `accent`) vêm de `src/data/themes.ts` (`default` escuro / `claro`).

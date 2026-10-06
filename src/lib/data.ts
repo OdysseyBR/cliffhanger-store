@@ -15,9 +15,10 @@ import type {
  * Camada de dados do catálogo.
  *
  * Fonte única: Cloud Firestore (collections: universes, authors, works,
- * products, collections, launches). Sem Firestore — ou em falha de
- * rede/credencial — a loja renderiza vazio; o catálogo de demonstração
- * só é usado com o flag explícito CATALOG_SOURCE=local (desenvolvimento).
+ * products, collections, launches). Falha de rede/credencial PROPAGA para o
+ * error.tsx do segmento — a loja nunca mostra "catálogo vazio" silencioso
+ * (P0.1). O catálogo de demonstração só é usado com o flag explícito
+ * CATALOG_SOURCE=local (desenvolvimento).
  */
 
 const CACHE_KEY = "__cliffhanger_catalog__";
@@ -35,20 +36,17 @@ async function readCollection<T>(db: FirebaseFirestore.Firestore, name: string):
   return snap.docs.map((doc) => revive({ id: doc.id, ...doc.data() }) as T);
 }
 
-const EMPTY_CATALOG: Catalog = {
-  universes: [],
-  authors: [],
-  works: [],
-  products: [],
-  collections: [],
-  launches: [],
-};
-
 async function loadCatalog(): Promise<Catalog> {
   if (process.env.CATALOG_SOURCE === "local") return localCatalog;
 
   const db = getAdminDb();
-  if (!db) return EMPTY_CATALOG;
+  if (!db) {
+    console.error(
+      "[catalog] Credenciais do Firestore ausentes — recusando renderizar catálogo vazio " +
+        "(configure FIREBASE_SERVICE_ACCOUNT ou use CATALOG_SOURCE=local em desenvolvimento).",
+    );
+    throw new Error("catálogo indisponível: credenciais do Firestore ausentes");
+  }
 
   try {
     const [universes, authors, works, products, collections, launches] = await Promise.all([
@@ -62,8 +60,8 @@ async function loadCatalog(): Promise<Catalog> {
 
     return { universes, authors, works, products, collections, launches };
   } catch (error) {
-    console.warn("[catalog] Firestore indisponível — catálogo vazio:", error);
-    return EMPTY_CATALOG;
+    console.error("[catalog] Firestore indisponível — propagando a falha:", error);
+    throw error;
   }
 }
 
@@ -76,8 +74,14 @@ async function loadCatalog(): Promise<Catalog> {
 export function getCatalog(): Promise<Catalog> {
   const entry = globalCache[CACHE_KEY];
   if (entry && Date.now() - entry.at < CACHE_TTL_MS) return entry.promise;
-  globalCache[CACHE_KEY] = { promise: loadCatalog(), at: Date.now() };
-  return globalCache[CACHE_KEY]!.promise;
+  const promise = loadCatalog();
+  globalCache[CACHE_KEY] = { promise, at: Date.now() };
+  // Uma falha não fica presa no TTL: ao rejeitar, o cache é limpo para que a
+  // próxima chamada tente de novo em vez de servir o mesmo erro por 30s.
+  void promise.catch(() => {
+    if (globalCache[CACHE_KEY]?.promise === promise) delete globalCache[CACHE_KEY];
+  });
+  return promise;
 }
 
 /**
@@ -164,7 +168,7 @@ export async function getLaunchBySlug(slug: string): Promise<Launch | undefined>
         const docs = snap.docs.map((doc) => revive({ id: doc.id, ...doc.data() }) as Launch);
         if (docs.length > 0) return docs.find((l) => l.slug === slug);
       } catch (error) {
-        console.warn("[launch] Firestore indisponível, usando catálogo local:", error);
+        console.warn("[launch] Firestore indisponível na leitura direta — tentando via catálogo:", error);
       }
     }
   }

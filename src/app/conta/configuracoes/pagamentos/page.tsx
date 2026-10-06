@@ -78,7 +78,7 @@ export default function ContaPagamentosPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  if (!user) return null;
+  if (!user) return <h1 className="sr-only">Pagamentos</h1>;
 
   const handleAdd = async () => {
     setBusy(true);
@@ -124,7 +124,7 @@ export default function ContaPagamentosPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-display text-2xl text-gold">Pagamentos</p>
+          <h1 className="text-display text-2xl text-gold">Pagamentos</h1>
           <p className="text-xs text-[var(--text-muted)]">
             Só referências — a loja nunca guarda o número do cartão (§7)
           </p>

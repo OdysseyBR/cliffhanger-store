@@ -14,7 +14,7 @@ const SECTIONS = [
 export default function ContaConfiguracoesPage() {
   return (
     <div className="space-y-3">
-      <p className="text-display text-2xl text-gold">Configurações</p>
+      <h1 className="text-display text-2xl text-gold">Configurações</h1>
       <div className="grid gap-2 sm:grid-cols-2">
         {SECTIONS.map((section) => (
           <Link

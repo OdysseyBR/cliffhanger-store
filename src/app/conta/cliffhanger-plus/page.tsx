@@ -162,7 +162,7 @@ export default function ContaPlusPage() {
     }
   };
 
-  if (!user) return null;
+  if (!user) return <h1 className="sr-only">Cliffhanger+</h1>;
 
   const sub = state?.subscription ?? null;
   const active = Boolean(sub && sub.status === "ativo");
@@ -180,7 +180,7 @@ export default function ContaPlusPage() {
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-display text-2xl text-gold">Cliffhanger+</p>
+        <h1 className="text-display text-2xl text-gold">Cliffhanger+</h1>
         <p className="text-xs text-[var(--text-muted)]">
           Sua assinatura, os Drops do período e o Clube do Leitor em um só lugar.
         </p>

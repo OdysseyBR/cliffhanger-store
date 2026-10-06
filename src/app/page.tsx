@@ -17,6 +17,7 @@ import {
   offers,
 } from "@/lib/data";
 import { getActiveBanner } from "@/lib/banners";
+import { readImageSize } from "@/lib/image-size";
 import { HOME_SECTION_ORDER } from "@/lib/theme-css";
 import { getActiveTheme } from "@/lib/themes";
 import { getHomeOverride } from "@/lib/home-override";
@@ -50,6 +51,9 @@ export default async function HomePage() {
     getHomeOverride(),
     getShopSettings(),
   ]);
+  // P1.9 — proporção real do banner para o <img> reservar espaço (sem CLS);
+  // null em falha = mesmo comportamento de hoje, sem attrs.
+  const bannerSize = banner ? await readImageSize(banner.image) : null;
   const { products, works, universes, authors, collections } = catalog;
 
   // 3.5 Destaques — curadoria do painel, do modelo ou seleção automática
@@ -228,9 +232,12 @@ export default async function HomePage() {
 
   return (
     <Page
-      beforeHeader={banner ? <HomeBanner banner={banner} /> : <BrandHero />}
+      beforeHeader={banner ? <HomeBanner banner={banner} size={bannerSize} /> : <BrandHero />}
       hideHeader={banner ? !banner.showHeader : false}
     >
+      <h1 className="sr-only">
+        Cliffhanger Store — livros, e-books, audiobooks e colecionáveis
+      </h1>
       {announcement && (
         <p className="mb-4 rounded-full border border-gold/40 bg-gold/10 px-5 py-2 text-center text-xs font-bold uppercase tracking-wider text-gold">
           {announcement}

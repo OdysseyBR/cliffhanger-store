@@ -49,7 +49,7 @@ export default function ContaPrivacidadePage() {
     })();
   }, [user]);
 
-  if (!user) return null;
+  if (!user) return <h1 className="sr-only">Privacidade</h1>;
 
   const handleConsent = async (value: boolean) => {
     setConsent(value);
@@ -116,7 +116,7 @@ export default function ContaPrivacidadePage() {
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-display text-2xl text-gold">Privacidade</p>
+        <h1 className="text-display text-2xl text-gold">Privacidade</h1>
         <p className="text-xs text-[var(--text-muted)]">
           Seus dados, suas regras (§10)
         </p>

@@ -38,10 +38,10 @@ export function ProductCard({ product, widthClass = "" }: { product: Product; wi
           </div>
         </Link>
 
-        {/* scrim inferior para o preço/selo respirarem sobre a arte */}
+        {/* scrim inferior chapado (P0.4) para o preço/selo respirarem sobre a arte */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-ink via-ink/55 to-transparent"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-ink/70"
         />
 
         <div className="absolute left-3 top-3 flex flex-col items-start gap-2">

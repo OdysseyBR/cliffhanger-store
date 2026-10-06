@@ -15,6 +15,7 @@ export default function LoginPage() {
     <Page>
       <Section
         title="Entrar"
+        titleAs="h1"
         subtitle="Acesse loja, biblioteca, wishlist e pedidos com uma única conta Cliffhanger."
       >
         <div className="card mx-auto max-w-md p-6">

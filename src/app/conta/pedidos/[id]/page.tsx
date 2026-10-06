@@ -44,7 +44,7 @@ export default function ContaPedidoDetalhePage() {
     })();
   }, [user, params.id]);
 
-  if (!user) return null;
+  if (!user) return <h1 className="sr-only">Pedido</h1>;
 
   if (loading) {
     return <p className="text-sm text-[var(--text-muted)]">Carregando pedido…</p>;
@@ -53,7 +53,7 @@ export default function ContaPedidoDetalhePage() {
   if (!order) {
     return (
       <div className="card p-8 text-center">
-        <p className="text-display text-2xl">Pedido não encontrado</p>
+        <h1 className="text-display text-2xl">Pedido não encontrado</h1>
         <p className="mt-2 text-sm text-[var(--text-muted)]">
           {missing
             ? "Confira o histórico — este pedido pode ser de outra conta."
@@ -72,7 +72,7 @@ export default function ContaPedidoDetalhePage() {
         <Link href="/conta/pedidos" className="text-xs text-gold underline">
           ← Todos os pedidos
         </Link>
-        <p className="text-display mt-1 text-2xl text-gold">{order.code || order.id}</p>
+        <h1 className="text-display mt-1 text-2xl text-gold">{order.code || order.id}</h1>
         <p className="text-xs text-[var(--text-muted)]">
           {ORDER_STATUS_LABEL[order.status as OrderStatus] ?? order.status} ·{" "}
           {PAYMENT_LABEL[order.paymentMethod as "pix"] ?? order.paymentMethod}

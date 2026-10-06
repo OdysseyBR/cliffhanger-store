@@ -15,6 +15,7 @@ export default function SobrePage() {
     <Page>
       <Section
         title="Sobre a Cliffhanger"
+        titleAs="h1"
         subtitle="Uma loja de cultura pop feita por quem também é fã — do livro ao coleccionável."
       >
         <div className="grid gap-6 lg:grid-cols-2">

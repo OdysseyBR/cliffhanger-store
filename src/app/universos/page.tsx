@@ -16,6 +16,7 @@ export default async function UniversosPage() {
     <Page>
       <Section
         title="Universos"
+        titleAs="h1"
         subtitle="Todo produto da loja nasce dentro de um universo. Escolha por onde começar."
       >
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

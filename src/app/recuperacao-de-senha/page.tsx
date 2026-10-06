@@ -15,6 +15,7 @@ export default function RecuperacaoDeSenhaPage() {
     <Page>
       <Section
         title="Recuperar senha"
+        titleAs="h1"
         subtitle="Enviamos um link seguro por e-mail — ele expira em alguns minutos."
       >
         <div className="card mx-auto max-w-md p-6">

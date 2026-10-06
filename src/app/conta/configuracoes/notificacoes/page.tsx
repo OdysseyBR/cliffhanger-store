@@ -52,7 +52,7 @@ export default function ContaNotificacoesPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  if (!user) return null;
+  if (!user) return <h1 className="sr-only">Notificações</h1>;
 
   const toggle = (category: keyof NotifyPrefs, channel: NotifyChannel) =>
     setPrefs((prev) => ({ ...prev, [category]: { ...prev[category], [channel]: !prev[category][channel] } }));
@@ -72,7 +72,7 @@ export default function ContaNotificacoesPage() {
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-display text-2xl text-gold">Notificações</p>
+        <h1 className="text-display text-2xl text-gold">Notificações</h1>
         <p className="text-xs text-[var(--text-muted)]">
           Escolha o que a loja pode te avisar — por contexto e canal (§9)
         </p>

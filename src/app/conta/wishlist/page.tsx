@@ -5,7 +5,7 @@ export default function ContaWishlistPage() {
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-display text-2xl text-gold">Wishlist</p>
+        <h1 className="text-display text-2xl text-gold">Wishlist</h1>
         <p className="text-xs text-[var(--text-muted)]">Tudo que você quer ter.</p>
       </div>
       <WishlistGrid />

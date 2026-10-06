@@ -55,6 +55,7 @@ export default function PrivacidadePage() {
     <Page>
       <Section
         title="Política de privacidade"
+        titleAs="h1"
         subtitle="Transparência sobre os dados da sua conta Cliffhanger — em linguagem simples."
       >
         <div className="mx-auto max-w-3xl space-y-6">

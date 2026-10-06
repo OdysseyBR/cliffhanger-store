@@ -50,20 +50,30 @@ export default async function ContatoPage() {
     <Page>
       <Section
         title="Contato"
+        titleAs="h1"
         subtitle="Escolha o canal certo — quanto mais específico, mais rápido respondemos."
       >
         <div className="grid gap-6 lg:grid-cols-3">
           {channels.map((channel) => (
             <div key={channel.title} className="card space-y-2 p-6">
               <h2 className="text-display text-xl text-gold">{channel.title}</h2>
-              {channel.lines.map((line, index) => (
-                <p
-                  key={line}
-                  className={index === 0 ? "text-sm font-semibold" : "text-sm text-[var(--text-muted)]"}
-                >
-                  {line}
-                </p>
-              ))}
+              {channel.lines.map((line, index) => {
+                const email = index === 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(line);
+                return (
+                  <p
+                    key={line}
+                    className={index === 0 ? "text-sm font-semibold" : "text-sm text-[var(--text-muted)]"}
+                  >
+                    {email ? (
+                      <a href={`mailto:${line}`} className="transition hover:text-gold">
+                        {line}
+                      </a>
+                    ) : (
+                      line
+                    )}
+                  </p>
+                );
+              })}
             </div>
           ))}
         </div>

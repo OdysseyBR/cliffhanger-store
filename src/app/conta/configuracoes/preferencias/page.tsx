@@ -50,7 +50,7 @@ export default function ContaPreferenciasPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  if (!user) return null;
+  if (!user) return <h1 className="sr-only">Preferências</h1>;
 
   const set = <K extends keyof AccountPrefs>(key: K, value: AccountPrefs[K]) =>
     setPrefs((prev) => ({ ...prev, [key]: value }));
@@ -71,7 +71,7 @@ export default function ContaPreferenciasPage() {
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-display text-2xl text-gold">Preferências</p>
+        <h1 className="text-display text-2xl text-gold">Preferências</h1>
         <p className="text-xs text-[var(--text-muted)]">
           O jeito de usar a loja — aplicadas onde suportado (§11)
         </p>

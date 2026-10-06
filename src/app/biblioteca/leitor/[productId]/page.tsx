@@ -28,6 +28,7 @@ export default function LeitorPage() {
   return (
     <Page>
       <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <h1 className="sr-only">Leitor de e-book</h1>
         <Link
           href="/biblioteca"
           className="mb-4 inline-flex items-center gap-1.5 text-sm font-bold uppercase tracking-wider text-gold transition hover:underline"

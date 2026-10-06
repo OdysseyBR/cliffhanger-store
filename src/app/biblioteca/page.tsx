@@ -186,6 +186,7 @@ export default function BibliotecaPage() {
     <Page>
       <Section
         title="Biblioteca"
+        titleAs="h1"
         subtitle={
           loading
             ? undefined

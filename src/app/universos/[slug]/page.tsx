@@ -45,7 +45,7 @@ export default async function UniversoPage({ params }: Props) {
         <div className="absolute inset-0 -z-10 opacity-30">
           <ChCover kind="Universo" subtitle={universe.name} variant="backdrop" />
         </div>
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/60 via-ink/85 to-[var(--surface)]" />
+        <div className="absolute inset-0 -z-10 bg-ink/70" />
 
         <div className="mx-auto max-w-5xl px-4 py-14 text-center sm:px-6 lg:px-8">
           <span className="text-xs font-bold uppercase tracking-[0.3em] text-gold">Universo</span>

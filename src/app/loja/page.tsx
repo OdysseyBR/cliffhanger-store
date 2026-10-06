@@ -20,6 +20,7 @@ export default async function LojaPage() {
     <Page>
       <Section
         title="Loja"
+        titleAs="h1"
         subtitle="Catálogo completo — filtre por categoria, preço, disponibilidade e avaliação."
       >
         <Suspense

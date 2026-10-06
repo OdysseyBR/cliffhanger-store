@@ -49,6 +49,7 @@ export default async function DownloadPage() {
     <Page>
       <Section
         title="Download do App"
+        titleAs="h1"
         subtitle="A experiência Cliffhanger Store no seu celular — leia, ouça e acompanhe seus pedidos."
       >
         <div className="grid gap-6 lg:grid-cols-2">

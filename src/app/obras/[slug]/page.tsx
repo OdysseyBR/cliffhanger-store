@@ -68,7 +68,7 @@ export default async function ObraPage({ params }: Props) {
         <div className="absolute inset-0 -z-10 opacity-25">
           <ChCover kind="Obra" subtitle={work.title} variant="backdrop" />
         </div>
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/70 via-ink/85 to-[var(--surface)]" />
+        <div className="absolute inset-0 -z-10 bg-ink/70" />
 
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[280px_1fr] lg:px-8 lg:py-16">
           <div className="mx-auto aspect-[2/3] w-full max-w-[280px] overflow-hidden rounded-xl border border-[var(--border)] shadow-2xl">

@@ -26,7 +26,7 @@ export default async function BuscarPage({
 
   return (
     <Page>
-      <Section title="Buscar" subtitle="Obras, produtos, e-books, audiobooks, autores e universos.">
+      <Section title="Buscar" titleAs="h1" subtitle="Obras, produtos, e-books, audiobooks, autores e universos.">
         <form action="/buscar" method="GET" className="mb-8 flex max-w-2xl gap-2">
           <input
             type="search"

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { bannerHref } from "@/lib/banner-fields";
+import type { ImageSize } from "@/lib/image-size";
 import type { Banner } from "@/lib/types";
 
 /**
@@ -8,7 +9,14 @@ import type { Banner } from "@/lib/types";
  * fundo ou countdown — apenas a imagem completa, com destino ao clique,
  * texto alternativo, versão mobile (quando existir) e modo fullscreen.
  */
-export function HomeBanner({ banner }: { banner: Banner }) {
+export function HomeBanner({
+  banner,
+  size,
+}: {
+  banner: Banner;
+  /** P1.9 — dimensões reais da arte (reserva o espaço antes do load). */
+  size?: ImageSize | null;
+}) {
   const href = bannerHref(banner);
   const alt = banner.alt?.trim() || banner.name;
   const external = /^https?:\/\//i.test(href);
@@ -24,6 +32,8 @@ export function HomeBanner({ banner }: { banner: Banner }) {
       <img
         src={banner.image}
         alt={alt}
+        width={size?.width}
+        height={size?.height}
         loading="eager"
         fetchPriority="high"
         className={

@@ -97,6 +97,7 @@ export default function FaqPage() {
     <Page>
       <Section
         title="Perguntas frequentes"
+        titleAs="h1"
         subtitle="Pedidos, entrega, contas e conteúdo digital — em um minuto você resolve."
       >
         <div className="grid gap-6 lg:grid-cols-2">

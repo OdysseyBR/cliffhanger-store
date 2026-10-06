@@ -36,7 +36,7 @@ export default function ContaColecaoPage() {
     })();
   }, [user]);
 
-  if (!user) return null;
+  if (!user) return <h1 className="sr-only">Minha coleção</h1>;
 
   const groups = new Map<string, CollectionEntry[]>();
   for (const item of items) {
@@ -49,7 +49,7 @@ export default function ContaColecaoPage() {
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-display text-2xl text-gold">Minha coleção</p>
+        <h1 className="text-display text-2xl text-gold">Minha coleção</h1>
         <p className="text-xs text-[var(--text-muted)]">
           Tudo que você tem — {items.length} item(ns). O que você quer ter fica na{" "}
           <a href="/conta/wishlist" className="text-gold underline">

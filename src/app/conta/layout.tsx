@@ -52,6 +52,8 @@ export default function ContaLayout({ children }: { children: React.ReactNode })
     return (
       <Page>
         <div className="mx-auto max-w-md py-10">
+          {/* P1.8 — branch substitui os filhos: este é o único h1 da rota. */}
+          <h1 className="sr-only">Minha conta</h1>
           <AuthCard />
         </div>
       </Page>

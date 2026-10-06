@@ -236,6 +236,7 @@ export default function PedidosPage() {
     <Page>
       <Section
         title="Meus pedidos"
+        titleAs="h1"
         subtitle="Acompanhe o status da entrega e o histórico de compras da sua conta."
       >
         {authLoading ? (

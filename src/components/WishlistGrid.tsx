@@ -11,26 +11,58 @@ export function WishlistGrid() {
   const { wishlist, user } = useStore();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState(false);
+  const [tentativa, setTentativa] = useState(0);
 
+  // catálogo: falha de rede/API é estado próprio (P0.2) — nunca passa por "vazio"
   useEffect(() => {
+    let ativo = true;
     void (async () => {
+      setLoading(true);
+      setErro(false);
       try {
         const res = await fetch("/api/products");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = (await res.json()) as { products: Product[] };
-        setProducts(data.products ?? []);
+        if (ativo) setProducts(data.products ?? []);
       } catch {
-        setProducts([]);
+        if (ativo) {
+          setProducts([]);
+          setErro(true);
+        }
       } finally {
-        setLoading(false);
+        if (ativo) setLoading(false);
       }
     })();
-  }, []);
+    return () => {
+      ativo = false;
+    };
+  }, [tentativa]);
 
   const items = products.filter((p) => wishlist.includes(p.id));
 
   if (loading) {
     return (
       <div className="card grid place-items-center p-12 text-[var(--text-muted)]">Carregando…</div>
+    );
+  }
+
+  if (erro) {
+    return (
+      <div className="card grid place-items-center gap-4 p-14 text-center">
+        <p className="text-display text-4xl">Não foi possível carregar a wishlist</p>
+        <p className="max-w-md text-sm text-[var(--text-muted)]">
+          Seus itens continuam salvos — só não conseguimos buscar preços e
+          disponibilidade agora.
+        </p>
+        <button
+          type="button"
+          onClick={() => setTentativa((t) => t + 1)}
+          className="btn btn-primary"
+        >
+          Tentar novamente
+        </button>
+      </div>
     );
   }
 

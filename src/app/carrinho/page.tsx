@@ -15,20 +15,36 @@ export default function CarrinhoPage() {
   const { cart, setQty, removeFromCart, clearCart } = useStore();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState(false);
+  const [tentativa, setTentativa] = useState(0);
   const [freeFrom, setFreeFrom] = useState(FREE_SHIPPING_FROM);
 
+  // catálogo: falha de rede/API é estado próprio (P0.2) — nunca passa por "vazio"
   useEffect(() => {
+    let ativo = true;
     void (async () => {
+      setLoading(true);
+      setErro(false);
       try {
         const res = await fetch("/api/products");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = (await res.json()) as { products: Product[] };
-        setProducts(data.products ?? []);
+        if (ativo) setProducts(data.products ?? []);
       } catch {
-        setProducts([]);
+        if (ativo) {
+          setProducts([]);
+          setErro(true);
+        }
       } finally {
-        setLoading(false);
+        if (ativo) setLoading(false);
       }
     })();
+    return () => {
+      ativo = false;
+    };
+  }, [tentativa]);
+
+  useEffect(() => {
     // limite do frete grátis (Configurações §12); constante de reserva
     void (async () => {
       try {
@@ -82,6 +98,7 @@ export default function CarrinhoPage() {
     <Page>
       <Section
         title="Carrinho"
+        titleAs="h1"
         subtitle="Itens digitais e físicos convivem no mesmo pedido — o frete só é cobrado no que precisa de envio."
         href="/loja"
         hrefLabel="Continuar comprando"
@@ -89,6 +106,21 @@ export default function CarrinhoPage() {
         {loading ? (
           <div className="card grid place-items-center p-12 text-[var(--text-muted)]">
             Carregando carrinho…
+          </div>
+        ) : erro ? (
+          <div className="card grid place-items-center gap-4 p-14 text-center">
+            <p className="text-display text-4xl">Não foi possível carregar o carrinho</p>
+            <p className="max-w-md text-sm text-[var(--text-muted)]">
+              A loja está temporariamente indisponível. Seus itens continuam salvos
+              neste navegador — tente buscar de novo em instantes.
+            </p>
+            <button
+              type="button"
+              onClick={() => setTentativa((t) => t + 1)}
+              className="btn btn-primary"
+            >
+              Tentar novamente
+            </button>
           </div>
         ) : lines.length === 0 ? (
           <div className="card grid place-items-center gap-4 p-14 text-center">

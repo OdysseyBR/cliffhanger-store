@@ -72,7 +72,7 @@ export const themes: ThemeModel[] = [
   // -------------------------------------------------------------------------
   // 2. Padrão Cliffhanger Claro — modo claro da mesma identidade (§4):
   //    inverte áreas escuras → claras mantendo vermelho + areia. A areia
-  //    escurece (#96743b) para manter contraste legível em fundo claro;
+  //    escurece (#826533) para manter contraste legível em fundo claro;
   //    o hover/foco do vermelho também escurece (#7e0404). A logo escura
   //    é ligada automaticamente pelo motor (identity.mode === "light").
   // -------------------------------------------------------------------------
@@ -99,7 +99,7 @@ export const themes: ThemeModel[] = [
         textMuted: "#6e5a51",
         brand: "#a30707",
         brandStrong: "#7e0404",
-        accent: "#96743b",
+        accent: "#826533",
         border: "rgba(23, 3, 3, 0.16)",
         headerBg: "rgba(251, 247, 241, 0.9)",
       },

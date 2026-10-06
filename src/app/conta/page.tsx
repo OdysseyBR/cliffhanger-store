@@ -86,7 +86,7 @@ export default function ContaDashboardPage() {
     })();
   }, [user]);
 
-  if (!user) return null;
+  if (!user) return <h1 className="sr-only">Minha conta</h1>;
 
   const ebooks = items.filter((item) => item.type === "ebook").length;
   const audiobooks = items.filter((item) => item.type === "audiobook").length;
@@ -101,6 +101,7 @@ export default function ContaDashboardPage() {
 
   return (
     <div className="space-y-5">
+      <h1 className="sr-only">Minha conta</h1>
       <div className="card flex flex-wrap items-center gap-4 p-5">
         {user.photoURL ? (
           // eslint-disable-next-line @next/next/no-img-element

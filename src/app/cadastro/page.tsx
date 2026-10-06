@@ -15,6 +15,7 @@ export default function CadastroPage() {
     <Page>
       <Section
         title="Criar conta"
+        titleAs="h1"
         subtitle="Uma única conta para loja, biblioteca, wishlist e Cliffhanger Club."
       >
         <div className="card mx-auto max-w-md p-6">

@@ -44,7 +44,7 @@ export default function ContaDadosPage() {
     })();
   }, [user]);
 
-  if (!user) return null;
+  if (!user) return <h1 className="sr-only">Dados pessoais</h1>;
 
   const handleSave = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -73,7 +73,7 @@ export default function ContaDadosPage() {
   return (
     <div className="card space-y-4 p-5">
       <div>
-        <p className="text-display text-2xl text-gold">Dados pessoais</p>
+        <h1 className="text-display text-2xl text-gold">Dados pessoais</h1>
         <p className="text-xs text-[var(--text-muted)]">
           Para as operações da loja — o básico fica em Perfil
         </p>

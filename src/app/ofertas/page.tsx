@@ -20,7 +20,7 @@ export default async function OfertasPage() {
 
   return (
     <Page>
-      <Section title="Ofertas" subtitle="Descontos por tempo limitado em produtos selecionados.">
+      <Section title="Ofertas" titleAs="h1" subtitle="Descontos por tempo limitado em produtos selecionados.">
         {biggest > 0 && (
           <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-gold px-5 py-2 text-ink">
             <span className="text-display text-2xl">Até {biggest}% OFF</span>

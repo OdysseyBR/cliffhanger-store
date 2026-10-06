@@ -32,14 +32,14 @@ export default function ContaBibliotecaPage() {
     })();
   }, [user]);
 
-  if (!user) return null;
+  if (!user) return <h1 className="sr-only">Biblioteca</h1>;
 
   const ebooks = items.filter((item) => item.type === "ebook").length;
   const audiobooks = items.filter((item) => item.type === "audiobook").length;
 
   return (
     <div className="card space-y-3 p-5">
-      <p className="text-display text-2xl text-gold">Biblioteca</p>
+      <h1 className="text-display text-2xl text-gold">Biblioteca</h1>
       {loading ? (
         <p className="text-sm text-[var(--text-muted)]">Carregando resumo…</p>
       ) : (

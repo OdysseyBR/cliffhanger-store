@@ -106,7 +106,7 @@ export default async function ProdutoPage({ params }: Props) {
 
               <div
                 aria-hidden
-                className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink/85 to-transparent"
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-ink/70"
               />
 
               {product.badge && (

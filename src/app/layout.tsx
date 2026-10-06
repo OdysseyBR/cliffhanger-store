@@ -65,6 +65,13 @@ export default async function RootLayout({
   // referenciam --font-display-face/--font-body-face — se estivessem só
   // no <body>, a resolução em html seria inválida e as fontes nunca
   // chegariam a carregar (bug de tipografia do site inteiro).
+  const themeKeys = JSON.stringify(themes.map((theme) => theme.key));
+  // Anti-flash (P1.3): bloco inline que roda durante o parse, antes de qualquer
+  // conteúdo pintar — o data-theme do navegador vale já na primeira dobra.
+  const antiFlash =
+    `try{var t=JSON.parse(localStorage.getItem("ch:theme")||'""');` +
+    `if(t&&${themeKeys}.indexOf(t)>=0){document.documentElement.dataset.theme=t;}}catch(e){}`;
+
   return (
     <html
       lang="pt-BR"
@@ -73,15 +80,23 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="antialiased" suppressHydrationWarning>
+        <script dangerouslySetInnerHTML={{ __html: antiFlash }} />
         {/* CSS dos modelos — React 19 move para o <head> preservando a ordem */}
         <style
           href="theme-engine"
           precedence="theme-engine"
           dangerouslySetInnerHTML={{ __html: engineCss }}
         />
+        {/* Skip-link (P1.7): primeiro focável da página, aponta para o <main> */}
+        <a
+          href="#conteudo"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-xl focus:bg-violet focus:px-4 focus:py-3 focus:text-sm focus:font-bold focus:text-white focus:shadow-2xl"
+        >
+          Pular para o conteúdo
+        </a>
         <Providers>
           <div className="flex min-h-screen flex-col">
-            <main className="flex-1">{children}</main>
+            <main id="conteudo" className="flex-1">{children}</main>
             <SiteFooter />
           </div>
         </Providers>

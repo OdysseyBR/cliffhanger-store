@@ -21,6 +21,7 @@ export default async function LancamentosPage() {
       {launchList.length > 0 && (
         <Section
           title="Páginas de lançamento"
+          titleAs="h1"
           subtitle="Data, contagem regressiva, edições, trailer e produtos derivados (Documento Mestre 13.1)."
         >
           <div className="grid gap-4 sm:grid-cols-2">
@@ -60,6 +61,7 @@ export default async function LancamentosPage() {
 
       <Section
         title="Produtos em lançamento"
+        titleAs={launchList.length > 0 ? "h2" : "h1"}
         subtitle="Novidades, chegadas recentes e pré-vendas com data de envio prevista."
       >
         {list.length === 0 ? (

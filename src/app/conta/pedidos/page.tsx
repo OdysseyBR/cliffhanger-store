@@ -56,7 +56,7 @@ export default function ContaPedidosPage() {
     })();
   }, [user]);
 
-  if (!user) return null;
+  if (!user) return <h1 className="sr-only">Pedidos</h1>;
 
   const list = orders.filter((order) => filter === "all" || groupOf(order.status) === filter);
 
@@ -64,7 +64,7 @@ export default function ContaPedidosPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-display text-2xl text-gold">Pedidos</p>
+          <h1 className="text-display text-2xl text-gold">Pedidos</h1>
           <p className="text-xs text-[var(--text-muted)]">
             Histórico de compras — {orders.length} pedido(s)
           </p>

@@ -38,6 +38,14 @@
   --field-radius: 0.75rem;
 
   /* atmosfera: sem glows/gradientes (Etapa K — estilo chapado) */
+
+  color-scheme: dark;
+}
+
+/* Tema claro: scrollbars, inputs nativos e teclado mobile acompanham o
+   tema manual (P1.4) — sem isto, dessincronizam do esquema do SO. */
+html[data-theme="claro"] {
+  color-scheme: light;
 }
 
 * {
@@ -114,7 +122,9 @@ body {
 }
 
 .btn-accent:hover:not(:disabled) {
-  filter: brightness(1.06);
+  /* realce expresso como cor chapada equivalente ao antigo brightness(1.06)
+     (P1.15) — sem filter para os hex P4 continuarem exatos */
+  background: color-mix(in srgb, var(--accent) 94%, #ffffff);
   transform: translateY(-2px);
 }
 

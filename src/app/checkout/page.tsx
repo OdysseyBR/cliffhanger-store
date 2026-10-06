@@ -639,7 +639,7 @@ export default function CheckoutPage() {
       : "";
     return (
       <Page>
-        <Section title={approved ? "Pedido concluído" : "Aguardando pagamento"}>
+        <Section titleAs="h1" title={approved ? "Pedido concluído" : "Aguardando pagamento"}>
           <div className="card mx-auto max-w-2xl gap-4 p-10 text-center">
             {approved ? (
               <>
@@ -759,7 +759,7 @@ export default function CheckoutPage() {
   if (lines.length === 0) {
     return (
       <Page>
-        <Section title="Checkout">
+        <Section titleAs="h1" title="Checkout">
           <div className="card grid place-items-center gap-4 p-14 text-center">
             <p className="text-display text-4xl">Nada para pagar ainda</p>
             <Link href="/loja" className="btn btn-primary">
@@ -773,7 +773,7 @@ export default function CheckoutPage() {
 
   return (
     <Page>
-      <Section title="Checkout" subtitle="Dados → Entrega → Pagamento → Revisão → Pedido">
+      <Section titleAs="h1" title="Checkout" subtitle="Dados → Entrega → Pagamento → Revisão → Pedido">
         {/* stepper */}
         <ol className="mb-8 flex flex-wrap gap-2">
           {steps.slice(0, 4).map((s, index) => {

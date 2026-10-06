@@ -20,7 +20,7 @@ export function UniverseCard({ universe }: { universe: Universe }) {
           className="opacity-70 transition group-hover:opacity-90"
         />
       </div>
-      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/60 to-transparent" />
+      <div className="absolute inset-0 -z-10 bg-ink/70" />
       <span className="text-display text-3xl text-paper">{universe.name}</span>
       <span className="mt-1 line-clamp-2 text-xs text-paper/80">{universe.tagline}</span>
     </Link>
