@@ -216,12 +216,12 @@ export interface PermissionGroup {
 
 export const PERMISSION_GROUPS: PermissionGroup[] = [
   { key: "dashboard", label: "Dashboard", modules: "Visão geral do painel", view: "dashboard.view", edit: null },
-  { key: "products", label: "Produtos", modules: "Catálogo de venda", view: "products.view", edit: "products.edit" },
-  { key: "catalog", label: "Catálogo editorial", modules: "Obras, Universos, Autores, Categorias, Coleções", view: "catalog.view", edit: "catalog.edit" },
+  { key: "products", label: "Produtos", modules: "Catálogo de venda por tipo (Livros, E-books, Camisetas…)", view: "products.view", edit: "products.edit" },
+  { key: "catalog", label: "Catálogo editorial", modules: "Universos, Autores, Categorias, Coleções", view: "catalog.view", edit: "catalog.edit" },
   { key: "stock", label: "Estoque", modules: "Estoque atual, entradas, saídas e alertas", view: "stock.view", edit: "stock.edit" },
   { key: "orders", label: "Pedidos", modules: "Pedidos e acompanhamento", view: "orders.view", edit: "orders.edit" },
   { key: "customers", label: "Clientes", modules: "Clientes e compras", view: "customers.view", edit: null },
-  { key: "digital", label: "Biblioteca Digital", modules: "E-books, Audiobooks, Biblioteca e QR Codes", view: "digital.view", edit: "digital.edit" },
+  { key: "digital", label: "Biblioteca Digital", modules: "E-books e Audiobooks (em Produtos), Biblioteca e QR Codes", view: "digital.view", edit: "digital.edit" },
   { key: "plus", label: "Cliffhanger+", modules: "Planos, Drops e Clube do Leitor (§24–§26)", view: "plus.view", edit: "plus.edit" },
   { key: "preorders", label: "Pré-vendas", modules: "Pré-vendas e lotes", view: "preorders.view", edit: "preorders.edit" },
   { key: "coupons", label: "Cupons", modules: "Cupons de desconto", view: "coupons.view", edit: "coupons.edit" },

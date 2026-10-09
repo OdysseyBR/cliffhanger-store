@@ -105,7 +105,18 @@ function Label({ children, tone }: { children: React.ReactNode; tone?: string })
   );
 }
 
-export function DigitalProductsModule({ kind }: { kind: DigitalModuleKind }) {
+export function DigitalProductsModule({
+  kind,
+  embedded,
+}: {
+  kind: DigitalModuleKind;
+  /**
+   * Etapa T — renderizado dentro de Produtos › abas E-books/Audiobooks:
+   * esconde o título e o cartão de login duplicados (a página externa
+   * já cuida dos dois); a checagem de `digital.view` continua ativa.
+   */
+  embedded?: boolean;
+}) {
   const meta = META[kind];
   const { user, notify } = useStore();
   const { me, can, loading: roleLoading } = useAdminPermissions();
@@ -201,7 +212,7 @@ export function DigitalProductsModule({ kind }: { kind: DigitalModuleKind }) {
     }
   };
 
-  if (!user) {
+  if (!user && !embedded) {
     return <AdminLogin note={meta.loginNote} />;
   }
 
@@ -254,15 +265,17 @@ export function DigitalProductsModule({ kind }: { kind: DigitalModuleKind }) {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="text-display text-3xl text-gold">{meta.title}</p>
-          <p className="text-xs text-[var(--text-muted)]">
-            {meta.subtitle}
-            {digital.items ? ` · ${totals.titles} título(s)` : ""}
-          </p>
+      {!embedded && (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-display text-3xl text-gold">{meta.title}</p>
+            <p className="text-xs text-[var(--text-muted)]">
+              {meta.subtitle}
+              {digital.items ? ` · ${totals.titles} título(s)` : ""}
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <div className="card p-4">

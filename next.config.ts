@@ -18,6 +18,27 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Etapa T — rotas movidas no painel: redirecionamento HTTP antes do
+  // render (E-books/Audiobooks viraram abas de Produtos; Obras saiu).
+  async redirects() {
+    return [
+      {
+        source: "/admin/e-books",
+        destination: "/admin/produtos?tipo=ebook",
+        permanent: true,
+      },
+      {
+        source: "/admin/audiobooks",
+        destination: "/admin/produtos?tipo=audiobook",
+        permanent: true,
+      },
+      {
+        source: "/admin/obras",
+        destination: "/admin/produtos",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
