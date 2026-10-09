@@ -56,7 +56,7 @@ export function MobileAppBanner() {
       className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border)] bg-[var(--surface-raised)]"
     >
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#A30707] text-[#F8FEFF]">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-violet text-[#F8FEFF]">
           <IconPhone className="h-5 w-5" />
         </span>
         <p className="min-w-0 flex-1 text-xs leading-snug sm:text-sm">

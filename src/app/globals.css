@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #0e0000;
-  --color-ink-soft: #210303;
-  --color-violet: #a30707;
-  --color-violet-soft: #d13a3a;
-  --color-violet-deep: #7e0404;
-  --color-paper: #f8feff;
-  --color-gold: #e7cb9b;
-  --color-gold-soft: #f1dcc0;
+  --color-ink: #050609;
+  --color-ink-soft: #090c14;
+  --color-violet: #5427a8;
+  --color-violet-soft: #8b5cf6;
+  --color-violet-deep: #2a1a5e;
+  --color-paper: #f5f5fa;
+  --color-gold: #b89a65;
+  --color-gold-soft: #c4b5fd;
   --color-danger: #e5484d;
   --color-success: #30a46c;
 
@@ -20,22 +20,22 @@
   /* Padrão Cliffhanger (fundo escuro, texto claro). O bloco do padrão
      escolhido sobrepõe estas variáveis em `html[data-theme="…"]` —
      ver src/lib/theme-css.ts. */
-  --surface: #0e0000;
-  --surface-raised: #210303;
-  --surface-raised-2: #300707;
-  --body-bg: #0e0000;
-  --text: #f8feff;
-  --text-muted: #d3b7a4;
-  --brand: #a30707;
-  --brand-strong: #d13a3a;
-  --accent: #e7cb9b;
-  --border: rgba(248, 254, 255, 0.14);
-  --header-bg: rgba(14, 0, 0, 0.86);
+  --surface: #050609;
+  --surface-raised: #101522;
+  --surface-raised-2: #0b0f1a;
+  --body-bg: #050609;
+  --text: #f5f5fa;
+  --text-muted: #a5a8b5;
+  --brand: #5427a8;
+  --brand-strong: #8b5cf6;
+  --accent: #b89a65;
+  --border: rgba(245, 245, 250, 0.12);
+  --header-bg: rgba(9, 12, 20, 0.86);
 
-  /* forma (2.3) — controlada por modelo */
-  --card-radius: 1.25rem;
-  --btn-radius: 0.75rem;
-  --field-radius: 0.75rem;
+  /* forma — cantos levemente arredondados da identidade cinematográfica */
+  --card-radius: 0.75rem;
+  --btn-radius: 0.5rem;
+  --field-radius: 0.5rem;
 
   /* atmosfera: sem glows/gradientes (Etapa K — estilo chapado) */
 
@@ -123,7 +123,7 @@ body {
 
 .btn-accent:hover:not(:disabled) {
   /* realce expresso como cor chapada equivalente ao antigo brightness(1.06)
-     (P1.15) — sem filter para os hex P4 continuarem exatos */
+     (P1.15) — sem filter para os hex da identidade continuarem exatos */
   background: color-mix(in srgb, var(--accent) 94%, #ffffff);
   transform: translateY(-2px);
 }

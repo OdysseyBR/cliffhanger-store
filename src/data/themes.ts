@@ -1,8 +1,9 @@
 // Cliffhanger — padrões visuais permanentes da loja (Documento de Correção,
 // Finalização e Ajustes — §2/§4/§12/§28). Sem Theme Engine no painel:
 // dois modos oficiais mantidos em código — Padrão Cliffhanger (modo escuro)
-// e Padrão Cliffhanger Claro (modo claro), os dois na paleta aprovada na
-// Etapa K: vermelho #A30707 + areia #E7CB9B sobre #0E0000. O header alterna
+// e Padrão Cliffhanger Claro (modo claro), os dois na identidade
+// cinematográfica: preto profundo #050609 + roxo imperial #5427A8 +
+// dourado envelhecido #B89A65 sobre branco gelo #F5F5FA. O header alterna
 // entre os dois (ThemeSync + setTheme); temas especiais de evento são
 // desenvolvidos especificamente no projeto, quando houver.
 
@@ -28,8 +29,8 @@ const now = "2026-09-23T00:00:00.000Z";
 
 export const themes: ThemeModel[] = [
   // -------------------------------------------------------------------------
-  // 1. Padrão Cliffhanger — modo escuro oficial (paleta vencedora da
-  //    Etapa K, "Paleta 4": 0E0000 / A30707 / E7CB9B / F8FEFF).
+  // 1. Padrão Cliffhanger — modo escuro oficial (identidade cinematográfica:
+  //    preto profundo #050609 + roxo imperial #5427A8 + dourado #B89A65).
   // -------------------------------------------------------------------------
   {
     id: "theme-default",
@@ -47,19 +48,19 @@ export const themes: ThemeModel[] = [
     identity: {
       mode: "dark",
       colors: {
-        surface: "#0e0000",
-        surfaceRaised: "#210303",
-        surfaceRaised2: "#300707",
-        text: "#f8feff",
-        textMuted: "#d3b7a4",
-        brand: "#a30707",
-        brandStrong: "#d13a3a",
-        accent: "#e7cb9b",
-        border: "rgba(248, 254, 255, 0.14)",
-        headerBg: "rgba(14, 0, 0, 0.86)",
+        surface: "#050609",
+        surfaceRaised: "#101522",
+        surfaceRaised2: "#0b0f1a",
+        text: "#f5f5fa",
+        textMuted: "#a5a8b5",
+        brand: "#5427a8",
+        brandStrong: "#8b5cf6",
+        accent: "#b89a65",
+        border: "rgba(245, 245, 250, 0.12)",
+        headerBg: "rgba(9, 12, 20, 0.86)",
       },
       displayFont: "bebas",
-      cardRadius: "1.25rem",
+      cardRadius: "0.75rem",
       borderStyle: "clean",
     },
     home: {

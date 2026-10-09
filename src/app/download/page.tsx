@@ -56,7 +56,7 @@ export default async function DownloadPage() {
           {/* hero + CTA */}
           <div className="card space-y-5 p-6 lg:col-span-2">
             <div className="flex items-start gap-4">
-              <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-[#A30707] text-[#F8FEFF]">
+              <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-violet text-[#F8FEFF]">
                 <IconPhone className="h-7 w-7" />
               </span>
               <div className="min-w-0 space-y-1">
