@@ -48,7 +48,7 @@ export function ProductCard({ product, widthClass = "" }: { product: Product; wi
           {product.badge && (
             <span
               className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider shadow-lg ${
-                badgeTone[product.badge] ?? "bg-violet text-white"
+                badgeTone[product.badge] ?? "bg-violet text-[var(--on-brand)]"
               }`}
             >
               {product.badge}

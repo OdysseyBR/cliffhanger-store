@@ -90,7 +90,7 @@ export default async function RootLayout({
         {/* Skip-link (P1.7): primeiro focável da página, aponta para o <main> */}
         <a
           href="#conteudo"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-xl focus:bg-violet focus:px-4 focus:py-3 focus:text-sm focus:font-bold focus:text-white focus:shadow-2xl"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-xl focus:bg-violet focus:px-4 focus:py-3 focus:text-sm focus:font-bold focus:text-[var(--on-brand)] focus:shadow-2xl"
         >
           Pular para o conteúdo
         </a>

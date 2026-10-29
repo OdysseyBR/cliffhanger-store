@@ -1,14 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #050609;
-  --color-ink-soft: #090c14;
-  --color-violet: #5427a8;
-  --color-violet-soft: #8b5cf6;
-  --color-violet-deep: #2a1a5e;
-  --color-paper: #f5f5fa;
-  --color-gold: #b89a65;
-  --color-gold-soft: #c4b5fd;
+  --color-ink: #000000;
+  --color-ink-soft: #141414;
+  /* identidade monocromática: violet/gold viram os polos P&B do tema */
+  --color-violet: #ffffff;
+  --color-violet-soft: #ffffff;
+  --color-violet-deep: #141414;
+  --color-paper: #ffffff;
+  --color-gold: #ffffff;
+  --color-gold-soft: #d4d4d4;
   --color-danger: #e5484d;
   --color-success: #30a46c;
 
@@ -17,20 +18,22 @@
 }
 
 :root {
-  /* Padrão Cliffhanger (fundo escuro, texto claro). O bloco do padrão
+  /* Padrão Preto e Branco (fundo escuro, texto claro). O bloco do padrão
      escolhido sobrepõe estas variáveis em `html[data-theme="…"]` —
      ver src/lib/theme-css.ts. */
-  --surface: #050609;
-  --surface-raised: #101522;
-  --surface-raised-2: #0b0f1a;
-  --body-bg: #050609;
-  --text: #f5f5fa;
-  --text-muted: #a5a8b5;
-  --brand: #5427a8;
-  --brand-strong: #8b5cf6;
-  --accent: #b89a65;
-  --border: rgba(245, 245, 250, 0.12);
-  --header-bg: rgba(9, 12, 20, 0.86);
+  --surface: #000000;
+  --surface-raised: #141414;
+  --surface-raised-2: #0d0d0d;
+  --body-bg: #000000;
+  --text: #ffffff;
+  --text-muted: #a3a3a3;
+  --brand: #ffffff;
+  --brand-strong: #e5e5e5;
+  --accent: #ffffff;
+  /* conteúdo sobre preenchimentos de brand/accent (botões, chips) */
+  --on-brand: #000000;
+  --border: rgba(255, 255, 255, 0.14);
+  --header-bg: rgba(0, 0, 0, 0.86);
 
   /* forma — cantos levemente arredondados da identidade cinematográfica */
   --card-radius: 0.75rem;
@@ -108,7 +111,7 @@ body {
 
 .btn-primary {
   background: var(--brand);
-  color: #f8feff;
+  color: var(--on-brand);
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -173,7 +176,7 @@ body {
   overflow: hidden;
   border-block: 1px solid var(--border);
   background: var(--brand);
-  color: var(--text);
+  color: var(--on-brand);
   padding-block: 0.7rem;
 }
 

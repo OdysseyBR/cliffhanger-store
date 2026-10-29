@@ -65,6 +65,19 @@ export function withAlpha(color: string, alpha: number): string {
   return hex;
 }
 
+/**
+ * Cor legível sobre um fundo chapado (paleta P&B absoluta): preto total
+ * sobre fundos claros, branco total sobre fundos escuros. Retorna "" para
+ * cores não hexadecimais (o chamador cai no fallback).
+ */
+export function readableOn(color: string): string {
+  const long = /^#([0-9a-f]{6})$/i.exec(color.trim());
+  if (!long) return "";
+  const n = parseInt(long[1], 16);
+  const luminance = (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255;
+  return luminance > 0.5 ? "#000000" : "#ffffff";
+}
+
 /** Variáveis CSS do modelo (aplicadas em html[data-theme="<key>"]). */
 export function themeCssVars(theme: ThemeModel): Record<string, string> {
   const c: ThemeColors = theme.identity.colors;
@@ -79,6 +92,8 @@ export function themeCssVars(theme: ThemeModel): Record<string, string> {
     "--brand": c.brand,
     "--brand-strong": c.brandStrong,
     "--accent": c.accent,
+    // conteúdo sobre preenchimentos de brand/accent (botões, chips, badges)
+    "--on-brand": c.onBrand?.trim() || readableOn(c.brand) || c.text,
     "--border": c.border,
     "--header-bg": c.headerBg,
     "--card-radius": style === "editorial" ? "0rem" : theme.identity.cardRadius,

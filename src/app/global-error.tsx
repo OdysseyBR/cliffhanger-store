@@ -41,8 +41,8 @@ export default function GlobalError({
             __html: `
 html, body { margin: 0; min-height: 100%; }
 body {
-  background: #0E0000;
-  color: #F8FEFF;
+  background: #000000;
+  color: #ffffff;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   display: flex;
   align-items: center;
@@ -51,7 +51,7 @@ body {
   box-sizing: border-box;
   text-align: center;
 }
-html[data-theme="claro"] body { background: #F8FEFF; color: #0E0000; }
+html[data-theme="claro"] body { background: #ffffff; color: #000000; }
 .ops {
   font-family: system-ui, -apple-system, sans-serif;
   font-size: 4.5rem;
@@ -60,17 +60,16 @@ html[data-theme="claro"] body { background: #F8FEFF; color: #0E0000; }
   line-height: 1;
   letter-spacing: .02em;
   margin: 0;
-  color: #E7CB9B;
+  color: #e5484d;
 }
-html[data-theme="claro"] .ops { color: #A30707; }
 h1 {
   font-size: 1.75rem;
   text-transform: uppercase;
   letter-spacing: .04em;
   margin: 14px 0 0;
-  color: #F8FEFF;
+  color: #ffffff;
 }
-html[data-theme="claro"] h1 { color: #0E0000; }
+html[data-theme="claro"] h1 { color: #000000; }
 p { max-width: 28rem; margin: 16px auto 0; line-height: 1.6; }
 .acoes { display: flex; gap: 12px; justify-content: center; margin-top: 28px; flex-wrap: wrap; }
 button, a {
@@ -83,15 +82,18 @@ button, a {
   text-decoration: none;
   display: inline-block;
 }
-button { background: #A30707; color: #F8FEFF; }
-button:hover { background: #E7CB9B; color: #0E0000; }
+button { background: #ffffff; color: #000000; }
+button:hover { background: #e5e5e5; }
+html[data-theme="claro"] button { background: #000000; color: #ffffff; }
+html[data-theme="claro"] button:hover { background: #1a1a1a; }
 a {
   background: transparent;
-  color: #F8FEFF;
-  border: 1px solid #F8FEFF;
+  color: #ffffff;
+  border: 1px solid #ffffff;
 }
-html[data-theme="claro"] a { color: #0E0000; border-color: #0E0000; }
-a:hover { background: #E7CB9B; color: #0E0000; border-color: #E7CB9B; }
+html[data-theme="claro"] a { color: #000000; border-color: #000000; }
+a:hover { background: #ffffff; color: #000000; border-color: #ffffff; }
+html[data-theme="claro"] a:hover { background: #000000; color: #ffffff; border-color: #000000; }
 `,
           }}
         />

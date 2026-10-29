@@ -81,7 +81,7 @@ export function ProfileMenu() {
             onClick={() => setOpen(false)}
             className="mb-2 flex items-center gap-3 rounded-lg p-2 hover:bg-[var(--surface-raised)]"
           >
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-violet text-sm font-extrabold text-white">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-violet text-sm font-extrabold text-[var(--on-brand)]">
               {initials}
             </span>
             <span className="min-w-0">

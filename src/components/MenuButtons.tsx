@@ -41,7 +41,7 @@ export function MenuButtons() {
               className="card group flex items-center gap-3 px-4 py-4 transition hover:-translate-y-1 hover:border-violet-soft"
             >
               <span
-                className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-violet/15 text-xl transition group-hover:bg-violet group-hover:text-[#F8FEFF]"
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-violet/15 text-xl transition group-hover:bg-violet group-hover:text-[var(--on-brand)]"
                 aria-hidden
               >
                 {icons[item.label] ?? "•"}

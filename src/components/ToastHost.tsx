@@ -25,7 +25,7 @@ export function ToastHost() {
               ? "bg-[#30a46c] text-white"
               : toast.tone === "error"
                 ? "bg-[#e5484d] text-white"
-                : "bg-violet text-white"
+                : "bg-violet text-[var(--on-brand)]"
           }`}
         >
           {toast.message}

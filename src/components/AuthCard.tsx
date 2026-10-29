@@ -100,7 +100,7 @@ export function AuthCard({ initialMode = "entrar" }: { initialMode?: Mode }) {
               setMode(m);
             }}
             className={`flex-1 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wider transition ${
-              mode === m ? "bg-violet text-white" : "border border-[var(--border)]"
+              mode === m ? "bg-violet text-[var(--on-brand)]" : "border border-[var(--border)]"
             }`}
           >
             {m === "entrar" ? "Entrar" : "Criar conta"}

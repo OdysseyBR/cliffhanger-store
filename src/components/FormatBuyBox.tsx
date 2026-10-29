@@ -39,7 +39,7 @@ export function FormatBuyBox({
             aria-pressed={index === selected}
             className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
               index === selected
-                ? "border-transparent bg-violet text-white"
+                ? "border-transparent bg-violet text-[var(--on-brand)]"
                 : "border-[var(--border)] hover:border-violet-soft"
             }`}
           >

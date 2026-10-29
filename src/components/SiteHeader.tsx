@@ -51,8 +51,8 @@ export function SiteHeader() {
               type="button"
               onClick={() => setTheme(isLight ? "" : "claro")}
               className="grid h-10 w-10 place-items-center rounded-full transition hover:bg-[var(--surface-raised)]"
-              aria-label={isLight ? "Ativar modo escuro" : "Ativar modo claro"}
-              title={isLight ? "Modo escuro" : "Modo claro"}
+              aria-label={isLight ? "Ativar Preto e Branco" : "Ativar Branco e Preto"}
+              title={isLight ? "Preto e Branco (padrão)" : "Branco e Preto"}
             >
               {isLight ? <IconMoon /> : <IconSun />}
             </button>
@@ -170,7 +170,7 @@ function SiteNav() {
               href={item.href}
               className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
                 active
-                  ? "bg-violet text-white"
+                  ? "bg-violet text-[var(--on-brand)]"
                   : "text-[var(--text-muted)] hover:bg-[var(--surface-raised-2)] hover:text-gold"
               }`}
             >

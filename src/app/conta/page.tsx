@@ -107,7 +107,7 @@ export default function ContaDashboardPage() {
           // eslint-disable-next-line @next/next/no-img-element
           <img src={user.photoURL} alt="" className="h-16 w-16 rounded-full object-cover" />
         ) : (
-          <span className="grid h-16 w-16 place-items-center rounded-full bg-violet text-xl font-extrabold text-white">
+          <span className="grid h-16 w-16 place-items-center rounded-full bg-violet text-xl font-extrabold text-[var(--on-brand)]">
             {initials}
           </span>
         )}

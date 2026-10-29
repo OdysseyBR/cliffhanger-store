@@ -784,6 +784,11 @@ export interface ThemeColors {
   border: string;
   /** rgba(...) */
   headerBg: string;
+  /**
+   * Cor do conteúdo sobre preenchimentos de brand/accent (botões, chips,
+   * badges). Opcional: ausente = derivada por luminância em theme-css.ts.
+   */
+  onBrand?: string;
 }
 
 export interface ThemeIdentity {

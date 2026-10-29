@@ -784,7 +784,7 @@ export default function CheckoutPage() {
                 key={s.key}
                 className={`rounded-full border px-4 py-1.5 text-xs font-bold uppercase tracking-wider ${
                   active
-                    ? "border-transparent bg-violet text-white"
+                    ? "border-transparent bg-violet text-[var(--on-brand)]"
                     : done
                       ? "border-transparent bg-gold text-ink"
                       : "border-[var(--border)] text-[var(--text-muted)]"
