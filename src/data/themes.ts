@@ -1,6 +1,6 @@
 // Litterae — padrões visuais permanentes da livraria (Documento de Correção,
 // Finalização e Ajustes — §2/§4/§12/§28). Sem Theme Engine no painel:
-// dois modos oficiais mantidos em código — Escuro (padrão) e Claro —,
+// dois modos oficiais mantidos em código — Claro (padrão) e Escuro —,
 // ambos na paleta oficial da marca: laranja #e67817 (brand/accent),
 // off-white #f7f4f3 e quase-preto #02000e (superfícies e texto).
 // O laranja é a cor da marca nos dois modos; o token --on-brand fica fixo
@@ -32,7 +32,7 @@ const now = "2026-09-23T00:00:00.000Z";
 
 export const themes: ThemeModel[] = [
   // -------------------------------------------------------------------------
-  // 1. Escuro — padrão oficial (quase-preto #02000e + off-white #f7f4f3,
+  // 1. Escuro — tema secundário (quase-preto #02000e + off-white #f7f4f3,
   //    com laranja #e67817 em brand/accent e --on-brand #02000e).
   // -------------------------------------------------------------------------
   {
@@ -75,8 +75,8 @@ export const themes: ThemeModel[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 2. Claro — modo claro da mesma paleta: inverte as áreas escuras →
-  //    claras (off-white #f7f4f3 + quase-preto #02000e), mantendo o
+  // 2. Claro — padrão oficial — modo claro da mesma paleta: inverte as
+  //    áreas escuras → claras (off-white #f7f4f3 + quase-preto #02000e),
   //    laranja #e67817 da marca em brand/accent. A logo escura é ligada
   //    automaticamente pelo motor (identity.mode === "light").
   // -------------------------------------------------------------------------

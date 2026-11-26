@@ -6,10 +6,10 @@ import { themes } from "@/data/themes";
 
 /**
  * Aplica o override de padrão visual do usuário (se houver) por cima do
- * padrão do servidor. "" (Escuro — padrão) mantém o
- * padrão ativo e "claro" aplica o modo claro (alternados pelo botão do
- * header e pela página de Preferências). O valor vindo do servidor é
- * memorizado no primeiro efeito para que voltar a "" restaure o padrão
+ * padrão do servidor. "" (Claro — padrão) mantém o padrão ativo, "claro"
+ * força o modo claro e "default" força o modo escuro (alternados pelo
+ * botão do header e pela página de Preferências). O valor vindo do servidor
+ * é memorizado no primeiro efeito para que voltar a "" restaure o padrão
  * do servidor em vez do último override.
  *
  * A chave é validada contra os temas existentes: uma escolha antiga de um

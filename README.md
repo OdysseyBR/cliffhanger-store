@@ -7,7 +7,7 @@ desenvolvido conforme o Documento Mestre (`Projeto/` na raiz do workspace).
 ## Stack
 
 - **Next.js 16** (App Router, Turbopack) + **TypeScript**
-- **Tailwind CSS v4** (temas: `default` (escuro) / `claro` via `data-theme`)
+- **Tailwind CSS v4** (temas: `claro` (padrão) / `default` (escuro) via `data-theme`)
 - **Firebase** — Auth (Google, Facebook, e-mail) + Firestore (catálogo, usuários, pedidos)
 - **Vercel** — deploy de produção automático a cada push em `main`
 
@@ -83,4 +83,4 @@ Produção: <https://www.cliffhangerstore.xyz>
 Identidade Litterae — `#02000e` (quase-preto, `--color-ink`) · `#e67817` (laranja da marca,
 `--color-violet`/`--color-gold`) · `#f7f4f3` (off-white, `--color-paper`), chapada (sem
 gradientes). Tokens em `src/app/globals.css`; os valores por tema (incl. `accent`) vêm de
-`src/data/themes.ts` (`default` escuro / `claro`).
+`src/data/themes.ts` (`claro` padrão / `default` escuro).

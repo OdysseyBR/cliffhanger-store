@@ -26,14 +26,14 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <html lang="pt-BR" data-theme="default" suppressHydrationWarning>
+    <html lang="pt-BR" data-theme="claro" suppressHydrationWarning>
       <head>
         <title>Algo deu errado — Litterae</title>
         <script
           dangerouslySetInnerHTML={{
             __html:
               'try{var t=JSON.parse(localStorage.getItem("ch:theme")||\'""\');' +
-              'if(t==="claro"){document.documentElement.dataset.theme="claro";}}catch(e){}',
+              'if(t==="claro"||t==="default"){document.documentElement.dataset.theme=t;}}catch(e){}',
           }}
         />
         <style

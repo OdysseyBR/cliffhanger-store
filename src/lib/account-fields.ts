@@ -64,7 +64,7 @@ export function defaultNotifyPrefs(): NotifyPrefs {
 }
 
 export interface AccountPrefs {
-  appearance: "" | "claro";
+  appearance: "" | "claro" | "default";
   readerFont: "pequeno" | "padrao" | "grande";
   audioSpeed: number;
 }
@@ -220,11 +220,13 @@ export function sanitizeNotifyPrefs(raw: unknown): FieldParse<NotifyPrefs> {
   return { ok: true, item: prefs };
 }
 
-export function sanitizeAccountPrefs(raw: unknown): FieldParse<AccountPrefs> {  const input = (raw ?? null) as Partial<AccountPrefs> | null;
+export function sanitizeAccountPrefs(raw: unknown): FieldParse<AccountPrefs> {
+  const input = (raw ?? null) as Partial<AccountPrefs> | null;
   if (!input || typeof input !== "object") {
     return { ok: false, error: "Preferências inválidas." };
   }
-  const appearance = input.appearance === "claro" ? "claro" : "";
+  const appearance =
+    input.appearance === "claro" || input.appearance === "default" ? input.appearance : "";
   const readerFont =
     input.readerFont === "pequeno" || input.readerFont === "grande" ? input.readerFont : "padrao";
   const audioSpeed = AUDIO_SPEEDS.includes(Number(input.audioSpeed)) ? Number(input.audioSpeed) : 1;

@@ -49,10 +49,10 @@ export function SiteHeader() {
             </Link>
             <button
               type="button"
-              onClick={() => setTheme(isLight ? "" : "claro")}
+              onClick={() => setTheme(isLight ? "default" : "")}
               className="grid h-10 w-10 place-items-center rounded-full transition hover:bg-[var(--surface-raised)]"
               aria-label={isLight ? "Ativar tema Escuro" : "Ativar tema Claro"}
-              title={isLight ? "Escuro (padrão)" : "Claro"}
+              title={isLight ? "Escuro" : "Claro (padrão)"}
             >
               {isLight ? <IconMoon /> : <IconSun />}
             </button>

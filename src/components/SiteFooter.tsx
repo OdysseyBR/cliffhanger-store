@@ -3,15 +3,16 @@ import type { CSSProperties } from "react";
 import { footerLinks, mainNav } from "@/lib/nav";
 
 /**
- * Logo do footer como máscara CSS: o desenho é pintado com `currentColor`
+ * Tipografia da marca no rodapé como máscara CSS: só o logotipo textual
+ * (W Tipográfia, sem o quadrado do ícone), pintado com `currentColor`
  * (a cor do texto do rodapé = text-paper). Assim ela reage ao fundo de cada
  * padrão visual automaticamente — clara no tema Claro, escura no tema
  * Escuro — sem depender de uma lista de regras por tema.
  */
 const logoMaskStyle: CSSProperties = {
   backgroundColor: "currentColor",
-  WebkitMaskImage: "url(/logo-litterae-branco.svg)",
-  maskImage: "url(/logo-litterae-branco.svg)",
+  WebkitMaskImage: "url(/logo-litterae-tipografia.svg)",
+  maskImage: "url(/logo-litterae-tipografia.svg)",
   WebkitMaskRepeat: "no-repeat",
   maskRepeat: "no-repeat",
   WebkitMaskSize: "contain",
@@ -28,7 +29,7 @@ export function SiteFooter() {
           <span
             role="img"
             aria-label="Litterae"
-            className="block h-12 aspect-[1649/296]"
+            className="block h-9 aspect-[1273/204]"
             style={logoMaskStyle}
           />
           <p className="mt-4 max-w-xs text-sm text-paper/70">

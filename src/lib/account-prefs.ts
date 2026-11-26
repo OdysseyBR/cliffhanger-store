@@ -64,7 +64,7 @@ export async function readAccountPrefs(uid: string): Promise<AccountPrefs> {
   if (!raw || typeof raw !== "object") return defaultAccountPrefs();
   const data = raw as Partial<AccountPrefs>;
   return {
-    appearance: data.appearance === "claro" ? "claro" : "",
+    appearance: data.appearance === "claro" || data.appearance === "default" ? data.appearance : "",
     readerFont: data.readerFont === "pequeno" || data.readerFont === "grande" ? data.readerFont : "padrao",
     audioSpeed: [0.75, 1, 1.25, 1.5, 2].includes(Number(data.audioSpeed)) ? Number(data.audioSpeed) : 1,
   };
