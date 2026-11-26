@@ -27,7 +27,7 @@ type Edicao = "especial" | "limitada" | "exclusiva";
 const formatoLabels: Record<Formato, string> = {
   livro: "Livro físico",
   ebook: "E-book",
-  audiobook: "Audiobook",
+  audiobook: "Audiolivro",
 };
 
 const edicaoLabels: Record<Edicao, string> = {

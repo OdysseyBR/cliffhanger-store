@@ -358,7 +358,7 @@ export function deletePromotion(id: string) {
   );
 }
 
-/** §12/§18 — Cliffhanger Club (membros/pontos e benefícios). */
+/** §12/§18 — Clube Litterae (membros/pontos e benefícios). */
 export function fetchClub() {
   return adminFetch<{ members: ClubMember[]; benefits: ClubBenefit[] }>(
     "/api/admin/club/benefits",
@@ -490,7 +490,7 @@ export function saveSettings(settings: ShopSettings) {
   );
 }
 
-/** §16/§24–§26 — Cliffhanger+ no painel: planos, Drops e Clube do Leitor. */
+/** §16/§24–§26 — Litterae+ no painel: planos, Drops e Clube do Leitor. */
 export interface PlusBoardResponse {
   plans: PlusPlan[];
   updatedAt?: string;

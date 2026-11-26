@@ -5,13 +5,13 @@ import { footerLinks, mainNav } from "@/lib/nav";
 /**
  * Logo do footer como máscara CSS: o desenho é pintado com `currentColor`
  * (a cor do texto do rodapé = text-paper). Assim ela reage ao fundo de cada
- * padrão visual automaticamente — clara no Padrão Cliffhanger Claro, escura
- * no Padrão Cliffhanger — sem depender de uma lista de regras por tema.
+ * padrão visual automaticamente — clara no tema Claro, escura no tema
+ * Escuro — sem depender de uma lista de regras por tema.
  */
 const logoMaskStyle: CSSProperties = {
   backgroundColor: "currentColor",
-  WebkitMaskImage: "url(/logo-cliffhanger-branco.svg)",
-  maskImage: "url(/logo-cliffhanger-branco.svg)",
+  WebkitMaskImage: "url(/logo-litterae-branco.svg)",
+  maskImage: "url(/logo-litterae-branco.svg)",
   WebkitMaskRepeat: "no-repeat",
   maskRepeat: "no-repeat",
   WebkitMaskSize: "contain",
@@ -27,16 +27,16 @@ export function SiteFooter() {
         <div>
           <span
             role="img"
-            aria-label="Cliffhanger Store"
-            className="block h-12 aspect-[1650/414]"
+            aria-label="Litterae"
+            className="block h-12 aspect-[1649/296]"
             style={logoMaskStyle}
           />
           <p className="mt-4 max-w-xs text-sm text-paper/70">
-            Livros, e-books, audiobooks, produtos oficiais e colecionáveis dos universos
-            Cliffhanger. Uma conta, toda a biblioteca.
+            Livraria digital de autores independentes: livros, e-books e audiolivros em um
+            só lugar. Uma conta, toda a biblioteca.
           </p>
           <p className="mt-4 text-xs uppercase tracking-widest text-gold">
-            #FiqueNaBrisa
+            #AbraUmLivro
           </p>
         </div>
 
@@ -58,7 +58,7 @@ export function SiteFooter() {
 
       <div className="border-t border-paper/10">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-5 text-xs text-paper/60 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-          <p>© {new Date().getFullYear()} Cliffhanger Store. Todos os direitos reservados.</p>
+          <p>© {new Date().getFullYear()} Litterae. Todos os direitos reservados.</p>
           <ul className="flex flex-wrap gap-4">
             {mainNav.slice(-6).map((item) => (
               <li key={item.href}>

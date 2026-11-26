@@ -19,7 +19,7 @@ const icons: Record<string, ReactNode> = {
   Loja: <IconBag />,
   Livros: <IconBook />,
   "E-books": <IconTablet />,
-  Audiobooks: <IconHeadphones />,
+  Audiolivros: <IconHeadphones />,
   Produtos: <IconShirt />,
   Colecionáveis: <IconDice />,
   Universos: <IconGlobe />,

@@ -124,7 +124,7 @@ export function AuthCard({ initialMode = "entrar" }: { initialMode?: Mode }) {
       {mode === "recuperar" ? (
         <form onSubmit={submit} className="space-y-3">
           <p className="text-sm text-[var(--text-muted)]">
-            Informe o e-mail da sua conta Cliffhanger e enviaremos um link para
+            Informe o e-mail da sua conta Litterae e enviaremos um link para
             criar uma nova senha.
           </p>
           <input

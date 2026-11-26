@@ -10,7 +10,7 @@ import type { CartItem } from "@/lib/types";
 
 /**
  * Nome do padrão visual para o override do usuário no navegador.
- * "" = seguir o padrão do servidor (Padrão Cliffhanger).
+ * "" = seguir o padrão do servidor (tema Escuro).
  */
 export type ThemeName = string;
 

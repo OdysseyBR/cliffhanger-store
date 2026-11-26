@@ -26,7 +26,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div>
             <p className="text-display text-3xl text-gold">Painel administrativo</p>
             <p className="text-xs text-[var(--text-muted)]">
-              Cliffhanger Store — módulos da loja, permissões e auditoria (§13)
+              Litterae — módulos da loja, permissões e auditoria (§13)
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">

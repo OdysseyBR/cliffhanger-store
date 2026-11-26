@@ -16,7 +16,7 @@ import { hasFreeShipping } from "@/lib/plus";
  * derruba a cotação. Sem token de transportadora: sem dependência externa
  * obrigatória.
  *
- * §24 — assinantes Cliffhanger+ (Essential+) têm frete grátis: quando o
+ * §24 — assinantes Litterae+ (Essential+) têm frete grátis: quando o
  * Bearer é de uma conta com assinatura ativa, as opções voltam zeradas.
  */
 
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
 
   const state = await resolveState(digits);
 
-  // §24 — frete grátis para assinantes Cliffhanger+ ativos.
+  // §24 — frete grátis para assinantes Litterae+ ativos.
   const plusFree = await hasFreeShipping(await verifyUid(request));
   const options = plusFree
     ? quote.options.map((option) => ({ ...option, price: 0, free: true }))

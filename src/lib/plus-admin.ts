@@ -18,7 +18,7 @@ import {
 } from "@/lib/plus-fields";
 
 /**
- * §24–§26 — escrita administrativa do Cliffhanger+: planos (`site/plus`),
+ * §24–§26 — escrita administrativa do Litterae+: planos (`site/plus`),
  * Drops (`drops` + `dropClaims`) e caixas do Clube do Leitor
  * (`clubBoxes`), além das estatísticas do programa para o painel (§17).
  *

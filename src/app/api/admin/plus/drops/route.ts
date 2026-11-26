@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     uid: gate.uid,
     role: gate.role,
     action: "criar",
-    module: "Cliffhanger+",
+    module: "Litterae+",
     entity: "plusDrop",
     entityId: drop.id,
     summary: `Criou o Drop “${drop.title}” (${drop.minPlan}, ${drop.permanence === "permanente" ? "permanente" : "temporário"}, semana ${drop.week} de ${drop.period})`,

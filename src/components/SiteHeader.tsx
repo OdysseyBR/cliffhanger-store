@@ -51,28 +51,28 @@ export function SiteHeader() {
               type="button"
               onClick={() => setTheme(isLight ? "" : "claro")}
               className="grid h-10 w-10 place-items-center rounded-full transition hover:bg-[var(--surface-raised)]"
-              aria-label={isLight ? "Ativar Preto e Branco" : "Ativar Branco e Preto"}
-              title={isLight ? "Preto e Branco (padrão)" : "Branco e Preto"}
+              aria-label={isLight ? "Ativar tema Escuro" : "Ativar tema Claro"}
+              title={isLight ? "Escuro (padrão)" : "Claro"}
             >
               {isLight ? <IconMoon /> : <IconSun />}
             </button>
           </div>
 
           {/* logo centralizada */}
-          <Link href="/" className="flex items-center" aria-label="Cliffhanger Store — início">
+          <Link href="/" className="flex items-center" aria-label="Litterae — início">
             <img
-              src="/logo-cliffhanger-branco.svg"
-              alt="Cliffhanger Store"
+              src="/logo-litterae-branco.svg"
+              alt="Litterae"
               className="logo-white h-9 w-auto sm:h-11"
-              width={200}
-              height={44}
+              width={1649}
+              height={296}
             />
             <img
-              src="/logo-cliffhanger-escuro.svg"
-              alt="Cliffhanger Store"
+              src="/logo-litterae-escuro.svg"
+              alt="Litterae"
               className="logo-dark hidden h-9 w-auto sm:h-11"
-              width={200}
-              height={44}
+              width={1649}
+              height={296}
             />
           </Link>
 

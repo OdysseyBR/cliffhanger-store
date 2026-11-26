@@ -6,7 +6,7 @@ import { getUniverses } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Universos",
-  description: "Explore os universos da Cliffhanger: Valeharts, Neon Sertão e Biblioteca dos Afogados.",
+  description: "Explore os universos da Litterae: Valeharts, Neon Sertão e Biblioteca dos Afogados.",
 };
 
 export default async function UniversosPage() {

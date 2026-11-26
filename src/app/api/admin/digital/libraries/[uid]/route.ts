@@ -79,7 +79,7 @@ export async function POST(request: Request, { params }: RouteCtx) {
 
   if (product.type !== "ebook" && product.type !== "audiobook") {
     return Response.json(
-      { error: "Só produtos digitais (e-book ou audiobook) entram na biblioteca." },
+      { error: "Só produtos digitais (e-book ou audiolivro) entram na biblioteca." },
       { status: 400 },
     );
   }
@@ -87,7 +87,7 @@ export async function POST(request: Request, { params }: RouteCtx) {
     return Response.json(
       {
         error: `“${product.title}” não está marcado com entrega digital — ative em ${
-          product.type === "ebook" ? "E-books" : "Audiobooks"
+          product.type === "ebook" ? "E-books" : "Audiolivros"
         } antes de conceder o acesso.`,
       },
       { status: 400 },

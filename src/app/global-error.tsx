@@ -9,7 +9,7 @@ import { useEffect } from "react";
  * error.md §Global Error). Por isso:
  * - o tema do navegador (ch:theme) é reaplicado por script inline antes da
  *   primeira pintura;
- * - a paleta P4 entra num <style> chapado, sem classes externas.
+ * - a paleta da marca entra num <style> chapado, sem classes externas.
  *
  * Props: `retry` (Next 16) — diferente do `reset` do error.tsx de segmento.
  * Sem metadata export (client component): o <title> é o componente React.
@@ -28,7 +28,7 @@ export default function GlobalError({
   return (
     <html lang="pt-BR" data-theme="default" suppressHydrationWarning>
       <head>
-        <title>Algo deu errado — Cliffhanger Store</title>
+        <title>Algo deu errado — Litterae</title>
         <script
           dangerouslySetInnerHTML={{
             __html:
@@ -41,8 +41,8 @@ export default function GlobalError({
             __html: `
 html, body { margin: 0; min-height: 100%; }
 body {
-  background: #000000;
-  color: #ffffff;
+  background: #02000e;
+  color: #f7f4f3;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   display: flex;
   align-items: center;
@@ -51,7 +51,7 @@ body {
   box-sizing: border-box;
   text-align: center;
 }
-html[data-theme="claro"] body { background: #ffffff; color: #000000; }
+html[data-theme="claro"] body { background: #f7f4f3; color: #02000e; }
 .ops {
   font-family: system-ui, -apple-system, sans-serif;
   font-size: 4.5rem;
@@ -67,9 +67,9 @@ h1 {
   text-transform: uppercase;
   letter-spacing: .04em;
   margin: 14px 0 0;
-  color: #ffffff;
+  color: #f7f4f3;
 }
-html[data-theme="claro"] h1 { color: #000000; }
+html[data-theme="claro"] h1 { color: #02000e; }
 p { max-width: 28rem; margin: 16px auto 0; line-height: 1.6; }
 .acoes { display: flex; gap: 12px; justify-content: center; margin-top: 28px; flex-wrap: wrap; }
 button, a {
@@ -82,18 +82,15 @@ button, a {
   text-decoration: none;
   display: inline-block;
 }
-button { background: #ffffff; color: #000000; }
-button:hover { background: #e5e5e5; }
-html[data-theme="claro"] button { background: #000000; color: #ffffff; }
-html[data-theme="claro"] button:hover { background: #1a1a1a; }
+button { background: #e67817; color: #02000e; }
+button:hover { background: #f08a2e; }
 a {
   background: transparent;
-  color: #ffffff;
-  border: 1px solid #ffffff;
+  color: #f7f4f3;
+  border: 1px solid #f7f4f3;
 }
-html[data-theme="claro"] a { color: #000000; border-color: #000000; }
-a:hover { background: #ffffff; color: #000000; border-color: #ffffff; }
-html[data-theme="claro"] a:hover { background: #000000; color: #ffffff; border-color: #000000; }
+html[data-theme="claro"] a { color: #02000e; border-color: #02000e; }
+a:hover { background: #e67817; color: #02000e; border-color: #e67817; }
 `,
           }}
         />
@@ -103,7 +100,7 @@ html[data-theme="claro"] a:hover { background: #000000; color: #ffffff; border-c
           <p className="ops">Ops</p>
           <h1>Algo deu errado</h1>
           <p>
-            Enfrentamos um cliffhanger técnico. Tente novamente — se persistir,
+            Enfrentamos um obstáculo técnico. Tente novamente — se persistir,
             volte para a home.
           </p>
           <div className="acoes">

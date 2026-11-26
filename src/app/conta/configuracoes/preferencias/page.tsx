@@ -90,8 +90,8 @@ export default function ContaPreferenciasPage() {
                 <SelectInput
                   value={prefs.appearance}
                   options={[
-                    { value: "", label: "Preto e Branco (padrão)" },
-                    { value: "claro", label: "Branco e Preto" },
+                    { value: "", label: "Escuro (padrão)" },
+                    { value: "claro", label: "Claro" },
                   ]}
                   onChange={(v) => set("appearance", v as AccountPrefs["appearance"])}
                 />
@@ -115,7 +115,7 @@ export default function ContaPreferenciasPage() {
             </div>
             <div>
               <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                Velocidade do audiobook
+                Velocidade do audiolivro
               </p>
               <div className="w-64">
                 <SelectInput

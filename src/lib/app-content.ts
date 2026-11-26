@@ -105,7 +105,7 @@ export const APP_EXPERIENCE_LABELS: Record<keyof AppExperiences, string> = {
   feed: "Feed de arte",
   leitor: "Leitor integrado",
   scanner: "Scanner de QR Codes",
-  drops: "Drops do Cliffhanger+",
+  drops: "Drops do Litterae+",
   eventos: "Agenda de eventos",
   offline: "Biblioteca offline",
 };

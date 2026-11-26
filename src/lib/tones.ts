@@ -5,10 +5,10 @@
 export const badgeTone: Record<string, string> = {
   NOVO: "bg-[#30a46c] text-white",
   "LANÇAMENTO": "bg-violet text-[var(--on-brand)]",
-  "PRÉ-VENDA": "bg-gold text-ink",
+  "PRÉ-VENDA": "bg-gold text-[var(--on-brand)]",
   EXCLUSIVO: "bg-ink text-gold",
   LIMITADO: "bg-[#e5484d] text-white",
-  "BEST-SELLER": "bg-gold text-ink",
+  "BEST-SELLER": "bg-gold text-[var(--on-brand)]",
   ESGOTANDO: "bg-[#e5484d] text-white",
   OFERTA: "bg-[#e5484d] text-white",
   DIGITAL: "bg-violet text-[var(--on-brand)]",

@@ -1,13 +1,13 @@
-// Cliffhanger — padrões visuais permanentes da loja (Documento de Correção,
+// Litterae — padrões visuais permanentes da livraria (Documento de Correção,
 // Finalização e Ajustes — §2/§4/§12/§28). Sem Theme Engine no painel:
-// dois modos oficiais mantidos em código, agora na paleta monocromática
-// P&B — Preto e Branco (padrão, modo escuro) e Branco e Preto (modo claro).
-// Cores absolutas: preto total #000000 + branco total #FFFFFF; cinzas
-// neutros ficam reservados a superfícies elevadas, bordas, texto
-// secundário e estados de hover. brand/accent seguem a cor do texto
-// (realces são inversões chapadas), e o token --on-brand garante o
-// contraste dos preenchimentos. O header alterna entre os dois
-// (ThemeSync + setTheme); temas especiais de evento são desenvolvidos
+// dois modos oficiais mantidos em código — Escuro (padrão) e Claro —,
+// ambos na paleta oficial da marca: laranja #e67817 (brand/accent),
+// off-white #f7f4f3 e quase-preto #02000e (superfícies e texto).
+// O laranja é a cor da marca nos dois modos; o token --on-brand fica fixo
+// em #02000e (contraste AA sobre o laranja). Off-white e quase-preto
+// invertem entre os modos; cinzas neutros ficam reservados a superfícies
+// elevadas, bordas, texto secundário e hover. O header alterna entre os
+// dois (ThemeSync + setTheme); temas especiais de evento são desenvolvidos
 // especificamente no projeto, quando houver.
 
 import type {
@@ -32,13 +32,13 @@ const now = "2026-09-23T00:00:00.000Z";
 
 export const themes: ThemeModel[] = [
   // -------------------------------------------------------------------------
-  // 1. Preto e Branco — padrão oficial (modo escuro da paleta monocromática:
-  //    preto total #000000 + branco total #FFFFFF e cinzas neutros).
+  // 1. Escuro — padrão oficial (quase-preto #02000e + off-white #f7f4f3,
+  //    com laranja #e67817 em brand/accent e --on-brand #02000e).
   // -------------------------------------------------------------------------
   {
     id: "theme-default",
     key: "default",
-    name: "Preto e Branco",
+    name: "Escuro",
     kind: "default",
     version: "v1.0",
     status: "publicado",
@@ -51,16 +51,17 @@ export const themes: ThemeModel[] = [
     identity: {
       mode: "dark",
       colors: {
-        surface: "#000000",
-        surfaceRaised: "#141414",
-        surfaceRaised2: "#0d0d0d",
-        text: "#ffffff",
-        textMuted: "#a3a3a3",
-        brand: "#ffffff",
-        brandStrong: "#e5e5e5",
-        accent: "#ffffff",
-        border: "rgba(255, 255, 255, 0.14)",
-        headerBg: "rgba(0, 0, 0, 0.86)",
+        surface: "#02000e",
+        surfaceRaised: "#14121f",
+        surfaceRaised2: "#0b0913",
+        text: "#f7f4f3",
+        textMuted: "#a3a0a8",
+        brand: "#e67817",
+        brandStrong: "#f08a2e",
+        accent: "#e67817",
+        onBrand: "#02000e",
+        border: "rgba(247, 244, 243, 0.14)",
+        headerBg: "rgba(2, 0, 14, 0.86)",
       },
       displayFont: "bebas",
       cardRadius: "0.75rem",
@@ -74,15 +75,15 @@ export const themes: ThemeModel[] = [
   },
 
   // -------------------------------------------------------------------------
-  // 2. Branco e Preto — modo claro da mesma paleta monocromática: inverte
-  //    áreas escuras → claras (branco total #FFFFFF + preto total #000000).
-  //    A logo escura é ligada automaticamente pelo motor
-  //    (identity.mode === "light").
+  // 2. Claro — modo claro da mesma paleta: inverte as áreas escuras →
+  //    claras (off-white #f7f4f3 + quase-preto #02000e), mantendo o
+  //    laranja #e67817 da marca em brand/accent. A logo escura é ligada
+  //    automaticamente pelo motor (identity.mode === "light").
   // -------------------------------------------------------------------------
   {
     id: "theme-claro",
     key: "claro",
-    name: "Branco e Preto",
+    name: "Claro",
     kind: "custom",
     version: "v1.0",
     status: "publicado",
@@ -95,16 +96,17 @@ export const themes: ThemeModel[] = [
     identity: {
       mode: "light",
       colors: {
-        surface: "#ffffff",
+        surface: "#f7f4f3",
         surfaceRaised: "#ffffff",
-        surfaceRaised2: "#f2f2f2",
-        text: "#000000",
-        textMuted: "#525252",
-        brand: "#000000",
-        brandStrong: "#1a1a1a",
-        accent: "#000000",
-        border: "rgba(0, 0, 0, 0.16)",
-        headerBg: "rgba(255, 255, 255, 0.9)",
+        surfaceRaised2: "#ece8e7",
+        text: "#02000e",
+        textMuted: "#56525e",
+        brand: "#e67817",
+        brandStrong: "#cf6a0f",
+        accent: "#e67817",
+        onBrand: "#02000e",
+        border: "rgba(2, 0, 14, 0.16)",
+        headerBg: "rgba(247, 244, 243, 0.9)",
       },
       displayFont: "bebas",
       cardRadius: "1.25rem",

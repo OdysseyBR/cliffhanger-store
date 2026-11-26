@@ -100,7 +100,7 @@ export function SecuritySection() {
     }
   };
 
-  /** Vincula Google/Facebook à conta atual (§8 — mesma Cliffhanger Account). */
+  /** Vincula Google/Facebook à conta atual (§8 — mesma Conta Litterae). */
   const linkProvider = async (providerId: "google.com" | "facebook.com") => {
     const current = getClientAuth()?.currentUser;
     if (!current) {
@@ -206,7 +206,7 @@ export function SecuritySection() {
             </div>
           )}
           <p className="mt-1.5 text-xs text-[var(--text-muted)]">
-            Todos apontam para a mesma Cliffhanger Account.
+            Todos apontam para a mesma Conta Litterae.
           </p>
         </div>
 

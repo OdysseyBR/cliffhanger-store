@@ -6,7 +6,7 @@ import { Section } from "@/components/Section";
 export const metadata: Metadata = {
   title: "Privacidade",
   description:
-    "Política de privacidade da Cliffhanger Store: dados coletados, uso, compartilhamento e seus direitos (LGPD).",
+    "Política de privacidade da Litterae: dados coletados, uso, compartilhamento e seus direitos (LGPD).",
 };
 
 const SECTIONS: { title: string; paragraphs: string[] }[] = [
@@ -22,7 +22,7 @@ const SECTIONS: { title: string; paragraphs: string[] }[] = [
     title: "2. Como usamos seus dados",
     paragraphs: [
       "Para processar pagamentos, separar pedidos e entregar compras físicas e digitais.",
-      "Para criar sua biblioteca digital, histórico de pedidos e vantagens do Cliffhanger Club.",
+      "Para criar sua biblioteca digital, histórico de pedidos e vantagens do Clube Litterae.",
       "Para enviar comunicações do pedido (confirmação, rastreio) e, se você aceitar, novidades da loja.",
     ],
   },
@@ -56,7 +56,7 @@ export default function PrivacidadePage() {
       <Section
         title="Política de privacidade"
         titleAs="h1"
-        subtitle="Transparência sobre os dados da sua conta Cliffhanger — em linguagem simples."
+        subtitle="Transparência sobre os dados da sua conta Litterae — em linguagem simples."
       >
         <div className="mx-auto max-w-3xl space-y-6">
           {SECTIONS.map((section) => (

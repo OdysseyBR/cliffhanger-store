@@ -71,7 +71,7 @@ export function AddToCart({ product }: { product: Product }) {
             : "Envio para todo o Brasil · frete calculado no checkout"}
         </li>
         <li>Pagamento por PIX, cartão de crédito ou débito</li>
-        <li>Compra segura · suporte pela Cliffhanger Store</li>
+        <li>Compra segura · suporte pela Litterae</li>
       </ul>
     </div>
   );

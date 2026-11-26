@@ -52,7 +52,7 @@ export function MobileAppBanner() {
     <div
       data-testid="app-banner"
       role="region"
-      aria-label="Recomendação do app Cliffhanger"
+      aria-label="Recomendação do app Litterae"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border)] bg-[var(--surface-raised)]"
     >
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
@@ -60,7 +60,7 @@ export function MobileAppBanner() {
           <IconPhone className="h-5 w-5" />
         </span>
         <p className="min-w-0 flex-1 text-xs leading-snug sm:text-sm">
-          <span className="font-bold">Cliffhanger tem app!</span>{" "}
+          <span className="font-bold">Litterae tem app!</span>{" "}
           <span className="text-[var(--text-muted)]">
             No celular é melhor: leia, ouça e acompanhe pedidos no aplicativo.
           </span>

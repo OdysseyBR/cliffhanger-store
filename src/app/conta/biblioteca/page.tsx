@@ -44,7 +44,7 @@ export default function ContaBibliotecaPage() {
         <p className="text-sm text-[var(--text-muted)]">Carregando resumo…</p>
       ) : (
         <p className="text-sm text-[var(--text-muted)]">
-          {ebooks} ebooks · {audiobooks} audiobooks
+          {ebooks} ebooks · {audiobooks} audiolivros
         </p>
       )}
       <div>

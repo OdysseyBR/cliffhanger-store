@@ -31,7 +31,7 @@ export function AdminLogin({ note }: { note?: string }) {
 
   return (
     <div className="card mx-auto max-w-md gap-4 p-8">
-      <p className="text-display text-3xl text-gold">Painel Cliffhanger</p>
+      <p className="text-display text-3xl text-gold">Painel Litterae</p>
       <p className="text-sm text-[var(--text-muted)]">
         Acesso restrito ao super admin autorizado (variável <code>SUPER_ADMIN_EMAIL</code>).
       </p>

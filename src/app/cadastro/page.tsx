@@ -6,7 +6,7 @@ import { Section } from "@/components/Section";
 export const metadata: Metadata = {
   title: "Criar conta",
   description:
-    "Crie sua conta Cliffhanger: biblioteca digital, wishlist, clube e histórico de pedidos.",
+    "Crie sua conta Litterae: biblioteca digital, wishlist, clube e histórico de pedidos.",
 };
 
 /** Rota obrigatória §22 — cadastro de novos leitores. */
@@ -16,7 +16,7 @@ export default function CadastroPage() {
       <Section
         title="Criar conta"
         titleAs="h1"
-        subtitle="Uma única conta para loja, biblioteca, wishlist e Cliffhanger Club."
+        subtitle="Uma única conta para loja, biblioteca, wishlist e Clube Litterae."
       >
         <div className="card mx-auto max-w-md p-6">
           <AuthCard initialMode="criar" />

@@ -92,7 +92,7 @@ export async function PUT(request: Request, { params }: RouteCtx) {
     uid: gate.uid,
     role: gate.role,
     action: "editar",
-    module: "Cliffhanger Club",
+    module: "Clube Litterae",
     entity: "member",
     entityId: uid,
     summary: `${delta > 0 ? "Creditou" : "Debitou"} ${Math.abs(delta)} ponto(s) ${delta > 0 ? "para" : "de"} ${who} (${before} → ${after}): ${reason}`,

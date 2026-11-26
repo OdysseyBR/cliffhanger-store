@@ -31,27 +31,27 @@ export const revalidate = 300;
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Cliffhanger Store — livros, e-books, audiobooks e colecionáveis",
-    template: "%s | Cliffhanger Store",
+    default: "Litterae — livraria digital de livros, e-books e audiolivros",
+    template: "%s | Litterae",
   },
   description:
-    "A loja do Cliffhanger Universo: livros, e-books, audiobooks, produtos oficiais e colecionáveis dos seus universos favoritos.",
+    "Litterae é a livraria digital de autores independentes: livros, e-books e audiolivros de autores menores — e um lugar para publicar suas próprias obras digitais.",
   keywords: [
-    "cliffhanger",
-    "loja",
+    "litterae",
+    "livraria digital",
     "livros",
     "ebooks",
-    "audiobooks",
-    "coleccionáveis",
-    "universos",
+    "audiolivros",
+    "autores independentes",
+    "publicar livro digital",
   ],
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    siteName: "Cliffhanger Store",
-    title: "Cliffhanger Store — livros, e-books, audiobooks e colecionáveis",
+    siteName: "Litterae",
+    title: "Litterae — livraria digital de livros, e-books e audiolivros",
     description:
-      "Livros, e-books, audiobooks, produtos oficiais e colecionáveis dos seus universos favoritos.",
+      "Livros, e-books e audiolivros de autores independentes — e um lugar para publicar suas próprias obras digitais.",
   },
 };
 

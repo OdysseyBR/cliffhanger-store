@@ -6,7 +6,7 @@ import { getCatalog, offers } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Ofertas",
-  description: "Ofertas e promoções por tempo limitado na Cliffhanger Store.",
+  description: "Ofertas e promoções por tempo limitado na Litterae.",
 };
 
 export default async function OfertasPage() {
@@ -24,7 +24,7 @@ export default async function OfertasPage() {
         {biggest > 0 && (
           <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-gold px-5 py-2 text-ink">
             <span className="text-display text-2xl">Até {biggest}% OFF</span>
-            <span className="text-xs font-bold uppercase tracking-wider">Cliffhanger Winter Fest</span>
+            <span className="text-xs font-bold uppercase tracking-wider">Litterae Winter Fest</span>
           </div>
         )}
 

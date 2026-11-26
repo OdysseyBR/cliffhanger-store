@@ -5,7 +5,7 @@ import { getCatalog } from "@/lib/data";
 export const metadata: Metadata = {
   title: "Produtos",
   description:
-    "Produtos oficiais Cliffhanger: camisetas, canecas, posters, marcadores e adesivos.",
+    "Produtos oficiais Litterae: camisetas, canecas, posters, marcadores e adesivos.",
 };
 
 export default async function ProdutosPage() {

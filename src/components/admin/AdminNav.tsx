@@ -9,7 +9,7 @@ import type { AdminPermission } from "@/lib/roles";
 /**
  * Menu lateral do painel em árvore — Etapa T (hierarquia do painel).
  * Reorganiza os módulos nos 9 grupos operacionais (Loja, Vendas,
- * Clientes, Digital, Cliffhanger+, Aplicativo, Site, Relatórios e
+ * Clientes, Digital, Litterae+, Aplicativo, Site, Relatórios e
  * Sistema) sobre os módulos do §12; Obras saiu do painel (substituído
  * por Produtos por tipo) e E-books/Audiobooks agora vivem como abas
  * de Produtos.
@@ -79,12 +79,12 @@ const ADMIN_NAV: NavGroup[] = [
     ],
   },
   {
-    title: "Cliffhanger+",
+    title: "Litterae+",
     items: [
       { label: "Planos", href: "/admin/cliffhanger-plus", perm: "plus.view", exact: true },
       { label: "Drops", href: "/admin/cliffhanger-plus/drops", perm: "plus.view" },
       { label: "Clube do Leitor", href: "/admin/cliffhanger-plus/clube", perm: "plus.view" },
-      { label: "Cliffhanger Club", href: "/admin/clube", perm: "club.view" },
+      { label: "Clube Litterae", href: "/admin/clube", perm: "club.view" },
     ],
   },
   {

@@ -13,7 +13,7 @@ import type {
 
 /**
  * §12/§36 — Relatórios: as 17 áreas pedidas na §36 (vendas, produtos,
- * estoque, clientes, pedidos, Cliffhanger+, cancelamentos, pré-vendas,
+ * estoque, clientes, pedidos, Litterae+, cancelamentos, pré-vendas,
  * Drops, biblioteca digital, e-books, audiobooks, Clube do Leitor,
  * campanhas, cupons, wishlist e conversão) e o painel de integração da
  * §37 (conta × site × app × admin) — tudo derivado de coleções reais,
@@ -218,7 +218,7 @@ export async function GET(request: Request) {
       revenue: preorderRevenue,
     };
 
-    // ------------------------------------- Cliffhanger+ e Drops (§36)
+    // ------------------------------------- Litterae+ e Drops (§36)
     const subscriptions = subscriptionsSnap.docs.map((doc) => {
       const data = revive(doc.data()) as { plan?: unknown; price?: unknown; status?: unknown };
       return {

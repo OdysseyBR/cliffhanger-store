@@ -4,7 +4,7 @@
  * Define os 7 papéis exigidos pelo documento (Administrador, Editorial,
  * Comercial, Estoque, Atendimento, Marketing e Financeiro) e a matriz de
  * permissões por módulo do painel (§12/§35 — 41 permissões no total,
- * incluindo `plus.view`/`plus.edit` do Cliffhanger+). Módulo compartilhado
+ * incluindo `plus.view`/`plus.edit` do Litterae+). Módulo compartilhado
  * entre servidor (admin-guard) e cliente (AdminNav) — por isso NÃO importa
  * "server-only".
  *
@@ -38,10 +38,10 @@ export const ADMIN_ROLE_LABELS: Record<AdminRole, string> = {
 export const ADMIN_ROLE_DESCRIPTIONS: Record<AdminRole, string> = {
   administrador: "Acesso total ao painel, incluindo equipe e auditoria.",
   editorial: "Catálogo editorial, notícias, lançamentos e pré-vendas.",
-  comercial: "Produtos, cupons, promoções, clube, leitura comercial e Cliffhanger+.",
+  comercial: "Produtos, cupons, promoções, clube, leitura comercial e Litterae+.",
   estoque: "Estoque, entradas/saídas, alertas e leitura de pedidos.",
-  atendimento: "Pedidos, clientes, avaliações e leitura do Cliffhanger+.",
-  marketing: "Banners, home, notícias, campanhas, clube, notificações e Cliffhanger+.",
+  atendimento: "Pedidos, clientes, avaliações e leitura do Litterae+.",
+  marketing: "Banners, home, notícias, campanhas, clube, notificações e Litterae+.",
   financeiro: "Financeiro, relatórios, pedidos e leitura de cupons.",
 };
 
@@ -221,12 +221,12 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
   { key: "stock", label: "Estoque", modules: "Estoque atual, entradas, saídas e alertas", view: "stock.view", edit: "stock.edit" },
   { key: "orders", label: "Pedidos", modules: "Pedidos e acompanhamento", view: "orders.view", edit: "orders.edit" },
   { key: "customers", label: "Clientes", modules: "Clientes e compras", view: "customers.view", edit: null },
-  { key: "digital", label: "Biblioteca Digital", modules: "E-books e Audiobooks (em Produtos), Biblioteca e QR Codes", view: "digital.view", edit: "digital.edit" },
-  { key: "plus", label: "Cliffhanger+", modules: "Planos, Drops e Clube do Leitor (§24–§26)", view: "plus.view", edit: "plus.edit" },
+  { key: "digital", label: "Biblioteca Digital", modules: "E-books e Audiolivros (em Produtos), Biblioteca e QR Codes", view: "digital.view", edit: "digital.edit" },
+  { key: "plus", label: "Litterae+", modules: "Planos, Drops e Clube do Leitor (§24–§26)", view: "plus.view", edit: "plus.edit" },
   { key: "preorders", label: "Pré-vendas", modules: "Pré-vendas e lotes", view: "preorders.view", edit: "preorders.edit" },
   { key: "coupons", label: "Cupons", modules: "Cupons de desconto", view: "coupons.view", edit: "coupons.edit" },
   { key: "promotions", label: "Promoções", modules: "Promoções e ofertas", view: "promotions.view", edit: "promotions.edit" },
-  { key: "club", label: "Cliffhanger Club", modules: "Clube de benefícios", view: "club.view", edit: "club.edit" },
+  { key: "club", label: "Clube Litterae", modules: "Clube de benefícios", view: "club.view", edit: "club.edit" },
   { key: "reviews", label: "Avaliações", modules: "Avaliações de clientes", view: "reviews.view", edit: "reviews.edit" },
   { key: "banners", label: "Banners", modules: "Banners da loja", view: "banners.view", edit: "banners.edit" },
   { key: "home", label: "Home", modules: "Composição da home", view: "home.view", edit: "home.edit" },

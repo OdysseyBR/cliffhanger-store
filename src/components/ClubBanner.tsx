@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-/** Assinatura da casa — presença do Cliffhanger Club na Home (seção 3.6). */
+/** Assinatura da casa — presença do Clube Litterae na Home (seção 3.6). */
 export function ClubBanner() {
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -10,7 +10,7 @@ export function ClubBanner() {
         <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
           <div>
             <span className="text-xs font-bold uppercase tracking-widest text-gold">
-              Cliffhanger Club
+              Clube Litterae
             </span>
             <h2 className="text-display mt-2 text-4xl sm:text-5xl">
               Leia, acumule pontos, desbloqueie
@@ -32,7 +32,7 @@ export function ClubBanner() {
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-[var(--border)]">
             <Image
               src="/summer-fest.png"
-              alt="Cliffhanger Club"
+              alt="Clube Litterae"
               fill
               sizes="(max-width: 1024px) 100vw, 32rem"
               className="object-cover"

@@ -6,7 +6,7 @@ import { getPlusPlans } from "@/lib/plus";
 import { getPlusBoard, savePlusPlans } from "@/lib/plus-admin";
 
 /**
- * §24/§17 — planos do Cliffhanger+ no painel: leitura (planos + stats de
+ * §24/§17 — planos do Litterae+ no painel: leitura (planos + stats de
  * assinatura) e gravação da sobrescrita em `site/plus`. Os três planos
  * são configuráveis; Latoy® Focus Multiverse segue como futuro (§24).
  */
@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     const board = await getPlusBoard();
     return Response.json(board);
   } catch {
-    return Response.json({ error: "Falha ao ler o Cliffhanger+." }, { status: 500 });
+    return Response.json({ error: "Falha ao ler o Litterae+." }, { status: 500 });
   }
 }
 
@@ -57,7 +57,7 @@ export async function PUT(request: Request) {
     uid: gate.uid,
     role: gate.role,
     action: "editar",
-    module: "Cliffhanger+",
+    module: "Litterae+",
     entity: "plusPlan",
     entityId: "site/plus",
     summary: `Atualizou os planos: ${saved.plans

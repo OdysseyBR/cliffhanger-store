@@ -478,7 +478,7 @@ export function EbookReader({
 
           <p className="mt-auto text-[11px] text-[var(--text-muted)]">
             {synced
-              ? "Progresso sincronizado com sua conta Cliffhanger."
+              ? "Progresso sincronizado com sua conta Litterae."
               : "Progresso salvo neste dispositivo. Entre na conta para sincronizar."}
           </p>
         </aside>

@@ -104,7 +104,7 @@ export default function AdminPlusClubPage() {
         <p className="text-display text-2xl text-gold">Sem permissão</p>
         <p className="text-sm text-[var(--text-muted)]">
           Seu papel <strong>{me.roleLabel}</strong> não inclui a permissão{" "}
-          <code className="font-mono">plus.view</code> — o Cliffhanger+ fica com Administrador e
+          <code className="font-mono">plus.view</code> — o Litterae+ fica com Administrador e
           Marketing (edição) e Comercial/Atendimento (leitura) (§35).
         </p>
       </div>

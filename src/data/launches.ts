@@ -57,7 +57,7 @@ export const launches: Launch[] = [
     id: "lch-ae-audio",
     slug: "alvorada-eletrica-em-audio",
     title: "Alvorada Elétrica em áudio",
-    highlight: "Audiobook completo",
+    highlight: "Audiolivro completo",
     cover: { bg: "#0C0014", fg: "#F8FEFF", accent: "#FDC500", motif: "circuito" },
     preOrder: false,
     releaseDate: "2026-11-13T00:00:00.000Z",

@@ -6,14 +6,14 @@ import { Section } from "@/components/Section";
 export const metadata: Metadata = {
   title: "Termos de uso",
   description:
-    "Termos de uso e condições de compra da Cliffhanger Store.",
+    "Termos de uso e condições de compra da Litterae.",
 };
 
 const SECTIONS: { title: string; paragraphs: string[] }[] = [
   {
     title: "1. Aceitação",
     paragraphs: [
-      "Ao navegar ou comprar na Cliffhanger Store você concorda com estes termos. Se discordar de algum ponto, não utilize a loja.",
+      "Ao navegar ou comprar na Litterae você concorda com estes termos. Se discordar de algum ponto, não utilize a loja.",
     ],
   },
   {
@@ -35,13 +35,13 @@ const SECTIONS: { title: string; paragraphs: string[] }[] = [
     title: "4. Entrega, trocas e desistência",
     paragraphs: [
       "Prazos de envio e entrega são estimativas — avarias ou trocas devem ser comunicadas em até 7 dias após o recebimento.",
-      "Produtos digitais (e-books, audiobooks) têm acesso liberado após a aprovação do pagamento, em Minha biblioteca.",
+      "Produtos digitais (e-books, audiolivros) têm acesso liberado após a aprovação do pagamento, em Minha biblioteca.",
     ],
   },
   {
     title: "5. Propriedade intelectual",
     paragraphs: [
-      "Marcas, capas, ilustrações e textos dos universos Cliffhanger pertencem aos seus titulares. A reprodução comercial é proibida.",
+      "Marcas, capas, ilustrações e textos dos universos Litterae pertencem aos seus titulares. A reprodução comercial é proibida.",
       "Comprar um e-book concede uso pessoal e intransferível — não autoriza redistribuição.",
     ],
   },

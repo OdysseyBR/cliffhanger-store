@@ -11,7 +11,7 @@ import { isUserGateResponse, requireUser } from "@/lib/user-guard";
  * 1. `customers/{uid}` (perfil, endereços, métodos, preferências);
  * 2. `users/{uid}` + subcoleção `sessions` (wishlist, push tokens, sessões);
  * 3. `libraries/{uid}` + subcoleção `progress` (biblioteca e progresso);
- * 4. `subscriptions/{uid}` (Cliffhanger+);
+ * 4. `subscriptions/{uid}` (Litterae+);
  * 5. `dropClaims` onde uid = uid (resgates de Drops);
  * 6. `adminUsers` do e-mail (impede ressurreição de privilégio);
  * 7. por último `auth.deleteUser(uid)`.
@@ -48,7 +48,7 @@ export async function DELETE(request: Request) {
     await deleteSubcollection(db, `libraries/${uid}/progress`);
     await db.collection("libraries").doc(uid).delete();
 
-    // 4) assinatura Cliffhanger+
+    // 4) assinatura Litterae+
     await db.collection("subscriptions").doc(uid).delete();
 
     // 5) resgates de Drops do usuário

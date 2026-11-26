@@ -1,4 +1,4 @@
-// Cliffhanger — núcleo dos padrões visuais (sem dependências de servidor).
+// Litterae — núcleo dos padrões visuais (sem dependências de servidor).
 // Usado pelo layout (SSR), pelo admin (preview no navegador) e pelo seed.
 
 import type {
@@ -33,7 +33,7 @@ export const HOME_SECTION_LABELS: Record<HomeSectionKey, string> = {
   universos: "Explore os universos",
   derivados: "Produtos derivados",
   editorial: "Destaque editorial",
-  club: "Cliffhanger Club",
+  club: "Clube Litterae",
   newsletter: "Newsletter",
   recomendacoes: "Recomendações",
   colecoes: "Coleções",
@@ -66,9 +66,9 @@ export function withAlpha(color: string, alpha: number): string {
 }
 
 /**
- * Cor legível sobre um fundo chapado (paleta P&B absoluta): preto total
- * sobre fundos claros, branco total sobre fundos escuros. Retorna "" para
- * cores não hexadecimais (o chamador cai no fallback).
+ * Cor legível sobre um fundo chapado (fallback quando o modelo não declara
+ * `onBrand`): preto sobre fundos claros, branco sobre fundos escuros.
+ * Retorna "" para cores não hexadecimais (o chamador cai no fallback).
  */
 export function readableOn(color: string): string {
   const long = /^#([0-9a-f]{6})$/i.exec(color.trim());

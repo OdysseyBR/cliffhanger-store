@@ -6,7 +6,7 @@ import { Section } from "@/components/Section";
 export const metadata: Metadata = {
   title: "Recuperar senha",
   description:
-    "Receba um link por e-mail para redefinir a senha da sua conta Cliffhanger.",
+    "Receba um link por e-mail para redefinir a senha da sua conta Litterae.",
 };
 
 /** Rota obrigatória §22 — recuperação de senha de contas com e-mail/senha. */

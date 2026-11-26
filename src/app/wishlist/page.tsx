@@ -15,7 +15,7 @@ export default function WishlistPage() {
         titleAs="h1"
         subtitle={
           user
-            ? "Salva na sua conta Cliffhanger — sincronizada em qualquer dispositivo."
+            ? "Salva na sua conta Litterae — sincronizada em qualquer dispositivo."
             : "Salva neste dispositivo. Entre na conta para sincronizar."
         }
         href="/loja"

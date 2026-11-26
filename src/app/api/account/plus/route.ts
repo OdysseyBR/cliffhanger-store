@@ -11,7 +11,7 @@ import {
 import { isPlusPlanId, type PlusSubscription } from "@/lib/plus-fields";
 
 /**
- * §15 — estado e gerenciamento da assinatura Cliffhanger+ (billing simulado).
+ * §15 — estado e gerenciamento da assinatura Litterae+ (billing simulado).
  *
  * GET  → planos, assinatura atual, Drops com estado de resgate, progresso
  *        semanal (§15) e caixas do Clube do Leitor elegíveis.

@@ -198,7 +198,7 @@ export default function CheckoutPage() {
   // frete — cotação por CEP (§17)
   const [quote, setQuote] = useState<ShippingQuote | null>(null);
   const [quoteError, setQuoteError] = useState<string | null>(null);
-  // §24 — frete grátis do Cliffhanger+ (vem do servidor com a sessão)
+  // §24 — frete grátis do Litterae+ (vem do servidor com a sessão)
   const [plusFree, setPlusFree] = useState(false);
   // pagamento
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "credito" | "debito">("pix");
@@ -877,7 +877,7 @@ export default function CheckoutPage() {
                       }`}
                     >
                       {plusFree
-                        ? "Frete grátis do Cliffhanger+ neste pedido."
+                        ? "Frete grátis do Litterae+ neste pedido."
                         : freeShipping
                           ? "Você ganhou frete grátis neste pedido."
                           : `Faltam ${formatPrice(freeFrom - subtotal)} para o frete grátis.`}
@@ -1144,7 +1144,7 @@ export default function CheckoutPage() {
                         {street}, {number} — {neighborhood}, {city}/{state} · {cep}
                       </p>
                     ) : (
-                      <p className="mt-1 text-[var(--text-muted)]">Biblioteca Cliffhanger</p>
+                      <p className="mt-1 text-[var(--text-muted)]">Biblioteca Litterae</p>
                     )}
                   </div>
                 </div>

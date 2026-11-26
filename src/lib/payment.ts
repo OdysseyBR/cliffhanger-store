@@ -206,7 +206,7 @@ function buildPagbankPayload(orderId: string, data: OrderDoc, method: CheckoutPa
     charges: [
       {
         reference_id: String(data.code ?? orderId),
-        description: `Pedido ${String(data.code ?? orderId)} — Cliffhanger Store`,
+        description: `Pedido ${String(data.code ?? orderId)} — Litterae`,
         amount: { value: totalCents, currency: "BRL" },
         payment_method: paymentMethod,
       },

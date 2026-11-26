@@ -245,7 +245,7 @@ export default function PedidosPage() {
           <div className="card mx-auto max-w-xl space-y-4 p-6 text-center">
             <h2 className="text-display text-2xl">Entre para ver seus pedidos</h2>
             <p className="text-sm text-[var(--text-muted)]">
-              O histórico fica ligado à sua conta Cliffhanger — compras feitas com
+              O histórico fica ligado à sua conta Litterae — compras feitas com
               o mesmo e-mail também aparecem aqui.
             </p>
             <div className="flex flex-wrap justify-center gap-2">

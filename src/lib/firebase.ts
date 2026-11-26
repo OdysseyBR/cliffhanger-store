@@ -5,7 +5,7 @@ import { getFirestore, type Firestore } from "firebase/firestore";
 /**
  * Cliente Firebase (browser) — apenas variáveis NEXT_PUBLIC_*.
  * Usado por autenticação (Google / Facebook / e-mail) e pela
- * sincronização da conta Cliffhanger (wishlist, biblioteca, pedidos).
+ * sincronização da conta Litterae (wishlist, biblioteca, pedidos).
  */
 
 const config = {

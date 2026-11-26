@@ -7,7 +7,7 @@ import { getShopSettings } from "@/lib/shop-settings";
 export const metadata: Metadata = {
   title: "Contato",
   description:
-    "Fale com a Cliffhanger Store: suporte a pedidos, trocas, digitais, clube e parcerias.",
+    "Fale com a Litterae: suporte a pedidos, trocas, digitais, clube e parcerias.",
 };
 
 /** Reflete o e-mail de suporte (Configurações §12) em até 5 minutos. */
@@ -18,7 +18,7 @@ const STATIC_CHANNELS: { title: string; lines: string[] }[] = [
     title: "Contas e digitais",
     lines: [
       "conta@cliffhangerstore.xyz",
-      "Login, biblioteca, e-books e audiobooks",
+      "Login, biblioteca, e-books e audiolivros",
       "Segunda a sexta, das 9h às 18h",
     ],
   },
@@ -95,7 +95,7 @@ export default async function ContatoPage() {
             </div>
           </div>
           <div className="rounded-xl border border-[var(--border)] p-4 text-sm text-[var(--text-muted)]">
-            <p className="font-bold text-gold">Cliffhanger Club</p>
+            <p className="font-bold text-gold">Clube Litterae</p>
             <p className="mt-1">
               Membros do clube têm fila preferencial no suporte — acesse sua conta
               para informar o número do pedido ou o e-mail da compra.

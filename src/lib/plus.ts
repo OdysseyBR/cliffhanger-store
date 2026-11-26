@@ -24,7 +24,7 @@ import {
 import type { LibraryItem, Product } from "@/lib/types";
 
 /**
- * Cliffhanger+ (§15 conta / §24–§26 admin) — persistência no Firestore:
+ * Litterae+ (§15 conta / §24–§26 admin) — persistência no Firestore:
  *
  * - `subscriptions/{uid}`  → assinatura pessoal (billing simulado)
  * - `drops/{id}`           → Drops configurados pelo painel (§25)

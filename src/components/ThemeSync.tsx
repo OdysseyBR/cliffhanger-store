@@ -6,7 +6,7 @@ import { themes } from "@/data/themes";
 
 /**
  * Aplica o override de padrão visual do usuário (se houver) por cima do
- * padrão do servidor. "" (Padrão Cliffhanger — modo escuro) mantém o
+ * padrão do servidor. "" (Escuro — padrão) mantém o
  * padrão ativo e "claro" aplica o modo claro (alternados pelo botão do
  * header e pela página de Preferências). O valor vindo do servidor é
  * memorizado no primeiro efeito para que voltar a "" restaure o padrão

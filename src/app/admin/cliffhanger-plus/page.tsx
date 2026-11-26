@@ -16,7 +16,7 @@ import {
 } from "@/lib/plus-fields";
 
 /**
- * §24 — planos do Cliffhanger+ no painel: Essential/Gold/Premium
+ * §24 — planos do Litterae+ no painel: Essential/Gold/Premium
  * configuráveis (preço, conceito e benefícios) gravados em `site/plus`,
  * com indicadores de assinatura (§17). Latoy® Focus Multiverse segue
  * como funcionalidade futura (§24).
@@ -77,7 +77,7 @@ export default function AdminPlusPlansPage() {
     if (result.ok) {
       notify(
         result.data.changed
-          ? "Planos do Cliffhanger+ atualizados."
+          ? "Planos do Litterae+ atualizados."
           : "Nada mudou — os planos já estavam assim.",
         "success",
       );
@@ -89,7 +89,7 @@ export default function AdminPlusPlansPage() {
   };
 
   if (!user) {
-    return <AdminLogin note="Entre com a conta administradora para gerenciar o Cliffhanger+." />;
+    return <AdminLogin note="Entre com a conta administradora para gerenciar o Litterae+." />;
   }
 
   const allowed = roleLoading || can("plus.view");
@@ -99,7 +99,7 @@ export default function AdminPlusPlansPage() {
         <p className="text-display text-2xl text-gold">Sem permissão</p>
         <p className="text-sm text-[var(--text-muted)]">
           Seu papel <strong>{me.roleLabel}</strong> não inclui a permissão{" "}
-          <code className="font-mono">plus.view</code> — o Cliffhanger+ fica com Administrador e
+          <code className="font-mono">plus.view</code> — o Litterae+ fica com Administrador e
           Marketing (edição) e Comercial/Atendimento (leitura) (§35).
         </p>
       </div>
@@ -114,7 +114,7 @@ export default function AdminPlusPlansPage() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-display text-3xl text-gold">Cliffhanger+</p>
+          <p className="text-display text-3xl text-gold">Litterae+</p>
           <p className="text-xs text-[var(--text-muted)]">
             Planos do programa e indicadores de assinatura (§24/§17)
             {updatedAt ? ` · atualizado em ${updatedAt.slice(0, 10).replace(/-/g, "/")}` : ""}

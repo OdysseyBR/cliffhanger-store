@@ -12,7 +12,7 @@ import type {
 } from "@/lib/types";
 
 /**
- * Catálogo de demonstração da Cliffhanger Store.
+ * Catálogo de demonstração da Litterae.
  * Estes dados são usados (a) como fallback local e (b) como fonte do
  * script de seed do Firestore (`npm run seed`).
  */
@@ -39,7 +39,7 @@ const universes: Universe[] = [
     name: "Valeharts",
     tagline: "Fantasia sombria, faróis apagados e reinos em trégua.",
     description:
-      "A saga que inaugurou a Cliffhanger: um arquipélago de cidades costeiras onde os faróis guardam memórias em vez de luz. Entre diplomacia frágil e antigas alianças, Valeharts é uma obra sobre quem acende o que já se apagou.",
+      "A saga que inaugurou a Litterae: um arquipélago de cidades costeiras onde os faróis guardam memórias em vez de luz. Entre diplomacia frágil e antigas alianças, Valeharts é uma obra sobre quem acende o que já se apagou.",
     cover: farol,
     createdAt: now,
   },
@@ -98,7 +98,7 @@ const authors: Author[] = [
     slug: "rafael-nomade",
     name: "Rafael Nômade",
     role: "Autor · Antologias e contos",
-    bio: "Contista e curador de antologias, Rafael transita entre os universos da Cliffhanger como quem troca de trilho: sempre com bagagem leve e uma história na mão.",
+    bio: "Contista e curador de antologias, Rafael transita entre os universos da Litterae como quem troca de trilho: sempre com bagagem leve e uma história na mão.",
     createdAt: now,
   },
 ];
@@ -180,7 +180,7 @@ const works: Work[] = [
     id: "wkb-fios-cortados",
     slug: "fios-cortados",
     title: "Fios Cortados",
-    subtitle: "Uma antologia Cliffhanger",
+    subtitle: "Uma antologia Litterae",
     authorId: "aut-rafael",
     universeId: "uni-neon-sertao",
     synopsis:
@@ -225,7 +225,7 @@ function p(o: Partial<Product> & Pick<Product, "id" | "slug" | "title" | "type" 
     stock: 25,
     digital: false,
     description:
-      "Produto oficial Cliffhanger Store, produzido em papel certificado e impressão de alta fidelidade.",
+      "Produto oficial Litterae, produzido em papel certificado e impressão de alta fidelidade.",
     specs: [],
     createdAt: now,
     ...o,
@@ -286,7 +286,7 @@ const products: Product[] = [
   p({
     id: "prd-vh1-audio",
     slug: "valeharts-i-o-ultimo-farol-audiobook",
-    title: "Valeharts I: O Último Farol — Audiobook",
+    title: "Valeharts I: O Último Farol — Audiolivro",
     type: "audiobook",
     category: "audiobooks",
     price: 39.9,
@@ -491,7 +491,7 @@ const products: Product[] = [
   p({
     id: "prd-vh2-audio",
     slug: "valeharts-ii-coracoes-de-cinza-audiobook",
-    title: "Valeharts II: Corações de Cinza — Audiobook",
+    title: "Valeharts II: Corações de Cinza — Audiolivro",
     type: "audiobook",
     category: "audiobooks",
     price: 42.9,
@@ -617,7 +617,7 @@ const products: Product[] = [
   p({
     id: "prd-ae-audio",
     slug: "alvorada-eletrica-audiobook",
-    title: "Alvorada Elétrica — Audiobook",
+    title: "Alvorada Elétrica — Audiolivro",
     type: "audiobook",
     category: "audiobooks",
     price: 37.9,
@@ -811,7 +811,7 @@ const products: Product[] = [
   p({
     id: "prd-cdm-audio",
     slug: "a-casa-das-mares-audiobook",
-    title: "A Casa das Marés — Audiobook",
+    title: "A Casa das Marés — Audiolivro",
     type: "audiobook",
     category: "audiobooks",
     price: 39.9,
@@ -910,7 +910,7 @@ const products: Product[] = [
   p({
     id: "prd-ch-camisa",
     slug: "camiseta-cliffhanger-recortes",
-    title: "Camiseta Cliffhanger — Recortes",
+    title: "Camiseta Litterae — Recortes",
     type: "camisa",
     category: "produtos",
     price: 99.9,
@@ -927,7 +927,7 @@ const products: Product[] = [
   p({
     id: "prd-ch-caneca",
     slug: "caneca-cliffhanger-roxo",
-    title: "Caneca Cliffhanger Roxo",
+    title: "Caneca Litterae Roxo",
     type: "caneca",
     category: "produtos",
     price: 54.9,
@@ -951,7 +951,7 @@ const products: Product[] = [
   p({
     id: "prd-ch-adesivos",
     slug: "kit-adesivos-cliffhanger",
-    title: "Kit de Adesivos Cliffhanger",
+    title: "Kit de Adesivos Litterae",
     type: "adesivo",
     category: "produtos",
     price: 12.9,
@@ -1051,7 +1051,7 @@ export const catalog: Catalog = { universes, authors, works, products, collectio
 export const categoryLabels: Record<ProductCategory, string> = {
   livros: "Livros",
   ebooks: "E-books",
-  audiobooks: "Audiobooks",
+  audiobooks: "Audiolivros",
   produtos: "Produtos",
   colecionaveis: "Colecionáveis",
 };
@@ -1061,7 +1061,7 @@ export const typeLabels: Record<ProductType, string> = {
   hq: "HQ",
   artbook: "Artbook",
   ebook: "E-book",
-  audiobook: "Audiobook",
+  audiobook: "Audiolivro",
   camisa: "Camiseta",
   caneca: "Caneca",
   poster: "Pôster",

@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #000000;
-  --color-ink-soft: #141414;
-  /* identidade monocromática: violet/gold viram os polos P&B do tema */
-  --color-violet: #ffffff;
-  --color-violet-soft: #ffffff;
-  --color-violet-deep: #141414;
-  --color-paper: #ffffff;
-  --color-gold: #ffffff;
-  --color-gold-soft: #d4d4d4;
+  --color-ink: #02000e;
+  --color-ink-soft: #14121f;
+  /* identidade Litterae: violet/gold acompanham o laranja da marca */
+  --color-violet: #e67817;
+  --color-violet-soft: #f08a2e;
+  --color-violet-deep: #14121f;
+  --color-paper: #f7f4f3;
+  --color-gold: #e67817;
+  --color-gold-soft: #f0a05a;
   --color-danger: #e5484d;
   --color-success: #30a46c;
 
@@ -18,22 +18,22 @@
 }
 
 :root {
-  /* Padrão Preto e Branco (fundo escuro, texto claro). O bloco do padrão
-     escolhido sobrepõe estas variáveis em `html[data-theme="…"]` —
-     ver src/lib/theme-css.ts. */
-  --surface: #000000;
-  --surface-raised: #141414;
-  --surface-raised-2: #0d0d0d;
-  --body-bg: #000000;
-  --text: #ffffff;
-  --text-muted: #a3a3a3;
-  --brand: #ffffff;
-  --brand-strong: #e5e5e5;
-  --accent: #ffffff;
+  /* Padrão Escuro Litterae (quase-preto #02000e, texto off-white #f7f4f3,
+     laranja #e67817 na marca). O bloco do padrão escolhido sobrepõe estas
+     variáveis em `html[data-theme="…"]` — ver src/lib/theme-css.ts. */
+  --surface: #02000e;
+  --surface-raised: #14121f;
+  --surface-raised-2: #0b0913;
+  --body-bg: #02000e;
+  --text: #f7f4f3;
+  --text-muted: #a3a0a8;
+  --brand: #e67817;
+  --brand-strong: #f08a2e;
+  --accent: #e67817;
   /* conteúdo sobre preenchimentos de brand/accent (botões, chips) */
-  --on-brand: #000000;
-  --border: rgba(255, 255, 255, 0.14);
-  --header-bg: rgba(0, 0, 0, 0.86);
+  --on-brand: #02000e;
+  --border: rgba(247, 244, 243, 0.14);
+  --header-bg: rgba(2, 0, 14, 0.86);
 
   /* forma — cantos levemente arredondados da identidade cinematográfica */
   --card-radius: 0.75rem;
@@ -69,7 +69,7 @@ body {
 
 ::selection {
   background: var(--accent);
-  color: var(--surface);
+  color: var(--on-brand);
 }
 
 /* ---- utilitários da marca ---- */
@@ -121,7 +121,7 @@ body {
 
 .btn-accent {
   background: var(--accent);
-  color: var(--color-ink);
+  color: var(--on-brand);
 }
 
 .btn-accent:hover:not(:disabled) {

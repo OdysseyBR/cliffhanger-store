@@ -82,7 +82,7 @@ export default function ContaPrivacidadePage() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "cliffhanger-meus-dados.json";
+      link.download = "litterae-meus-dados.json";
       link.click();
       URL.revokeObjectURL(url);
       notify("Dados exportados.", "success");
@@ -130,7 +130,7 @@ export default function ContaPrivacidadePage() {
             <p className="text-sm font-bold">O que a conta usa</p>
             <p className="text-xs text-[var(--text-muted)]">
               Perfil (nome, avatar, telefone), endereços, métodos de pagamento (só
-              referências), biblioteca digital, assinatura Cliffhanger+, wishlist,
+              referências), biblioteca digital, assinatura Litterae+, wishlist,
               pedidos, avaliações e pontos do clube — tudo visível nas seções desta
               conta.
             </p>
@@ -174,7 +174,7 @@ export default function ContaPrivacidadePage() {
             <p className="text-sm font-bold text-[#e5484d]">Excluir conta</p>
             <p className="mt-1 text-xs text-[var(--text-muted)]">
               Remove perfil, endereços, métodos, biblioteca vinculada, wishlist e a
-              assinatura Cliffhanger+ (benefícios temporários e Drops encerram junto
+              assinatura Litterae+ (benefícios temporários e Drops encerram junto
               com a conta; itens permanentes já resgatados saem da biblioteca). Os
               pedidos já feitos são mantidos sem dono para fins fiscais e de histórico.
             </p>

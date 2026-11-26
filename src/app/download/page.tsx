@@ -8,7 +8,7 @@ import { IconCheck, IconDownload, IconPhone } from "@/components/Icons";
 export const metadata: Metadata = {
   title: "Download do App",
   description:
-    "Baixe o app Cliffhanger Store para Android: leitor de e-books, player de audiobooks e seus pedidos direto no celular.",
+    "Baixe o app Litterae para Android: leitor de e-books, player de audiolivros e seus pedidos direto no celular.",
 };
 
 /** Manifesto da versão atual do app (public/app-version.json).
@@ -50,7 +50,7 @@ export default async function DownloadPage() {
       <Section
         title="Download do App"
         titleAs="h1"
-        subtitle="A experiência Cliffhanger Store no seu celular — leia, ouça e acompanhe seus pedidos."
+        subtitle="A experiência Litterae no seu celular — leia, ouça e acompanhe seus pedidos."
       >
         <div className="grid gap-6 lg:grid-cols-2">
           {/* hero + CTA */}
@@ -60,7 +60,7 @@ export default async function DownloadPage() {
                 <IconPhone className="h-7 w-7" />
               </span>
               <div className="min-w-0 space-y-1">
-                <h2 className="text-display text-2xl">Cliffhanger Store para Android</h2>
+                <h2 className="text-display text-2xl">Litterae para Android</h2>
                 <p className="text-sm text-[var(--text-muted)]">
                   Baixe a versão mais recente direto daqui — o mesmo arquivo publicado
                   oficialmente no GitHub da OdysseyBR.
@@ -128,7 +128,7 @@ export default async function DownloadPage() {
             <ul className="space-y-2 text-sm text-[var(--text-muted)]">
               <li className="flex gap-2">
                 <IconCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
-                <span>Leitor de e-books e player de audiobooks feitos pro celular.</span>
+                <span>Leitor de e-books e player de audiolivros feitos pro celular.</span>
               </li>
               <li className="flex gap-2">
                 <IconCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold" />

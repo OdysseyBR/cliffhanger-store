@@ -13,7 +13,7 @@ import type { OrderStatus } from "@/lib/types";
 
 /**
  * Visão cliente dos Relatórios §36: as 17 áreas do documento (vendas,
- * produtos, estoque, clientes, pedidos, Cliffhanger+, cancelamentos,
+ * produtos, estoque, clientes, pedidos, Litterae+, cancelamentos,
  * pré-vendas, Drops, biblioteca digital, e-books, audiobooks, Clube do
  * Leitor, campanhas, cupons, wishlist e conversão) sempre sobre dados
  * reais — a definição de conversão vai identificada no card. A Etapa T
@@ -38,13 +38,13 @@ const COVER = [
   "Estoque",
   "Clientes",
   "Pedidos",
-  "Cliffhanger+",
+  "Litterae+",
   "Cancelamentos",
   "Pré-vendas",
   "Drops",
   "Biblioteca digital",
   "E-books",
-  "Audiobooks",
+  "Audiolivros",
   "Clube do Leitor",
   "Campanhas",
   "Cupons",
@@ -62,7 +62,7 @@ const PLAN_LABEL: Record<string, string> = {
 const ABA_TABS = [
   { key: "vendas", label: "Vendas" },
   { key: "produtos", label: "Produtos" },
-  { key: "plus", label: "Cliffhanger+ e digital" },
+  { key: "plus", label: "Litterae+ e digital" },
 ] as const;
 
 type Aba = (typeof ABA_TABS)[number]["key"];
@@ -241,7 +241,7 @@ export function RelatoriosView({ aba: valor }: { aba: string }) {
 
           {aba === "plus" && (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <Kpi label="Assinantes Cliffhanger+" value={String(report.plus.subscribers)} hint={`${report.plus.cancelled} cancelada(s)`} />
+              <Kpi label="Assinantes Litterae+" value={String(report.plus.subscribers)} hint={`${report.plus.cancelled} cancelada(s)`} />
               <Kpi label="Receita mensal simulada" value={formatPrice(report.plus.mrr)} accent hint="soma dos planos ativos (§17)" />
               <Kpi
                 label="Drops · resgates"
@@ -439,8 +439,8 @@ export function RelatoriosView({ aba: valor }: { aba: string }) {
 
             {aba === "plus" && (
               <>
-                {/* Cliffhanger+ */}
-                <Section title="Cliffhanger+" note="§36 — assinaturas (cobrança simulada §17)">
+                {/* Litterae+ */}
+                <Section title="Litterae+" note="§36 — assinaturas (cobrança simulada §17)">
                   <div className="flex flex-wrap gap-1.5">
                     {Object.entries(report.plus.byPlan).map(([plan, count]) => (
                       <Label key={plan} tone={count > 0 ? "border-gold/50 bg-gold/10 text-gold" : undefined}>
@@ -457,7 +457,7 @@ export function RelatoriosView({ aba: valor }: { aba: string }) {
                 </Section>
 
                 {/* Drops */}
-                <Section title="Drops" note="§36 — conteúdo mensal do Cliffhanger+ (§25)">
+                <Section title="Drops" note="§36 — conteúdo mensal do Litterae+ (§25)">
                   <div className="flex flex-wrap gap-1.5">
                     <Label>{report.plus.drops} drop(s)</Label>
                     <Label tone="border-gold/50 bg-gold/10 text-gold">{report.plus.dropsActive} ativo(s)</Label>
@@ -484,10 +484,10 @@ export function RelatoriosView({ aba: valor }: { aba: string }) {
                 </Section>
 
                 {/* e-books e audiobooks */}
-                <Section title="E-books e Audiobooks" note="§36 — catálogo e vendas por formato">
+                <Section title="E-books e Audiolivros" note="§36 — catálogo e vendas por formato">
                   {(["ebooks", "audiobooks", "physical"] as const).map((key) => {
                     const row = report.formats[key];
-                    const name = key === "ebooks" ? "E-books" : key === "audiobooks" ? "Audiobooks" : "Físicos";
+                    const name = key === "ebooks" ? "E-books" : key === "audiobooks" ? "Audiolivros" : "Físicos";
                     return (
                       <div key={key} className="flex items-center justify-between gap-3 text-xs">
                         <span>{name}</span>
@@ -502,7 +502,7 @@ export function RelatoriosView({ aba: valor }: { aba: string }) {
 
                 {/* Clube do Leitor / Club */}
                 <Section
-                  title="Clube do Leitor e Cliffhanger Club"
+                  title="Clube do Leitor e Clube Litterae"
                   note="§36 — caixas (§26) e pontos (§18)"
                 >
                   <div className="flex flex-wrap gap-1.5">
@@ -545,7 +545,7 @@ export function RelatoriosView({ aba: valor }: { aba: string }) {
               <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-gold">App</p>
                 <p className="text-xs text-[var(--text-muted)]">
-                  Experiência · Biblioteca · Leitor · Audiobook · Coleção · Scanner · QR Codes · Cliffhanger+
+                  Experiência · Biblioteca · Leitor · Audiolivro · Coleção · Scanner · QR Codes · Litterae+
                 </p>
                 <p className="mt-2 text-sm font-bold">
                   {report.integration.app.content
@@ -556,7 +556,7 @@ export function RelatoriosView({ aba: valor }: { aba: string }) {
               <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-gold">Admin</p>
                 <p className="text-xs text-[var(--text-muted)]">
-                  Operação · Produtos · Estoque · Pedidos · Clientes · Cliffhanger+ · Conteúdo · Relatórios
+                  Operação · Produtos · Estoque · Pedidos · Clientes · Litterae+ · Conteúdo · Relatórios
                 </p>
                 <p className="mt-2 text-sm font-bold">
                   {report.integration.admin.users} usuário(s) · {report.integration.admin.auditLogs}{" "}
@@ -595,7 +595,7 @@ export function RelatoriosView({ aba: valor }: { aba: string }) {
                   value: `${report.integration.account.wishlistUsers} conta(s) · ${report.integration.account.wishlistItems} item(ns)`,
                 },
                 {
-                  label: "Cliffhanger+",
+                  label: "Litterae+",
                   value: `${report.integration.account.plusActive} assinatura(s) ativa(s)`,
                 },
                 {
@@ -603,7 +603,7 @@ export function RelatoriosView({ aba: valor }: { aba: string }) {
                   value: `${report.integration.account.reading.entries} registro(s) · ${report.integration.account.reading.entries > 0 ? pct(report.integration.account.reading.avgPercent) : "—"}`,
                 },
                 {
-                  label: "Progresso de audiobook",
+                  label: "Progresso de audiolivro",
                   value: `${report.integration.account.listening.entries} registro(s) · ${report.integration.account.listening.entries > 0 ? pct(report.integration.account.listening.avgPercent) : "—"}`,
                 },
                 {

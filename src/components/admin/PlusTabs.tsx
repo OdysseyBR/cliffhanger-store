@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 /**
- * §24–§26 — abas do módulo Cliffhanger+ no painel: Planos, Drops e
+ * §24–§26 — abas do módulo Litterae+ no painel: Planos, Drops e
  * Clube do Leitor (seções separadas do §16).
  */
 
@@ -17,7 +17,7 @@ const PLUS_TABS: Array<{ key: PlusTab; href: string; label: string }> = [
 
 export function PlusTabs({ active }: { active: PlusTab }) {
   return (
-    <nav aria-label="Seções do Cliffhanger+" className="flex flex-wrap gap-1.5">
+    <nav aria-label="Seções do Litterae+" className="flex flex-wrap gap-1.5">
       {PLUS_TABS.map((tab) => (
         <Link
           key={tab.key}

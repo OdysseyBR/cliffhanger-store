@@ -1,7 +1,8 @@
-# Cliffhanger Store
+# Litterae
 
-Loja online do universo **Cliffhanger**: livros, e-books, audiobooks, produtos oficiais e
-colecionáveis. Projeto desenvolvido conforme o Documento Mestre (`Projeto/` na raiz do workspace).
+Livraria digital da **Litterae**: livros, e-books e audiolivros de autores independentes —
+com publicação para autores menores e para quem quer criar livros digitais. Projeto
+desenvolvido conforme o Documento Mestre (`Projeto/` na raiz do workspace).
 
 ## Stack
 
@@ -79,6 +80,7 @@ Produção: <https://www.cliffhangerstore.xyz>
 
 ## Paleta
 
-P4 — `#0E0000` (`--color-ink`) · `#A30707` (`--color-violet`) · `#E7CB9B` (`--color-gold`) ·
-`#F8FEFF` (`--color-paper`), chapada (sem gradientes). Tokens em `src/app/globals.css`; os
-valores por tema (incl. `accent`) vêm de `src/data/themes.ts` (`default` escuro / `claro`).
+Identidade Litterae — `#02000e` (quase-preto, `--color-ink`) · `#e67817` (laranja da marca,
+`--color-violet`/`--color-gold`) · `#f7f4f3` (off-white, `--color-paper`), chapada (sem
+gradientes). Tokens em `src/app/globals.css`; os valores por tema (incl. `accent`) vêm de
+`src/data/themes.ts` (`default` escuro / `claro`).

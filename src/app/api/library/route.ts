@@ -8,7 +8,7 @@ import { getProducts } from "@/lib/data";
  * Biblioteca digital (Doc Mestre §8).
  *
  * GET  → itens + progresso da conta (Bearer do usuário). Além das compras,
- *        inclui o acesso concedido pela assinatura Cliffhanger+ (§23):
+ *        inclui o acesso concedido pela assinatura Litterae+ (§23):
  *        Drops temporários resgatados e, no Premium, o catálogo completo
  *        enquanto a assinatura estiver ativa.
  * POST → sincroniza compras de visitante para a conta ({ productIds }).

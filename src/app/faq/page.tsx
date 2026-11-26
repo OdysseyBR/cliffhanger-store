@@ -6,7 +6,7 @@ import { Section } from "@/components/Section";
 export const metadata: Metadata = {
   title: "Perguntas frequentes",
   description:
-    "Dúvidas sobre pedidos, entrega, contas, e-books, audiobooks, pré-vendas e Cliffhanger Club.",
+    "Dúvidas sobre pedidos, entrega, contas, e-books, audiolivros, pré-vendas e Clube Litterae.",
 };
 
 interface FaqItem {
@@ -49,23 +49,23 @@ const GROUPS: { title: string; items: FaqItem[] }[] = [
       },
       {
         q: "Posso entrar com Google ou Facebook?",
-        a: "Sim. Os três métodos (Google, Facebook, e-mail e senha) apontam para a mesma Cliffhanger Account — você escolhe o mais conveniente.",
+        a: "Sim. Os três métodos (Google, Facebook, e-mail e senha) apontam para a mesma Conta Litterae — você escolhe o mais conveniente.",
       },
     ],
   },
   {
-    title: "E-books, audiobooks e clube",
+    title: "E-books, audiolivros e clube",
     items: [
       {
         q: "Como recebo meu e-book?",
         a: "Assim que o pagamento é aprovado, o título aparece em Minha biblioteca para leitura na web — sem esperar envio físico.",
       },
       {
-        q: "Audiobooks funcionam em quais aparelhos?",
+        q: "Audiolivros funcionam em quais aparelhos?",
         a: "Na versão atual, o player roda direto no navegador da loja, em computador, tablet e celular — basta estar logado.",
       },
       {
-        q: "O que é o Cliffhanger Club?",
+        q: "O que é o Clube Litterae?",
         a: "É o programa de fidelidade: você acumula pontos a cada compra e libera vantagens como acesso antecipado a pré-vendas e edições limitadas.",
       },
     ],

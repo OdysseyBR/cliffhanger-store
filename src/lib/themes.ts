@@ -10,7 +10,7 @@ import type { ThemeModel } from "@/lib/types";
  * serão implementados no projeto, quando houver.
  */
 
-/** Padrão ativo da loja (servidor): o Padrão Cliffhanger. */
+/** Tema ativo da loja (servidor): o Escuro (padrão oficial). */
 export async function getActiveTheme(): Promise<ThemeModel> {
   return localThemes.find((theme) => theme.kind === "default") ?? localThemes[0];
 }

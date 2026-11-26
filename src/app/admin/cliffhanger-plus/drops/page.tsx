@@ -32,7 +32,7 @@ import {
  */
 
 const PLAN_LABEL = { essential: "Essential", gold: "Gold", premium: "Premium" } as const;
-const KIND_LABEL = { ebook: "E-book", audiobook: "Audiobook", obra: "Obra" } as const;
+const KIND_LABEL = { ebook: "E-book", audiobook: "Audiolivro", obra: "Obra" } as const;
 
 type Editing = { mode: "novo" } | { mode: "editar"; drop: AdminDropRow } | null;
 
@@ -110,7 +110,7 @@ export default function AdminPlusDropsPage() {
         <p className="text-display text-2xl text-gold">Sem permissão</p>
         <p className="text-sm text-[var(--text-muted)]">
           Seu papel <strong>{me.roleLabel}</strong> não inclui a permissão{" "}
-          <code className="font-mono">plus.view</code> — o Cliffhanger+ fica com Administrador e
+          <code className="font-mono">plus.view</code> — o Litterae+ fica com Administrador e
           Marketing (edição) e Comercial/Atendimento (leitura) (§35).
         </p>
       </div>
@@ -125,7 +125,7 @@ export default function AdminPlusDropsPage() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-display text-3xl text-gold">Drops do Cliffhanger+</p>
+          <p className="text-display text-3xl text-gold">Drops do Litterae+</p>
           <p className="text-xs text-[var(--text-muted)]">
             Conteúdo mensal com plano mínimo, janela e resgates registrados (§25)
             {drops.items ? ` · ${items.length} drop(s) · ${claims.length} resgate(s)` : ""}

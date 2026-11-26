@@ -13,7 +13,7 @@ import type {
  * - Promoções: campanhas que combinam produtos, coleção, cupom, banner e
  *   período (§16). O desconto continua sendo o do cupom/`compareAt`; aqui
  *   se organiza e agenda a campanha.
- * - Club: pontos e benefícios do Cliffhanger Club (§18).
+ * - Club: pontos e benefícios do Clube Litterae (§18).
  * - Avaliações: moderação de estrelas/comentários/fotos com compra
  *   verificada (§19).
  * - Notificações: comunicados por canal, público e status (§16).

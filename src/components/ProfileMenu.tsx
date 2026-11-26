@@ -18,7 +18,7 @@ const SHORTCUTS = [
   { href: "/conta/biblioteca", label: "Minha biblioteca" },
   { href: "/conta/wishlist", label: "Wishlist" },
   { href: "/conta/colecao", label: "Minha coleção" },
-  { href: "/conta/cliffhanger-plus", label: "Cliffhanger+" },
+  { href: "/conta/cliffhanger-plus", label: "Litterae+" },
   { href: "/conta/configuracoes", label: "Configurações" },
 ];
 

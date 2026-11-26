@@ -22,7 +22,7 @@ export const PRODUCT_TYPE_OPTIONS: { value: ProductType; label: string }[] = [
   { value: "hq", label: "HQ" },
   { value: "artbook", label: "Artbook" },
   { value: "ebook", label: "E-book" },
-  { value: "audiobook", label: "Audiobook" },
+  { value: "audiobook", label: "Audiolivro" },
   { value: "camisa", label: "Camisa" },
   { value: "caneca", label: "Caneca" },
   { value: "poster", label: "Pôster" },
@@ -36,7 +36,7 @@ export const PRODUCT_TYPE_OPTIONS: { value: ProductType; label: string }[] = [
 export const PRODUCT_CATEGORY_OPTIONS: { value: ProductCategory; label: string }[] = [
   { value: "livros", label: "Livros" },
   { value: "ebooks", label: "E-books" },
-  { value: "audiobooks", label: "Audiobooks" },
+  { value: "audiobooks", label: "Audiolivros" },
   { value: "produtos", label: "Produtos" },
   { value: "colecionaveis", label: "Colecionáveis" },
 ];

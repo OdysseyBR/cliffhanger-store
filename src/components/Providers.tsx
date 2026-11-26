@@ -79,7 +79,7 @@ interface StoreValue {
   toasts: Toast[];
   notify: (message: string, tone?: Toast["tone"]) => void;
   dismissToast: (id: number) => void;
-  // tema (Padrão Cliffhanger / Padrão Cliffhanger Claro)
+  // tema (Escuro / Claro)
   theme: ThemeName;
   setTheme: (theme: ThemeName) => void;
   // autenticação
@@ -334,7 +334,7 @@ export function Providers({ children }: { children: ReactNode }) {
         } catch {
           /* sem e-mail agora — usuário pode reenviar depois */
         }
-      }, "Conta Cliffhanger criada — confira seu e-mail de verificação");
+      }, "Conta Litterae criada — confira seu e-mail de verificação");
     },
     [runAuth],
   );

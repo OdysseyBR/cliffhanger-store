@@ -16,7 +16,7 @@ import type { Order } from "@/lib/types";
 /**
  * Dashboard do painel (Documento de Correção §12 — módulo 1).
  * Visão geral: KPIs do catálogo, alertas de estoque, distribuição por
- * categoria, pedidos recentes e assinantes Cliffhanger+ (§17).
+ * categoria, pedidos recentes e assinantes Litterae+ (§17).
  */
 
 function KpiCard({
@@ -39,13 +39,13 @@ function KpiCard({
   );
 }
 
-/** §17 — assinantes Cliffhanger+ (montado só para papéis com plus.view). */
+/** §17 — assinantes Litterae+ (montado só para papéis com plus.view). */
 function PlusKpi() {
   const { board } = useAdminPlusBoard();
   const stats = board?.stats;
   return (
     <KpiCard
-      label="Assinantes Cliffhanger+"
+      label="Assinantes Litterae+"
       value={stats ? stats.ativos : "—"}
       sub={
         stats
@@ -352,8 +352,8 @@ export default function AdminDashboardPage() {
       <p className="text-xs text-[var(--text-muted)]">
         Módulos do painel (Documento de Correção §12): Dashboard, Produtos,
         Obras, Universos, Autores, Categorias, Coleções, Estoque, Pedidos,
-        Clientes, E-books, Audiobooks, Biblioteca Digital, Pré-vendas, Cupons,
-        Promoções, Cliffhanger Club, Avaliações, Banners, Home, Notícias,
+        Clientes, E-books, Audiolivros, Biblioteca Digital, Pré-vendas, Cupons,
+        Promoções, Clube Litterae, Avaliações, Banners, Home, Notícias,
         Lançamentos, Notificações, Relatórios, Financeiro e Configurações —
         todos ativos.
       </p>

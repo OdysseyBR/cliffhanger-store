@@ -28,7 +28,7 @@ export const DIGITAL_PRODUCT_TYPE: Record<DigitalModuleKind, Product["type"]> = 
 /** Nome do módulo (usado em auditoria §13 e na navegação §12). */
 export const DIGITAL_MODULE_LABEL: Record<DigitalModuleKind, string> = {
   pdf: "E-books",
-  audio: "Audiobooks",
+  audio: "Audiolivros",
 };
 
 /** Estado de edição do conteúdo digital de um produto. */
@@ -103,7 +103,7 @@ export function sanitizeDigitalInput(raw: unknown, kind: DigitalModuleKind): Dig
         ok: false,
         error:
           kind === "pdf"
-            ? "Neste módulo só entram arquivos PDF — áudio é gerenciado em Audiobooks."
+            ? "Neste módulo só entram arquivos PDF — áudio é gerenciado em Audiolivros."
             : "Neste módulo só entram arquivos de áudio — PDF é gerenciado em E-books.",
       };
     }

@@ -26,7 +26,7 @@ export type QrTargetType = (typeof QR_TARGET_TYPES)[number];
 export const QR_TARGET_LABELS: Record<QrTargetType, string> = {
   obra: "Obra",
   produto: "Produto",
-  audiobook: "Audiobook",
+  audiobook: "Audiolivro",
   "capitulo-bonus": "Capítulo bônus",
   "making-of": "Making-of",
   arte: "Arte",

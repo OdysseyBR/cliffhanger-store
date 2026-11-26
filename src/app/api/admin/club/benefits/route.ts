@@ -5,7 +5,7 @@ import { sanitizeBenefitInput } from "@/lib/marketing-fields";
 import type { ClubBenefit, ClubMember } from "@/lib/types";
 
 /**
- * §12/§18 — Cliffhanger Club: leitura de membros (pontos e nível) e
+ * §12/§18 — Clube Litterae: leitura de membros (pontos e nível) e
  * benefícios, e criação de benefícios (comercial, marketing e
  * administrador). Membros nascem do ajuste de pontos — sem movimento
  * manual, sem membro.
@@ -88,7 +88,7 @@ export async function POST(request: Request) {
     uid: gate.uid,
     role: gate.role,
     action: "criar",
-    module: "Cliffhanger Club",
+    module: "Clube Litterae",
     entity: "benefit",
     entityId: benefit.id,
     summary: `Criou o benefício “${benefit.title}” (${benefit.cost} pontos)`,

@@ -65,7 +65,7 @@ export default function ContaColecaoPage() {
         <div className="card p-8 text-center">
           <p className="text-display text-2xl">Coleção vazia — por enquanto</p>
           <p className="mt-2 text-sm text-[var(--text-muted)]">
-            Cada compra entra aqui sozinha: físicos, e-books, audiobooks e colecionáveis.
+            Cada compra entra aqui sozinha: físicos, e-books, audiolivros e colecionáveis.
           </p>
         </div>
       )}
@@ -79,7 +79,7 @@ export default function ContaColecaoPage() {
             <div key={item.productId} className="flex items-center justify-between gap-3 text-xs">
               <span className="truncate font-bold">{item.title}</span>
               <span className="shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                {item.digital ? (item.kind === "audiobook" ? "audiobook" : "e-book") : "físico"}
+                {item.digital ? (item.kind === "audiobook" ? "audiolivro" : "e-book") : "físico"}
               </span>
             </div>
           ))}

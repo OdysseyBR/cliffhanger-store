@@ -23,7 +23,7 @@ import {
 import type { ClubBenefit, ClubMember, ClubTier } from "@/lib/types";
 
 /**
- * §12/§18 — Cliffhanger Club: membros com pontos e nível derivado
+ * §12/§18 — Clube Litterae: membros com pontos e nível derivado
  * (Farol/Maré/Lenda), ajuste de pontos com motivo obrigatório e catálogo
  * de benefícios trocáveis (cupons, frete, produtos e conteúdo digital).
  */
@@ -179,7 +179,7 @@ export default function AdminClubPage() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-display text-3xl text-gold">Cliffhanger Club</p>
+          <p className="text-display text-3xl text-gold">Clube Litterae</p>
           <p className="text-xs text-[var(--text-muted)]">
             Pontos por compras e atividades, níveis e troca por benefícios (§18)
             {club.members ? ` · ${totals.members} membro(s)` : ""}

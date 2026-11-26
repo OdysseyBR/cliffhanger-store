@@ -124,7 +124,7 @@ export async function POST(request: Request) {
     subtotal,
     freeShippingFrom: settings.freeShippingFrom,
   });
-  // §24 — assinantes Cliffhanger+ (Essential+) têm frete grátis.
+  // §24 — assinantes Litterae+ (Essential+) têm frete grátis.
   const plusFree = await hasFreeShipping(userId);
   const shipping =
     hasPhysical && !plusFree

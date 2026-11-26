@@ -52,7 +52,7 @@ export async function PUT(request: Request, { params }: RouteCtx) {
 
   if (body?.kind !== "pdf" && body?.kind !== "audio") {
     return Response.json(
-      { error: "Informe o módulo: kind deve ser pdf (E-books) ou audio (Audiobooks)." },
+      { error: "Informe o módulo: kind deve ser pdf (E-books) ou audio (Audiolivros)." },
       { status: 400 },
     );
   }
@@ -66,7 +66,7 @@ export async function PUT(request: Request, { params }: RouteCtx) {
         error:
           kind === "pdf"
             ? `“${previous.title}” não é um e-book (tipo ${previous.type}) — edite-o em Produtos.`
-            : `“${previous.title}” não é um audiobook (tipo ${previous.type}) — edite-o em Produtos.`,
+            : `“${previous.title}” não é um audiolivro (tipo ${previous.type}) — edite-o em Produtos.`,
       },
       { status: 400 },
     );

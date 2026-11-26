@@ -9,7 +9,7 @@ import { getCatalog, launches } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Lançamentos",
-  description: "Lançamentos, novidades e pré-vendas da Cliffhanger Store.",
+  description: "Lançamentos, novidades e pré-vendas da Litterae.",
 };
 
 export default async function LancamentosPage() {

@@ -15,7 +15,7 @@ import type {
 } from "@/lib/plus-fields";
 
 /**
- * §15 — central pessoal da assinatura Cliffhanger+: situação (plano, preço,
+ * §15 — central pessoal da assinatura Litterae+: situação (plano, preço,
  * próxima cobrança), progresso dos benefícios semanais (Drops), catálogo de
  * planos, resgate dos Drops e caixas do Clube do Leitor (§26). O
  * gerenciamento (assinar/trocar/cancelar) roda em billing simulado (§17 —
@@ -113,7 +113,7 @@ export default function ContaPlusPage() {
       }
       notify(
         action === "assinar"
-          ? "Assinatura Cliffhanger+ ativada."
+          ? "Assinatura Litterae+ ativada."
           : action === "trocar"
             ? "Plano alterado com sucesso."
             : "Assinatura cancelada. Itens permanentes seguem na biblioteca.",
@@ -162,7 +162,7 @@ export default function ContaPlusPage() {
     }
   };
 
-  if (!user) return <h1 className="sr-only">Cliffhanger+</h1>;
+  if (!user) return <h1 className="sr-only">Litterae+</h1>;
 
   const sub = state?.subscription ?? null;
   const active = Boolean(sub && sub.status === "ativo");
@@ -180,7 +180,7 @@ export default function ContaPlusPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-display text-2xl text-gold">Cliffhanger+</h1>
+        <h1 className="text-display text-2xl text-gold">Litterae+</h1>
         <p className="text-xs text-[var(--text-muted)]">
           Sua assinatura, os Drops do período e o Clube do Leitor em um só lugar.
         </p>
@@ -203,7 +203,7 @@ export default function ContaPlusPage() {
           <section className="card space-y-3 p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-display text-xl text-gold">
-                Cliffhanger+ {sub ? planName : ""}
+                Litterae+ {sub ? planName : ""}
               </p>
               <span
                 className={`rounded border px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${
@@ -333,7 +333,7 @@ export default function ContaPlusPage() {
                 return (
                   <div key={plan.id} className="card space-y-2 p-5">
                     <p className="text-display text-xl text-gold">
-                      Cliffhanger+ {plan.name}
+                      Litterae+ {plan.name}
                     </p>
                     <p className="text-sm font-bold">{formatPrice(plan.price)}/mês</p>
                     <p className="text-xs uppercase tracking-wider text-[var(--text-muted)]">

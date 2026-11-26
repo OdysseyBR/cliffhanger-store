@@ -1,4 +1,4 @@
-// Cliffhanger Store — modelo de dados (Fase 0/1)
+// Litterae — modelo de dados (Fase 0/1)
 // Universo → Obra → Produtos/Edições/Formatos (Documento Mestre, seção 5.1)
 
 import type { AdminRole } from "@/lib/roles";
@@ -163,7 +163,7 @@ export interface LibraryItem {
   /** ISO */
   purchasedAt: string;
   /**
-   * Origem do acesso (§23). `plus` = liberado pela assinatura Cliffhanger+
+   * Origem do acesso (§23). `plus` = liberado pela assinatura Litterae+
    * (Drop temporário ou biblioteca Premium) — não é posse do usuário e some
    * quando a assinatura termina; itens sem `source` são compras/permanentes.
    */
@@ -473,7 +473,7 @@ export interface Promotion {
 /** Fase exibida no painel: derivada da janela + flag `active`. */
 export type PromotionPhase = "ativa" | "agendada" | "expirada" | "inativa";
 
-/** §18 — benefício trocável por pontos do Cliffhanger Club. */
+/** §18 — benefício trocável por pontos do Clube Litterae. */
 export interface ClubBenefit {
   id: string;
   title: string;
@@ -666,7 +666,7 @@ export interface ReportSummary {
     soldUnits: number;
     revenue: number;
   };
-  /** §36 — Cliffhanger+ e Drops */
+  /** §36 — Litterae+ e Drops */
   plus: {
     subscribers: number;
     byPlan: Record<string, number>;
@@ -684,7 +684,7 @@ export interface ReportSummary {
     audiobooks: { products: number; soldUnits: number; revenue: number };
     physical: { products: number; soldUnits: number; revenue: number };
   };
-  /** §36 — Clube do Leitor (caixas §26) e Cliffhanger Club (pontos §18) */
+  /** §36 — Clube do Leitor (caixas §26) e Clube Litterae (pontos §18) */
   readerClub: {
     boxes: number;
     planned: number;

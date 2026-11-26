@@ -28,7 +28,7 @@ export default function AudiobookPage() {
   return (
     <Page>
       <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
-        <h1 className="sr-only">Player de audiobook</h1>
+        <h1 className="sr-only">Player de audiolivro</h1>
         <Link
           href="/biblioteca"
           className="mb-4 inline-flex items-center gap-1.5 text-sm font-bold uppercase tracking-wider text-gold transition hover:underline"
@@ -51,7 +51,7 @@ export default function AudiobookPage() {
             </span>
             <p className="text-display text-3xl">Acesso não autorizado</p>
             <p className="max-w-md text-sm text-[var(--text-muted)]">
-              Este audiobook não está na sua biblioteca. Compre o item ou entre
+              Este audiolivro não está na sua biblioteca. Compre o item ou entre
               com a conta que realizou a compra para começar a ouvir.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
@@ -59,7 +59,7 @@ export default function AudiobookPage() {
                 Ir para a biblioteca
               </Link>
               <Link href="/audiobooks" className="btn btn-ghost">
-                Ver audiobooks
+                Ver audiolivros
               </Link>
             </div>
           </div>

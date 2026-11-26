@@ -32,7 +32,7 @@ interface ViewItem {
   image?: string;
   /** primeiro arquivo com download permitido (`null` = licença sem download) */
   downloadKind: "pdf" | "audio" | null;
-  /** acesso via assinatura Cliffhanger+ (§23) — some quando assinar termina */
+  /** acesso via assinatura Litterae+ (§23) — some quando assinar termina */
   source?: "plus";
   progress?: ReadingProgress;
 }
@@ -191,7 +191,7 @@ export default function BibliotecaPage() {
           loading
             ? undefined
             : synced
-              ? "Seus e-books e audiobooks, sincronizados com sua conta Cliffhanger em qualquer dispositivo."
+              ? "Seus e-books e audiolivros, sincronizados com sua conta Litterae em qualquer dispositivo."
               : "Seus itens digitais neste dispositivo. Entre na conta para sincronizar a biblioteca."
         }
         href="/ebooks"
@@ -211,7 +211,7 @@ export default function BibliotecaPage() {
           <div className="card grid place-items-center gap-4 p-14 text-center">
             <p className="text-display text-4xl">Nenhum item ainda</p>
             <p className="max-w-md text-sm text-[var(--text-muted)]">
-              Compre um e-book ou audiobook e ele aparece aqui automaticamente
+              Compre um e-book ou audiolivro e ele aparece aqui automaticamente
               após a confirmação do pagamento — sem esperar entrega.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
@@ -219,7 +219,7 @@ export default function BibliotecaPage() {
                 Explorar e-books
               </Link>
               <Link href="/audiobooks" className="btn btn-ghost">
-                Explorar audiobooks
+                Explorar audiolivros
               </Link>
             </div>
           </div>
@@ -254,11 +254,11 @@ export default function BibliotecaPage() {
                   <div className="flex min-w-0 flex-1 flex-col">
                     <span className="flex items-center gap-2">
                       <span className="text-xs font-bold uppercase tracking-wider text-gold">
-                        {item.type === "audiobook" ? "Audiobook" : "E-book"}
+                        {item.type === "audiobook" ? "Audiolivro" : "E-book"}
                       </span>
                       {item.source === "plus" && (
                         <span className="rounded border border-gold/40 bg-gold/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-gold">
-                          Cliffhanger+
+                          Litterae+
                         </span>
                       )}
                     </span>

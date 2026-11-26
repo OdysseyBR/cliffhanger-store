@@ -25,7 +25,7 @@ import type { AppContent } from "@/lib/app-content";
 import type { QrCatalogOption, QrCodeEntry } from "@/lib/qr-fields";
 
 /**
- * §24–§26/§33/§34 — hooks dos módulos novos do painel (Cliffhanger+,
+ * §24–§26/§33/§34 — hooks dos módulos novos do painel (Litterae+,
  * Aplicativo e QR Codes): lista e CRUD por `/api/admin/*`, resultado
  * "taggeado" com o uid, igual aos demais hooks do painel.
  */
@@ -40,7 +40,7 @@ function loadError(error: unknown, fallback: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// Cliffhanger+ · Planos (§24)
+// Litterae+ · Planos (§24)
 // ---------------------------------------------------------------------------
 
 export interface AdminPlusBoard {
@@ -77,7 +77,7 @@ export function useAdminPlusBoard(): AdminPlusBoard {
         setLoaded({ uid, board: result.data });
       } catch (error) {
         setLoaded(null);
-        setFailed({ uid, message: loadError(error, "Falha ao carregar o Cliffhanger+.") });
+        setFailed({ uid, message: loadError(error, "Falha ao carregar o Litterae+.") });
       }
     })();
   }, [uid, reloadKey]);
@@ -106,7 +106,7 @@ export function useAdminPlusBoard(): AdminPlusBoard {
 }
 
 // ---------------------------------------------------------------------------
-// Cliffhanger+ · Drops (§25)
+// Litterae+ · Drops (§25)
 // ---------------------------------------------------------------------------
 
 export interface AdminPlusDrops {
@@ -197,7 +197,7 @@ export function useAdminPlusDrops(): AdminPlusDrops {
 }
 
 // ---------------------------------------------------------------------------
-// Cliffhanger+ · Clube do Leitor (§26)
+// Litterae+ · Clube do Leitor (§26)
 // ---------------------------------------------------------------------------
 
 export interface AdminPlusClub {

@@ -1,5 +1,5 @@
 /**
- * §15 e §24–§26 — Cliffhanger+: tipos puros (client-safe) da assinatura,
+ * §15 e §24–§26 — Litterae+: tipos puros (client-safe) da assinatura,
  * dos Drops e do Clube do Leitor. Sem dependência de servidor aqui — a
  * persistência fica em `plus.ts` (server-only).
  *
@@ -53,9 +53,9 @@ export const DEFAULT_PLUS_PLANS: PlusPlan[] = [
     concept: "Tenha acesso.",
     perks: [
       "Tudo do Gold",
-      "Biblioteca completa de e-books e audiobooks enquanto assinar",
+      "Biblioteca completa de e-books e audiolivros enquanto assinar",
       "4 e-books permanentes por mês",
-      "2 audiobooks permanentes por mês",
+      "2 audiolivros permanentes por mês",
       "Benefícios Premium",
       "Latoy® Focus Multiverse (em breve)",
     ],
@@ -634,7 +634,7 @@ export function sanitizePlusPlansInput(raw: unknown): PlusFieldParse<PlusPlan[]>
       ? (raw as { plans?: unknown }).plans
       : raw;
   if (!Array.isArray(source) || source.length !== DEFAULT_PLUS_PLANS.length) {
-    return { ok: false, error: "Os três planos do Cliffhanger+ são obrigatórios." };
+    return { ok: false, error: "Os três planos do Litterae+ são obrigatórios." };
   }
   const ids = new Set<string>();
   for (const row of source) {
@@ -647,7 +647,7 @@ export function sanitizePlusPlansInput(raw: unknown): PlusFieldParse<PlusPlan[]>
   }
   const plans = normalizePlusPlans(source);
   if (plans.length !== DEFAULT_PLUS_PLANS.length) {
-    return { ok: false, error: "Os três planos do Cliffhanger+ são obrigatórios." };
+    return { ok: false, error: "Os três planos do Litterae+ são obrigatórios." };
   }
   return { ok: true, item: plans };
 }

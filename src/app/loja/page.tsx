@@ -9,7 +9,7 @@ import { buildFilterMaps } from "@/lib/filters";
 export const metadata: Metadata = {
   title: "Loja",
   description:
-    "Todos os produtos da Cliffhanger Store: livros, e-books, audiobooks, produtos oficiais e colecionáveis.",
+    "Todos os produtos da Litterae: livros, e-books, audiolivros, produtos oficiais e colecionáveis.",
 };
 
 export default async function LojaPage() {

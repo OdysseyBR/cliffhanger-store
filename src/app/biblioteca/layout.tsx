@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Biblioteca",
-  description: "Sua biblioteca digital: e-books e audiobooks comprados.",
+  description: "Sua biblioteca digital: e-books e audiolivros comprados.",
 };
 
 export default function BibliotecaLayout({ children }: { children: React.ReactNode }) {

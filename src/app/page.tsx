@@ -25,7 +25,7 @@ import { getShopSettings } from "@/lib/shop-settings";
 import type { HomeSectionKey, Product } from "@/lib/types";
 
 export const metadata: Metadata = {
-  title: "Cliffhanger Store — livros, e-books, audiobooks e colecionáveis",
+  title: "Litterae — livraria digital: livros, e-books e audiolivros",
 };
 
 /**
@@ -236,7 +236,7 @@ export default async function HomePage() {
       hideHeader={banner ? !banner.showHeader : false}
     >
       <h1 className="sr-only">
-        Cliffhanger Store — livros, e-books, audiobooks e colecionáveis
+        Litterae — livraria digital de livros, e-books e audiolivros de autores independentes
       </h1>
       {announcement && (
         <p className="mb-4 rounded-full border border-gold/40 bg-gold/10 px-5 py-2 text-center text-xs font-bold uppercase tracking-wider text-gold">
@@ -281,19 +281,20 @@ function BrandHero() {
     >
       {/* eslint-disable-next-line @next/next/no-img-element -- wordmark estático da identidade */}
       <img
-        src="/logo-cliffhanger-branco.svg"
-        alt="Cliffhanger Store"
+        src="/logo-litterae-branco.svg"
+        alt="Litterae"
         className="logo-white mx-auto h-12 w-auto"
       />
       {/* eslint-disable-next-line @next/next/no-img-element -- wordmark estático (modo claro) */}
       <img
-        src="/logo-cliffhanger-escuro.svg"
-        alt="Cliffhanger Store"
+        src="/logo-litterae-escuro.svg"
+        alt="Litterae"
         className="logo-dark mx-auto hidden h-12 w-auto"
       />
       <p className="text-display mt-4 text-3xl text-gold">Novos títulos em breve</p>
       <p className="mx-auto mt-2 max-w-md text-sm text-[var(--text-muted)]">
-        A loja está se preparando para o próximo lote. Volte em breve.
+        Livraria digital de autores independentes — livros, e-books e audiolivros.
+        Novos títulos toda semana.
       </p>
     </section>
   );

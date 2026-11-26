@@ -213,7 +213,7 @@ export function AudioPlayer({
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-bold">{title}</p>
           <p className="text-xs text-[var(--text-muted)]">
-            {currentChapter ? currentChapter.title : "Audiobook"}
+            {currentChapter ? currentChapter.title : "Audiolivro"}
             {duration > 0 && ` · ${formatTime(position)} de ${formatTime(duration)}`}
           </p>
         </div>
@@ -341,7 +341,7 @@ export function AudioPlayer({
           </p>
           {chapters.length === 0 ? (
             <p className="text-xs text-[var(--text-muted)]">
-              Este audiobook não possui capítulos cadastrados.
+              Este audiolivro não possui capítulos cadastrados.
             </p>
           ) : (
             <ul className="space-y-1">
@@ -411,7 +411,7 @@ export function AudioPlayer({
 
       <p className="text-[11px] text-[var(--text-muted)]">
         {synced
-          ? "Progresso sincronizado com sua conta Cliffhanger."
+          ? "Progresso sincronizado com sua conta Litterae."
           : "Progresso salvo neste dispositivo. Entre na conta para sincronizar."}
       </p>
 

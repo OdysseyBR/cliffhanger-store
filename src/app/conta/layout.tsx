@@ -22,7 +22,7 @@ const GROUPS: Array<{ title: string; links: Array<{ href: string; label: string 
       { href: "/conta/biblioteca", label: "Biblioteca" },
       { href: "/conta/colecao", label: "Minha coleção" },
       { href: "/conta/wishlist", label: "Wishlist" },
-      { href: "/conta/cliffhanger-plus", label: "Cliffhanger+" },
+      { href: "/conta/cliffhanger-plus", label: "Litterae+" },
     ],
   },
   {

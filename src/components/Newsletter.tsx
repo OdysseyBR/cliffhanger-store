@@ -22,7 +22,7 @@ export function Newsletter() {
     <section className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="card flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
         <div>
-          <h2 className="text-display text-3xl">Newsletter Cliffhanger</h2>
+          <h2 className="text-display text-3xl">Newsletter Litterae</h2>
           <p className="mt-1 text-sm text-[var(--text-muted)]">
             Lançamentos, pré-vendas e ofertas — sem spam, só história.
           </p>

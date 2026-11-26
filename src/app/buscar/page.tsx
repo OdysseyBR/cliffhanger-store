@@ -7,7 +7,7 @@ import { searchCatalog } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Buscar",
-  description: "Busca global na Cliffhanger Store: obras, produtos, autores e universos.",
+  description: "Busca global na Litterae: obras, produtos, autores e universos.",
 };
 
 /** Busca global (Documento Mestre 6.3). */
@@ -26,7 +26,7 @@ export default async function BuscarPage({
 
   return (
     <Page>
-      <Section title="Buscar" titleAs="h1" subtitle="Obras, produtos, e-books, audiobooks, autores e universos.">
+      <Section title="Buscar" titleAs="h1" subtitle="Obras, produtos, e-books, audiolivros, autores e universos.">
         <form action="/buscar" method="GET" className="mb-8 flex max-w-2xl gap-2">
           <input
             type="search"

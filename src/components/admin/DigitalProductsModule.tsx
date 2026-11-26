@@ -58,19 +58,19 @@ const META: Record<DigitalModuleKind, ModuleMeta> = {
       "Nenhum e-book no painel — cadastre o produto em Produtos (tipo “e-book”) e volte aqui para enviar o PDF e o sumário.",
   },
   audio: {
-    title: "Audiobooks",
+    title: "Audiolivros",
     subtitle:
       "Arquivos de áudio, capítulos e permissão de download da plataforma digital (§8)",
-    loginNote: "Entre com a conta administradora para gerenciar os audiobooks.",
+    loginNote: "Entre com a conta administradora para gerenciar os audiolivros.",
     noPermission:
-      "Os audiobooks exigem a permissão digital.view — elas ficam com os papéis que operam a biblioteca (§13).",
+      "Os audiolivros exigem a permissão digital.view — elas ficam com os papéis que operam a biblioteca (§13).",
     addFile: "Adicionar áudio",
     fileKindLabel: "áudio",
     startLabel: "Início (s)",
     startHint: "segundo inicial do capítulo",
     chapterWord: "Faixa",
     empty:
-      "Nenhum audiobook no painel — cadastre o produto em Produtos (tipo “audiobook”) e volte aqui para enviar o áudio e os capítulos.",
+      "Nenhum audiolivro no painel — cadastre o produto em Produtos (tipo “audiolivro”) e volte aqui para enviar o áudio e os capítulos.",
   },
 };
 
@@ -148,7 +148,7 @@ export function DigitalProductsModule({
           kind,
           url: "",
           name: editing
-            ? `${editing.title} — ${kind === "pdf" ? "E-book (PDF)" : "Audiobook (áudio)"}`
+            ? `${editing.title} — ${kind === "pdf" ? "E-book (PDF)" : "Audiolivro (áudio)"}`
             : "",
           allowDownload: true,
         },

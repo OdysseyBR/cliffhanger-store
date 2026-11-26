@@ -44,8 +44,8 @@ export const NOTIFY_CATEGORIES: Array<{ key: NotifyCategory; label: string; hint
   { key: "store", label: "Loja", hint: "Promoções, ofertas, novidades e reposições." },
   { key: "launches", label: "Lançamentos", hint: "Novidades, pré-vendas e edições especiais." },
   { key: "wishlist", label: "Wishlist", hint: "Volta ao estoque, preço, promoção e esgotando." },
-  { key: "library", label: "Biblioteca", hint: "E-books, audiobooks e conteúdos extras." },
-  { key: "plus", label: "Cliffhanger+", hint: "Drops, benefícios, caixas e renovação." },
+  { key: "library", label: "Biblioteca", hint: "E-books, audiolivros e conteúdos extras." },
+  { key: "plus", label: "Litterae+", hint: "Drops, benefícios, caixas e renovação." },
   { key: "orders", label: "Pedidos", hint: "Pagamento, envio, rastreio e entrega." },
 ];
 

@@ -127,7 +127,7 @@ export default async function ObraPage({ params }: Props) {
 
       {/* Edições, audiobooks e formatos */}
       {formats.length > 0 && (
-        <Section title="Edições e formatos" subtitle="Livro físico, e-book, audiobook e edições especiais.">
+        <Section title="Edições e formatos" subtitle="Livro físico, e-book, audiolivro e edições especiais.">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {formats.map((product) => (
               <ProductCard key={product.id} product={product} />
@@ -217,7 +217,7 @@ export default async function ObraPage({ params }: Props) {
           <div>
             <h3 className="text-display text-2xl">Contexto</h3>
             <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">
-              {universe ? universe.description : "Universo Cliffhanger em construção."}
+              {universe ? universe.description : "Universo em construção."}
             </p>
           </div>
         </div>

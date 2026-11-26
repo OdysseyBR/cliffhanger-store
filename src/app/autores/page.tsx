@@ -6,7 +6,7 @@ import { getAuthors } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Autores",
-  description: "Conheça os autores dos universos Cliffhanger.",
+  description: "Conheça os autores publicados na Litterae.",
 };
 
 export default async function AutoresPage() {

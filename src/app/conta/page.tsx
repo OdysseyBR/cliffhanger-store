@@ -117,7 +117,7 @@ export default function ContaDashboardPage() {
           <p className="mt-1 text-xs text-[var(--text-muted)]">
             {plus && plus.status === "ativo" ? (
               <>
-                Cliffhanger+ {plusPlanName}{" "}
+                Litterae+ {plusPlanName}{" "}
                 <strong className="text-gold">ativo</strong> —{" "}
                 <Link href="/conta/cliffhanger-plus" className="text-gold underline">
                   gerenciar assinatura
@@ -125,7 +125,7 @@ export default function ContaDashboardPage() {
               </>
             ) : (
               <>
-                Cliffhanger+ {plus ? "cancelado" : "não assinado"} —{" "}
+                Litterae+ {plus ? "cancelado" : "não assinado"} —{" "}
                 <Link href="/conta/cliffhanger-plus" className="text-gold underline">
                   conhecer planos
                 </Link>
@@ -144,7 +144,7 @@ export default function ContaDashboardPage() {
         <>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             <Stat label="E-books" value={String(ebooks)} href="/conta/biblioteca" />
-            <Stat label="Audiobooks" value={String(audiobooks)} href="/conta/biblioteca" />
+            <Stat label="Audiolivros" value={String(audiobooks)} href="/conta/biblioteca" />
             <Stat
               label="Coleção"
               value={collectionCount === null ? "…" : String(collectionCount)}

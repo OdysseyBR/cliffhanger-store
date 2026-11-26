@@ -8,7 +8,7 @@ import { listClubBoxesAdmin, saveClubBox } from "@/lib/plus-admin";
 /**
  * §26 — Clube do Leitor no painel: caixas mensais do Clube do Leitor
  * (produto, período, elegibilidade e status operacional), separado do
- * Cliffhanger Club de pontos (§18).
+ * Clube Litterae de pontos (§18).
  */
 export async function GET(request: Request) {
   const gate = await requireAdmin(request, "plus.view");
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     uid: gate.uid,
     role: gate.role,
     action: "criar",
-    module: "Cliffhanger+",
+    module: "Litterae+",
     entity: "clubBox",
     entityId: box.id,
     summary: `Criou a caixa “${box.title}” (${box.month}, ${box.status})`,

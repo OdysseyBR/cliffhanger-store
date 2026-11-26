@@ -219,7 +219,7 @@ export function ProductReviews({ productId }: { productId: string }) {
         {sent ? (
           <p className="text-sm text-[var(--text-muted)]">
             Sua avaliação foi enviada e está aguardando moderação. Obrigado por
-            participar da Cliffhanger Store.
+            participar da Litterae.
           </p>
         ) : !user ? (
           <div className="flex flex-wrap items-center justify-between gap-3">

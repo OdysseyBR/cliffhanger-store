@@ -40,7 +40,7 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "", label: "Todos" },
   { key: "livros", label: "Livros" },
   { key: "ebook", label: "E-books" },
-  { key: "audiobook", label: "Audiobooks" },
+  { key: "audiobook", label: "Audiolivros" },
   { key: "camisa", label: "Camisetas" },
   { key: "caneca", label: "Canecas" },
   { key: "poster", label: "Pôsteres" },

@@ -129,7 +129,7 @@ export default function AdminDigitalLibraryPage() {
         <p className="text-sm text-[var(--text-muted)]">
           Seu papel <strong>{me.roleLabel}</strong> não inclui a permissão{" "}
           <code className="font-mono">digital.view</code> — a biblioteca digital é restrita aos
-          papéis que operam licenças de e-books e audiobooks (§13).
+          papéis que operam licenças de e-books e audiolivros (§13).
         </p>
       </div>
     );
@@ -363,7 +363,7 @@ export default function AdminDigitalLibraryPage() {
                               : "border-gold/50 bg-gold/10 text-gold"
                           }
                         >
-                          {item.type === "audiobook" ? "audiobook" : "e-book"}
+                          {item.type === "audiobook" ? "audiolivro" : "e-book"}
                         </Label>
                         <Label>{item.allowDownload ? "download liberado" : "streaming"}</Label>
                         <Label>concedido em {when(item.purchasedAt)}</Label>
